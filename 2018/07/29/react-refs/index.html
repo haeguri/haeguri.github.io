@@ -143,62 +143,61 @@
 <p><code>createRef( )</code>로 만든 <code>ref</code>속성을 넘겨주는 대신에, 함수를 넘겨줄 수 있다. 함수는 리엑트 컴포넌트 인스턴스 혹은 HTML DOM 엘리먼트를 인자로 받는다. 그리고 인자는 다른 곳에 저장하고, 접근할 수 있다.</p>
 <p>아래의 예제는 인스턴스 프로퍼티에서 DOM 노드에 접근할 참조를 저장하기 위한 <code>ref</code> 콜백을 사용하는 일반적인 패턴을 구현한다. </p>
 <pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">class</span> <span class="token class-name">CustomTextInput</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
-  <span class="token function">constructor</span><span class="token punctuation">(</span>props<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">super</span><span class="token punctuation">(</span>props<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">constructor</span><span class="token punctuation">(</span>props<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">super</span><span class="token punctuation">(</span>props<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
     <span class="token keyword">this</span><span class="token punctuation">.</span>textInput <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>setTextInputRef <span class="token operator">=</span> element <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-      <span class="token keyword">this</span><span class="token punctuation">.</span>textInput <span class="token operator">=</span> element<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>textInput <span class="token operator">=</span> element<span class="token punctuation">;</span>
     <span class="token punctuation">}</span><span class="token punctuation">;</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>focusTextInput <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-      <span class="token comment" spellcheck="true">// Focus the text input using the raw DOM API</span>
-      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>textInput<span class="token punctuation">)</span> <span class="token keyword">this</span><span class="token punctuation">.</span>textInput<span class="token punctuation">.</span><span class="token function">focus</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 원래의 DOM API를 이용하여 텍스트 입력을 포커싱한다</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>textInput<span class="token punctuation">)</span> <span class="token keyword">this</span><span class="token punctuation">.</span>textInput<span class="token punctuation">.</span><span class="token function">focus</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 
-  <span class="token function">componentDidMount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token comment" spellcheck="true">// autofocus the input on mount</span>
-    <span class="token comment" spellcheck="true">// 마운트됐을 때 &lt;input> 태그에 포커싱을 한다.</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">focusTextInput</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
+    <span class="token function">componentDidMount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 마운트됐을 때 입력을 포커싱을 한다.</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">focusTextInput</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
-  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token comment" spellcheck="true">// 인스턴스 필드(`this.textInput`)에서 텍스트 입력 DOM 엘리먼트에 참조를 저장하기 위해 `ref` 콜백을 </span>
-    <span class="token comment" spellcheck="true">// </span>
-    <span class="token keyword">return</span> <span class="token punctuation">(</span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span>
-          <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>text<span class="token punctuation">"</span></span>
-          <span class="token attr-name">ref</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>setTextInputRef<span class="token punctuation">}</span></span>
-        <span class="token punctuation">/></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span>
-          <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>button<span class="token punctuation">"</span></span>
-          <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Focus</span> <span class="token attr-name">the</span> <span class="token attr-name">text</span> <span class="token attr-name">input"</span>
-          <span class="token attr-name">onClick</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>focusTextInput<span class="token punctuation">}</span></span>
-        <span class="token punctuation">/></span></span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-    <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
+    <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 인스턴스 필드(`this.textInput`)에 텍스트 입력 DOM 엘리먼트에 대한</span>
+        <span class="token comment" spellcheck="true">// 참조를 저장하기 위해 `ref` 콜백을 사용한다</span>
+        <span class="token keyword">return</span> <span class="token punctuation">(</span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span>
+                    <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>text<span class="token punctuation">"</span></span>
+                    <span class="token attr-name">ref</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>setTextInputRef<span class="token punctuation">}</span></span>
+                <span class="token punctuation">/></span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span>
+                    <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>button<span class="token punctuation">"</span></span>
+                    <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Focus</span> <span class="token attr-name">the</span> <span class="token attr-name">text</span> <span class="token attr-name">input"</span>
+                    <span class="token attr-name">onClick</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>focusTextInput<span class="token punctuation">}</span></span>
+                <span class="token punctuation">/></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 </code></pre>
 <p>리엑트는 컴포넌트가 마운트되면 DOM 엘리먼트를 파라메터로 <code>ref</code> 콜백을 실행할 것이다. 그리고 언마운트되면 <code>null</code>을 파라메터로 호출할 것이다. Ref는 <code>componentDidMount</code> 혹은 <code>componentDidUpdate</code>가 호출되기 전에 최신 상태로 보장된다.</p>
 <p><code>React.createRef()</code>로 만든 객체 Ref와 같이 컴포넌트 사이에서 Ref 콜백을 넘겨줄 수 있다. 컴포넌트 사이에서 콜백을 호출할 수 있다</p>
 <pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">function</span> <span class="token function">CustomTextInput</span><span class="token punctuation">(</span>props<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">return</span> <span class="token punctuation">(</span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">ref</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>props<span class="token punctuation">.</span>inputRef<span class="token punctuation">}</span></span> <span class="token punctuation">/></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">ref</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>props<span class="token punctuation">.</span>inputRef<span class="token punctuation">}</span></span> <span class="token punctuation">/></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
 
 <span class="token keyword">class</span> <span class="token class-name">Parent</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
-  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token punctuation">(</span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>CustomTextInput</span>
-        <span class="token attr-name">inputRef</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>el <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">this</span><span class="token punctuation">.</span>inputElement <span class="token operator">=</span> el<span class="token punctuation">}</span></span>
-      <span class="token punctuation">/></span></span>
-    <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
+    <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token punctuation">(</span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>CustomTextInput</span>
+                <span class="token attr-name">inputRef</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>el <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">this</span><span class="token punctuation">.</span>inputElement <span class="token operator">=</span> el<span class="token punctuation">}</span></span>
+            <span class="token punctuation">/></span></span>
+        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 </code></pre>
 <p>위의 예제에서, <code>Parent</code>는 ref 콜백을 <code>inputRef</code> prop으로 <code>CustomTextInput</code>에 넘겨준다. <code>CustomTextInput</code>은 넘겨받은 함수를 특별한 <code>ref</code> 속성으로써  <code>&lt;input&gt;</code>로 넘긴다.</p>
