@@ -6,12 +6,12 @@
 <img src="/images/css-box-model/css-box-model.png" width="300" height="238">
 <h2 id="컨텐츠-영역"><a href="#컨텐츠-영역" class="headerlink" title="컨텐츠 영역"></a>컨텐츠 영역</h2><p>컨텐츠 영역에는 텍스트나 이미지 등 엘리먼트의 실제 내용이 있다. 컨텐츠 영역의 크기를 명시적으로 정해주는 것은 <code>box-sizing</code> 속성이 기본 값인 <code>content-box</code>으로 되어 있을 때만 가능하다. <code>box-sizing</code>이 기본 값으로 설정되어 있으면, <code>width</code>, <code>height</code>, <code>min-width</code>, <code>min-height</code>, <code>max-width</code>, <code>max-height</code>과 같은 크기를 지정하는 CSS 속성들은 컨텐츠 영역의 크기만 변경하게 된다.</p>
 <p>그런데 <code>width</code>, <code>height</code>과 같은 속성들은 주로 컨텐츠 영역의 크기를 변경하려고 하는 것이 아니라 엘리먼트(박스)의 크기를 지정하려고 설정하는 경우가 대부분일 것이다.</p>
-<p>예를 들어서, <code>padding</code>, <code>border</code>, <code>margin</code> 속성이 부여된 엘리먼트의 크기를 너비 200px, 높이 300px으로 하고 싶다면 다음처럼 소스를 작성하려고 할 수도 있다.</p>
+<p>예를 들어서, <code>padding</code>, <code>border</code> 속성이 부여된 엘리먼트의 크기를 너비 200px, 높이 300px으로 하고 싶다면 다음처럼 소스를 작성하려고 할 수도 있다.</p>
 <iframe scrolling="no" width="100%" height="300" src="//jsfiddle.net/dwv5tkmh/25//embedded/html,result/light" frameborder="0" allowfullscreen></iframe>
 <p>이 엘리먼트가 실제 화면에 보여지는 크기를 개발자 도구에서 확인해보면 다음과 같다. </p>
 <img src="/images/css-box-model/calculated-box-size.png" width="300" height="200">
-<p>엘리먼트의 너비는 바깥에서부터 <code>margin</code>, <code>border</code>, <code>padding</code>, <code>width</code>를 더해서 260px으로 계산되고, 엘리먼트의 높이도 역시 동일한 방법으로 260px으로 계산된다.</p>
-<p>그 이유는 CSS 코드에서 <code>box-sizing</code> 속성으로 어떤 값도 주어지지 않아서 기본 값인 <code>content-box</code>로 설정됐는데, 이 상태에서 <code>width</code>, <code>height</code>는 <strong>컨텐츠 영역</strong>의 크기만을 지정하기 떄문이다. </p>
+<p>엘리먼트의 너비는 바깥에서부터 <code>border</code>, <code>padding</code>, <code>width</code>를 더해서 240px으로 계산되고, 엘리먼트의 높이도 역시 동일한 방법으로 240px으로 계산된다.</p>
+<p>이렇게 계산된 이유는 CSS 코드에서 <code>box-sizing</code> 속성으로 어떤 값도 주어지지 않아서 기본 값인 <code>content-box</code>로 설정됐기 때문이다. <code>box-sizing:content-box</code>로 설정된 엘리먼트는 <code>width</code>, <code>height</code> 속성을 적용해도 <code>padding</code>과 <code>border</code>는 포함하지 않고 <strong>컨텐츠 영역</strong>의 크기만을 지정한다.</p>
 <h2 id="패딩-padding-영역"><a href="#패딩-padding-영역" class="headerlink" title="패딩(padding) 영역"></a>패딩(padding) 영역</h2><p>패딩 영역은 컨텐츠 영역을 감싸면서 엘리먼트의 패딩을 포함하는 투명한 영역이다. 패딩의 두께는 <code>padding-top</code>, <code>padding-right</code>, <code>padding-bottom</code>, <code>padding-left</code> 속성과 네 가지 속성을 축약한 버전인 <code>padding</code>으로 결정된다.</p>
 <h2 id="테두리-border-영역"><a href="#테두리-border-영역" class="headerlink" title="테두리(border) 영역"></a>테두리(border) 영역</h2><p>테두리 영역은 패딩 영역을 감싸면서 엘리먼트의 테두리를 포함하는 영역이며, 테두리의 두께는 <code>border-width</code>, <code>border</code>으로 결정된다. </p>
 <p><code>box-sizing</code> 속성 값 중에는 <code>border-box</code>가 있는데, <code>box-sizing: border-box;</code>를 하게 되면 <code>width</code>, <code>height</code> 같은 엘리먼트(박스)의 크기를 변경하는 CSS 속성들이 <strong>‘border-box’</strong>의 크기를 변경하게 한다. <strong>‘border-box’</strong>는 컨텐츠, 패딩, 테두리 영역를 포함하는 박스를 말한다.</p>
