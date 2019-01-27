@@ -5,8 +5,8 @@
 <p>하나의 박스는 컨텐츠 영역(content area), 패딩 영역(padding area), 테두리 영역(border area), 마진 영역(margin area)으로 구성된다. 네 가지의 영역이 박스를 어떻게 구성하는지는 아래의 그림을 통해 쉽게 파악해볼 수 있다.</p>
 <img src="/images/css-box-model/css-box-model.png" width="300" height="238">
 <h2 id="컨텐츠-영역"><a href="#컨텐츠-영역" class="headerlink" title="컨텐츠 영역"></a>컨텐츠 영역</h2><p>컨텐츠 영역에는 텍스트나 이미지 등 엘리먼트의 실제 내용이 있다. 컨텐츠 영역의 크기를 명시적으로 정해주는 것은 <code>box-sizing</code> 속성이 기본 값인 <code>content-box</code>으로 되어 있을 때만 가능하다. <code>box-sizing</code>이 기본 값으로 설정되어 있으면, <code>width</code>, <code>height</code>, <code>min-width</code>, <code>min-height</code>, <code>max-width</code>, <code>max-height</code>과 같은 크기를 지정하는 CSS 속성들은 컨텐츠 영역의 크기만 변경하게 된다.</p>
-<p>그런데 <code>width</code>, <code>height</code>과 같은 속성들은 주로 컨텐츠 영역의 크기를 변경하려고 하는 것이 아니라 엘리먼트(박스)의 크기를 지정하려고 설정하는 경우가 대부분일 것이다.</p>
-<p>예를 들어서, <code>padding</code>, <code>border</code> 속성이 부여된 엘리먼트의 크기를 너비 200px, 높이 300px으로 하고 싶다면 다음처럼 소스를 작성하려고 할 수도 있다.</p>
+<p>그런데 <code>width</code>, <code>height</code>과 같은 속성들은 주로 컨텐츠 영역의 크기를 변경하려고 하는 것이 아니라 엘리먼트(박스)의 크기를 지정하려고 사용하는 경우가 대부분일 것이다.</p>
+<p>예를 들어서, <code>padding</code>, <code>border</code> 속성이 부여된 엘리먼트의 크기를 너비 200px, 높이 200px으로 하고 싶다면 다음처럼 소스를 작성하려고 할 수도 있다.</p>
 <iframe scrolling="no" width="100%" height="300" src="//jsfiddle.net/dwv5tkmh/25//embedded/html,result/light" frameborder="0" allowfullscreen></iframe>
 <p>이 엘리먼트가 실제 화면에 보여지는 크기를 개발자 도구에서 확인해보면 다음과 같다. </p>
 <img src="/images/css-box-model/calculated-box-size.png" width="300" height="200">
