@@ -14,13 +14,13 @@
 <li>(Browser) 원래의 HTTP 요청을 계속 함</li>
 </ol>
 <p> <u>‘1’번</u>을 제외한 나머지 과정은 브라우저와 서버가 알아서 해주는 과정이다. 서버는 이 과정이 시작되기 전에 응답에 알맞는 헤더가 설정되도록 작업하기만 하면 된다. 여기에서 <u>‘3’번</u>의 사전 요청 전송 과정은 생략되는 경우도 있다. 이것은 클라이언트에서 어떤 헤더나 메서드로 요청을 하는가에 따라서 달라진다. </p>
-<h2 id="간단한-요청"><a href="#간단한-요청" class="headerlink" title="간단한 요청"></a>간단한 요청</h2><p> 사전 요청을 하지 않아도 된다고 판단되는 <strong>간단한 CORS 요청</strong>들은 다음의 세가지 조건을 모두 만족해야 한다.</p>
+<h2 id="간단한-요청"><a href="#간단한-요청" class="headerlink" title="간단한 요청"></a>간단한 요청</h2><p> 사전 요청을 하지 않아도 된다고 판단되는 <strong>간단한 CORS 요청</strong>들은 다음의 세가지 조건을 <strong><u>모두 만족</u></strong>해야 한다.</p>
 <ul>
 <li>메서드는 다음 중 하나여야 한다 : <code>GET</code>, <code>HEAD</code>, <code>POST</code></li>
 <li>스크립트에서 수동 설정이 허용되는 헤더는 다음 중 하나여야 한다 : <code>Accept</code>, <code>Accept-Language</code>, <code>Content-Language</code>, <code>Content-Type</code> </li>
 <li><code>Content-Type</code> 헤더 값은 다음 중 하나여야 한다 : <code>application/x-www-form-urlencoded</code>, <code>multipart/form-data</code>, <code>text/plain</code><br>그리고 당연한 이야기지만, 이 모든 조건이 만족해도 서버에서 알맞은 헤더가 사전에 설정되어 있지 않으면 브라우저에 의해 CORS 요청은 거부된다.</li>
 </ul>
-<p>아래는 <strong>“foo.example”</strong> 페이지를 보고 있는 브라우저와 <strong>“bar.other”</strong> 서버가 주고받은 HTTP 요청과 응답의 헤더 부분이다.</p>
+<p>아래는 <strong>“foo.example”</strong> 페이지를 보고 있는 브라우저와 <strong>“bar.other”</strong> 서버가 주고받은 HTTP 요청, 응답의 내용이다.</p>
 <pre class=" language-text"><code class="language-text">GET /resources/public-data/ HTTP/1.1
 Host: bar.other
 User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; rv:1. 9.1b3pre) Gecko/20081130 Minefield/3.1b3pre
@@ -54,7 +54,7 @@ app<span class="token punctuation">.</span><span class="token function">use</spa
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token comment" spellcheck="true">// …</span>
 </code></pre>
-<h2 id="사전-요청"><a href="#사전-요청" class="headerlink" title="사전 요청"></a>사전 요청</h2><p>간단한 요청이 되는 경우를 제외하고, 다른 출처간의 리소스가 공유되기 전에 브라우저에서 받아들여도 되는 리소스인지 확인하기 위해서는 <strong>사전요청</strong>이 전달된다. 만약 다음의 조건 중 하나라도 만족한다면 실제 HTTP 요청 이전에 <strong>사전 요청</strong>이 전달된다. </p>
+<h2 id="사전-요청"><a href="#사전-요청" class="headerlink" title="사전 요청"></a>사전 요청</h2><p>간단한 요청이 되는 경우를 제외하고, 다른 출처간의 리소스가 공유되기 전에 브라우저에서 받아들여도 되는 리소스인지 확인하기 위해서는 <strong>사전요청</strong>이 전달된다. 만약 다음의 조건 중 <strong><u>하나라도 해당된다면</u></strong> 실제 HTTP 요청 이전에 <strong>사전 요청</strong>이 전달된다. </p>
 <ul>
 <li>GET, POST, HEAD 이외의 메서드인 요청</li>
 <li>요청이 <code>application/x-www-form-urlencoded</code>, <code>multipart/form-data</code>, <code>text/plain</code> 이외의 값을 가진<code>Content-Type</code>으로 전송될 경우</li>
