@@ -18,8 +18,9 @@
 <ul>
 <li>메서드는 다음 중 하나여야 한다 : <code>GET</code>, <code>HEAD</code>, <code>POST</code></li>
 <li>스크립트에서 수동 설정이 허용되는 헤더는 다음 중 하나여야 한다 : <code>Accept</code>, <code>Accept-Language</code>, <code>Content-Language</code>, <code>Content-Type</code> </li>
-<li><code>Content-Type</code> 헤더 값은 다음 중 하나여야 한다 : <code>application/x-www-form-urlencoded</code>, <code>multipart/form-data</code>, <code>text/plain</code><br>그리고 당연한 이야기지만, 이 모든 조건이 만족해도 서버에서 알맞은 헤더가 사전에 설정되어 있지 않으면 브라우저에 의해 CORS 요청은 거부된다.</li>
+<li><code>Content-Type</code> 헤더 값은 다음 중 하나여야 한다 : <code>application/x-www-form-urlencoded</code>, <code>multipart/form-data</code>, <code>text/plain</code></li>
 </ul>
+<p>그리고 당연한 이야기지만, 이 모든 조건이 만족해도 서버에서 알맞은 헤더가 사전에 설정되어 있지 않으면 브라우저에 의해 CORS 요청은 거부된다.</p>
 <p>아래는 <strong>“foo.example”</strong> 페이지를 보고 있는 브라우저와 <strong>“bar.other”</strong> 서버가 주고받은 HTTP 요청, 응답의 내용이다.</p>
 <pre class=" language-text"><code class="language-text">GET /resources/public-data/ HTTP/1.1
 Host: bar.other
