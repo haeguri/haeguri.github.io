@@ -206,7 +206,7 @@
 <p><strong>주의</strong><br>Ref에 접근하기 위해 <code>this.refs.textInput</code>를 사용하고 있다면, <a href="#callback-refs">콜백 패턴</a>이나 <a href="#creating-refs">createRef API</a>를 대신에 사용할 것을 권장한다.</p>
 </blockquote>
 <h3 id="Callback-Refs를-사용할-때-주의사항"><a href="#Callback-Refs를-사용할-때-주의사항" class="headerlink" title="Callback Refs를 사용할 때 주의사항"></a>Callback Refs를 사용할 때 주의사항</h3><p><code>ref</code> 콜백이 인라인 함수로 정의된다면 컴포넌트가 업데이트되는 동안 두 번 호출될 것이다. 첫 번째는 <code>null</code>, 그 다음에는 DOM 엘리먼트가 파라메터로 넘어간다. 이것은 각각의 <code>render</code> 메서드로 함수의 새 인스턴스가 만들어지기 때문인데, 그래서 리엑트는 예전의 ref를 비워우고 새로운 것으로 설정해줄 필요가 있다. <code>ref</code> 콜백을 클래스에 바운드된 메서드로 정의하면 이것을 피할 수 있지만, 대부분의 경우에서는 문제가 되지 않음을 기억해라.</p>
-</div></article></div></main><footer><div class="paginator"><a href="/2018/12/30/compare-response-json-send-func/" class="prev">上一篇</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'haeguri';
+</div></article></div></main><footer><div class="paginator"><a href="/2018/12/30/compare-response-json-send-func/" class="prev">PREV</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'haeguri';
 var disqus_identifier = '2018/12/09/react-refs/';
 var disqus_title = '( 번역 ) Refs and the DOM';
 var disqus_url = 'https://haeguri.github.io/2018/12/09/react-refs/';
