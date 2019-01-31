@@ -49,6 +49,9 @@ Content-Type: application/xml
 <p>두 번째 블록은 HTTP GET 요청에 대한 응답의 내용이다. 여기에서 CORS 요청을 가능하게 끔 하는 가장 중요한 헤더는 <code>Access-Control-Allow-Origin</code>이다. 이 헤더가 설정되지 않았거나, <code>*</code> 혹은 <code>http://foo.example</code>이 포함되지 않았다면 요청은 거부되었을 것이다. 이 헤더는 앞에서 말한 것처럼 서버 단에서 별도로 설정해줘야 한다.</p>
 <p>예를 들어서 NodeJS 서버에서 <code>Access-Control-Allow-Origin</code> 헤더를 설정한다면 다음과 같을 것이다.</p>
 <pre class=" language-javascript"><code class="language-javascript"><span class="token comment" spellcheck="true">// …</span>
+<span class="token keyword">var</span> express <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'express'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> app <span class="token operator">=</span> <span class="token function">express</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
 app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token punctuation">(</span>req<span class="token punctuation">,</span> res<span class="token punctuation">,</span> next<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
     res<span class="token punctuation">.</span><span class="token function">header</span><span class="token punctuation">(</span><span class="token string">'Access-Control-Allow-Origin'</span><span class="token punctuation">,</span> <span class="token string">'*'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
