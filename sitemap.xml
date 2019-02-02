@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://haeguri.github.io/2019/02/02/javascript-this/</loc>
+    
+    <lastmod>2019-02-02T10:38:42.971Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://haeguri.github.io/2019/02/01/http-cross-origin-resource-sharing/</loc>
     
     <lastmod>2019-01-31T16:54:23.159Z</lastmod>
