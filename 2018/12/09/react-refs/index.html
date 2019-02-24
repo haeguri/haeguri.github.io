@@ -1,8 +1,8 @@
 <!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> ( 번역 ) Refs and the DOM · Devlog</title><meta name="description" content="( 번역 ) Refs and the DOM - Haegyun Jung"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="https://haeguri.github.io/atom.xml" title="Devlog"><link rel="stylesheet" href="/css/prism.css" type="text/css"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="https://github.com/haeguri" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">( 번역 ) Refs and the DOM</h1><div class="post-info">2018년 12월 9일</div><div class="post-content"><blockquote>
-<p>리엑트 문서의 “Refs and the DOM”을 번역한 자료<br>원문 : <a href="https://reactjs.org/docs/refs-and-the-dom.html" target="_blank" rel="noopener">https://reactjs.org/docs/refs-and-the-dom.html</a></p>
+<p>리액트 문서의 “Refs and the DOM”을 번역한 자료<br>원문 : <a href="https://reactjs.org/docs/refs-and-the-dom.html" target="_blank" rel="noopener">https://reactjs.org/docs/refs-and-the-dom.html</a></p>
 </blockquote>
-<p>Ref는 DOM 노드 혹은 <code>render</code> 메서드로 생성된 리엑트 엘리먼트에 접근할 수 있는 방법을 제공한다.</p>
-<p>일반적인 리엑트 데이터 플로우에서는 <a href="https://reactjs.org/docs/components-and-props.html" target="_blank" rel="noopener">props</a>만이 부모 컴포넌트와 자식 컴포넌트와 상호작용할 수 있는 유일한 방법이다. 자식을 수정하기 위해서는 새로운 props을 넘겨줘야 자식이 다시 렌더링된다. 하지만 몇 가지 예외 경우에는 일반적인 데이터 플로에서 벗어나 긴급하게 자식을 수정해야 할 경우가 있다. 여기서 말하는 자식은 리엑트 컴포넌트의 인스턴스이거나 DOM 요소일 수도 있다. 이러한 경우, 리엑트는 비상용 탈출구를 제공한다.</p>
+<p>Ref는 DOM 노드 혹은 <code>render</code> 메서드로 생성된 리액트 엘리먼트에 접근할 수 있는 방법을 제공한다.</p>
+<p>일반적인 리액트 데이터 플로우에서는 <a href="https://reactjs.org/docs/components-and-props.html" target="_blank" rel="noopener">props</a>만이 부모 컴포넌트와 자식 컴포넌트와 상호작용할 수 있는 유일한 방법이다. 자식을 수정하기 위해서는 새로운 props을 넘겨줘야 자식이 다시 렌더링된다. 하지만 몇 가지 예외 경우에는 일반적인 데이터 플로에서 벗어나 긴급하게 자식을 수정해야 할 경우가 있다. 여기서 말하는 자식은 리액트 컴포넌트의 인스턴스이거나 DOM 요소일 수도 있다. 이러한 경우, 리액트는 비상용 탈출구를 제공한다.</p>
 <h3 id="언제-Ref를-쓰는가"><a href="#언제-Ref를-쓰는가" class="headerlink" title="언제 Ref를 쓰는가?"></a>언제 Ref를 쓰는가?</h3><p>Ref를 사용하면 좋은 몇 가지의 경우가 있다.</p>
 <ul>
 <li>포커스, 텍스트 선택, 미디어 재생을 다룰 때</li>
@@ -15,7 +15,7 @@
 <blockquote>
 <p><strong>주의</strong><br>아래의 예제는 16.3에서 소개된 <code>React.createRef()</code> API를 사용하도록 업데이트됐다. 만약 이전의 React 버전을 사용한다면 <a href="#callback-refs">callback refs</a>를 사용하는 것을 권한다.</p>
 </blockquote>
-<h3 id="Ref-만들기"><a href="#Ref-만들기" class="headerlink" title=" Ref 만들기"></a><a id="creating-refs"></a> Ref 만들기</h3><p>Ref는 <code>React.createRef()</code>로 만들어지며 <code>ref</code> 속성으로 리엑트 엘리먼트와 연결한다. 보통 Ref는 컴포넌트가 생성될 때 인스턴스 프로퍼티로 연결되서 컴포넌트를 통해 참조될 수 있게 된다.</p>
+<h3 id="Ref-만들기"><a href="#Ref-만들기" class="headerlink" title=" Ref 만들기"></a><a id="creating-refs"></a> Ref 만들기</h3><p>Ref는 <code>React.createRef()</code>로 만들어지며 <code>ref</code> 속성으로 리액트 엘리먼트와 연결한다. 보통 Ref는 컴포넌트가 생성될 때 인스턴스 프로퍼티로 연결되서 컴포넌트를 통해 참조될 수 있게 된다.</p>
 <pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">class</span> <span class="token class-name">MyComponent</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
     <span class="token function">constructor</span><span class="token punctuation">(</span>props<span class="token punctuation">)</span> <span class="token punctuation">{</span>
         <span class="token keyword">super</span><span class="token punctuation">(</span>props<span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -68,7 +68,7 @@
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<p>리엑트는 컴포넌트가 마운트 될 때 DOM 요소를 <code>current</code> 프로퍼티에 할당할 것이며 컴포넌트가 언마운트되면 다시 <code>null</code>을 할당할 것이다. <code>ref</code>는 <code>componentDidMount</code> 혹은 <code>componentDidUpdate</code> 라이프 사이클 훅이 실행되기 전에 갱신된다.</p>
+<p>리액트는 컴포넌트가 마운트 될 때 DOM 요소를 <code>current</code> 프로퍼티에 할당할 것이며 컴포넌트가 언마운트되면 다시 <code>null</code>을 할당할 것이다. <code>ref</code>는 <code>componentDidMount</code> 혹은 <code>componentDidUpdate</code> 라이프 사이클 훅이 실행되기 전에 갱신된다.</p>
 <h4 id="Ref를-클래스-컴포넌트에-추가하기"><a href="#Ref를-클래스-컴포넌트에-추가하기" class="headerlink" title="Ref를 클래스 컴포넌트에 추가하기"></a><a id="adding-ref-to-class-comp"></a>Ref를 클래스 컴포넌트에 추가하기</h4><p>만약 위의 <code>CustomTextInput</code>을 래핑해서 컴포넌트가 마운트되면 입력이 클릭된 것처럼 하려는 경우, ref를 통해서 커스텀 입력에 접근하고, <code>focusTextInput</code> 메서드를 수동으로 호출할 수 있다.</p>
 <pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">class</span> <span class="token class-name">AutoFocusTextInput</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
     <span class="token function">constructor</span><span class="token punctuation">(</span>props<span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -136,11 +136,11 @@
 </code></pre>
 <h3 id="부모-컴포넌트에-DOM-Ref를-노출하기"><a href="#부모-컴포넌트에-DOM-Ref를-노출하기" class="headerlink" title="부모 컴포넌트에 DOM Ref를 노출하기"></a>부모 컴포넌트에 DOM Ref를 노출하기</h3><p>드문 경우에 부모 컴포넌트에서 자식의 DOM 노드에 접근하기를 원할 수 있다. 이것은 컴포넌트 캡슐화를 망가뜨리기 때문에 일반적으로 추천되지 않지만, 포커스를 주거나 자식 DOM 노드의 크기나 포지션을 측정할 때 유용할 수 있다.</p>
 <p>위에서 <a href="#adding-ref-to-class-comp">자식 컴포넌트에 ref를 추가할 수 있었지만</a>, DOM 노드보다는 컴포넌트 인스턴스만을 가져오기 때문에 이것은 이상적인 해결책이 아니다. 덧붙이면 이것은 함수형 컴포넌트로도 할 수 없다.</p>
-<p>이러한 경우에서 리엑트 16.3 이상을 사용한다면 <a href="https://reactjs.org/docs/forwarding-refs.html" target="_blank" rel="noopener">ref forwarding</a>을 추천한다. Ref Forwarding은 컴포넌트가 자식 컴포넌트의 ref를 노출하는 것을 선택할 수 있게 한다. 자식의 DOM 노드를 부모 컴포넌트에 노출하는 방법에 대한 자세한 예제는 <a href="https://reactjs.org/docs/forwarding-refs.html#forwarding-refs-to-dom-componentsV" target="_blank" rel="noopener">ref forwarding 문서</a>에서 찾을 수 있다.</p>
-<p>만약 리엑트 16.2 이하을 사용하거나 ref forwarding에 의해 제공되는 기능보다 유연해야 한다면, <a href="https://gist.github.com/gaearon/1a018a023347fe1c2476073330cc5509" target="_blank" rel="noopener">이 대안</a>을 사용하거나 다르게 명명된 prop으로 ref를 명시적으로 넘겨줄 수 있다.</p>
+<p>이러한 경우에서 리액트 16.3 이상을 사용한다면 <a href="https://reactjs.org/docs/forwarding-refs.html" target="_blank" rel="noopener">ref forwarding</a>을 추천한다. Ref Forwarding은 컴포넌트가 자식 컴포넌트의 ref를 노출하는 것을 선택할 수 있게 한다. 자식의 DOM 노드를 부모 컴포넌트에 노출하는 방법에 대한 자세한 예제는 <a href="https://reactjs.org/docs/forwarding-refs.html#forwarding-refs-to-dom-componentsV" target="_blank" rel="noopener">ref forwarding 문서</a>에서 찾을 수 있다.</p>
+<p>만약 리액트 16.2 이하을 사용하거나 ref forwarding에 의해 제공되는 기능보다 유연해야 한다면, <a href="https://gist.github.com/gaearon/1a018a023347fe1c2476073330cc5509" target="_blank" rel="noopener">이 대안</a>을 사용하거나 다르게 명명된 prop으로 ref를 명시적으로 넘겨줄 수 있다.</p>
 <p>가능하다면, DOM 노드를 노출하지 않을 것을 권장하지만, 때때로 유용할 수 있다. 이 접근 법은 자식 컴포넌트에 어떤 코드를 추가해야 할 경우의 접근 법이다. 만약 자식 컴포넌트 구현체를 변경할 수 없다면 마지막 선택지는 <a href="https://reactjs.org/docs/react-dom.html#finddomnode" target="_blank" rel="noopener">findDOMNode</a>를 사용하는 것이지만, 실망스러울 것이다.</p>
-<h3 id="Callback-Refs"><a href="#Callback-Refs" class="headerlink" title=" Callback Refs"></a><a id="callback-refs"></a> Callback Refs</h3><p>리엑트는 Ref를 설정하기 위한 또 다른 방법인 ‘callback refs’를 제공한다. ‘callback refs’는 Ref가 설정되고 해제될 때 더욱 세세한 제어를 하게 한다.</p>
-<p><code>createRef( )</code>로 만든 <code>ref</code>속성을 넘겨주는 대신에, 함수를 넘겨줄 수 있다. 함수는 리엑트 컴포넌트 인스턴스 혹은 HTML DOM 엘리먼트를 인자로 받는다. 그리고 인자는 다른 곳에 저장하고, 접근할 수 있다.</p>
+<h3 id="Callback-Refs"><a href="#Callback-Refs" class="headerlink" title=" Callback Refs"></a><a id="callback-refs"></a> Callback Refs</h3><p>리액트는 Ref를 설정하기 위한 또 다른 방법인 ‘callback refs’를 제공한다. ‘callback refs’는 Ref가 설정되고 해제될 때 더욱 세세한 제어를 하게 한다.</p>
+<p><code>createRef( )</code>로 만든 <code>ref</code>속성을 넘겨주는 대신에, 함수를 넘겨줄 수 있다. 함수는 리액트 컴포넌트 인스턴스 혹은 HTML DOM 엘리먼트를 인자로 받는다. 그리고 인자는 다른 곳에 저장하고, 접근할 수 있다.</p>
 <p>아래의 예제는 인스턴스 프로퍼티에서 DOM 노드에 접근할 참조를 저장하기 위한 <code>ref</code> 콜백을 사용하는 일반적인 패턴을 구현한다. </p>
 <pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">class</span> <span class="token class-name">CustomTextInput</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
     <span class="token function">constructor</span><span class="token punctuation">(</span>props<span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -180,7 +180,7 @@
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<p>리엑트는 컴포넌트가 마운트되면 DOM 엘리먼트를 파라메터로 <code>ref</code> 콜백을 실행할 것이다. 그리고 언마운트되면 <code>null</code>을 파라메터로 호출할 것이다. Ref는 <code>componentDidMount</code> 혹은 <code>componentDidUpdate</code>가 호출되기 전에 최신 상태로 보장된다.</p>
+<p>리액트는 컴포넌트가 마운트되면 DOM 엘리먼트를 파라메터로 <code>ref</code> 콜백을 실행할 것이다. 그리고 언마운트되면 <code>null</code>을 파라메터로 호출할 것이다. Ref는 <code>componentDidMount</code> 혹은 <code>componentDidUpdate</code>가 호출되기 전에 최신 상태로 보장된다.</p>
 <p><code>React.createRef()</code>로 만든 객체 Ref와 같이 컴포넌트 사이에서 Ref 콜백을 넘겨줄 수 있다. 컴포넌트 사이에서 콜백을 호출할 수 있다</p>
 <pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">function</span> <span class="token function">CustomTextInput</span><span class="token punctuation">(</span>props<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
@@ -201,11 +201,11 @@
 <span class="token punctuation">}</span>
 </code></pre>
 <p>위의 예제에서, <code>Parent</code>는 ref 콜백을 <code>inputRef</code> prop으로 <code>CustomTextInput</code>에 넘겨준다. <code>CustomTextInput</code>은 넘겨받은 함수를 특별한 <code>ref</code> 속성으로써  <code>&lt;input&gt;</code>로 넘긴다.</p>
-<h3 id="레거시-API-문자열-Ref"><a href="#레거시-API-문자열-Ref" class="headerlink" title="레거시 API: 문자열 Ref"></a>레거시 API: 문자열 Ref</h3><p>예전에 리엑트를 사용했다면 <code>ref</code> 속성이 <code>”textInput&quot;</code>과 같이 문자열이고, DOM 노드를 <code>this.refs.textInput</code>으로 접근하는 오래된 API에 더 친숙할 것이다. 문자열 Ref는 <a href="https://github.com/facebook/react/pull/8333#issuecomment-271648615" target="_blank" rel="noopener">어떤 이슈</a>들을 가져서 레거시로 간주됐고, 앞으로의 릴리즈에서 제거될 것이기 때문에 문자열 Ref를 사용하는 일은 피해라</p>
+<h3 id="레거시-API-문자열-Ref"><a href="#레거시-API-문자열-Ref" class="headerlink" title="레거시 API: 문자열 Ref"></a>레거시 API: 문자열 Ref</h3><p>예전에 리액트를 사용했다면 <code>ref</code> 속성이 <code>”textInput&quot;</code>과 같이 문자열이고, DOM 노드를 <code>this.refs.textInput</code>으로 접근하는 오래된 API에 더 친숙할 것이다. 문자열 Ref는 <a href="https://github.com/facebook/react/pull/8333#issuecomment-271648615" target="_blank" rel="noopener">어떤 이슈</a>들을 가져서 레거시로 간주됐고, 앞으로의 릴리즈에서 제거될 것이기 때문에 문자열 Ref를 사용하는 일은 피해라</p>
 <blockquote>
 <p><strong>주의</strong><br>Ref에 접근하기 위해 <code>this.refs.textInput</code>를 사용하고 있다면, <a href="#callback-refs">콜백 패턴</a>이나 <a href="#creating-refs">createRef API</a>를 대신에 사용할 것을 권장한다.</p>
 </blockquote>
-<h3 id="Callback-Refs를-사용할-때-주의사항"><a href="#Callback-Refs를-사용할-때-주의사항" class="headerlink" title="Callback Refs를 사용할 때 주의사항"></a>Callback Refs를 사용할 때 주의사항</h3><p><code>ref</code> 콜백이 인라인 함수로 정의된다면 컴포넌트가 업데이트되는 동안 두 번 호출될 것이다. 첫 번째는 <code>null</code>, 그 다음에는 DOM 엘리먼트가 파라메터로 넘어간다. 이것은 각각의 <code>render</code> 메서드로 함수의 새 인스턴스가 만들어지기 때문인데, 그래서 리엑트는 예전의 ref를 비워우고 새로운 것으로 설정해줄 필요가 있다. <code>ref</code> 콜백을 클래스에 바운드된 메서드로 정의하면 이것을 피할 수 있지만, 대부분의 경우에서는 문제가 되지 않음을 기억해라.</p>
+<h3 id="Callback-Refs를-사용할-때-주의사항"><a href="#Callback-Refs를-사용할-때-주의사항" class="headerlink" title="Callback Refs를 사용할 때 주의사항"></a>Callback Refs를 사용할 때 주의사항</h3><p><code>ref</code> 콜백이 인라인 함수로 정의된다면 컴포넌트가 업데이트되는 동안 두 번 호출될 것이다. 첫 번째는 <code>null</code>, 그 다음에는 DOM 엘리먼트가 파라메터로 넘어간다. 이것은 각각의 <code>render</code> 메서드로 함수의 새 인스턴스가 만들어지기 때문인데, 그래서 리액트는 예전의 ref를 비워우고 새로운 것으로 설정해줄 필요가 있다. <code>ref</code> 콜백을 클래스에 바운드된 메서드로 정의하면 이것을 피할 수 있지만, 대부분의 경우에서는 문제가 되지 않음을 기억해라.</p>
 </div></article></div></main><footer><div class="paginator"><a href="/2018/12/30/compare-response-json-send-func/" class="prev">PREV</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'haeguri';
 var disqus_identifier = '2018/12/09/react-refs/';
 var disqus_title = '( 번역 ) Refs and the DOM';

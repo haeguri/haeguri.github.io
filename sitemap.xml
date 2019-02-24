@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://haeguri.github.io/2018/12/09/react-refs/</loc>
+    
+    <lastmod>2019-02-24T12:17:54.118Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://haeguri.github.io/2019/02/02/javascript-this/</loc>
     
     <lastmod>2019-02-05T09:13:49.360Z</lastmod>
@@ -26,13 +33,6 @@
     <loc>https://haeguri.github.io/2019/01/24/css-box-model/</loc>
     
     <lastmod>2019-01-27T13:59:04.525Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://haeguri.github.io/2018/12/09/react-refs/</loc>
-    
-    <lastmod>2018-12-09T06:25:18.844Z</lastmod>
     
   </url>
   
