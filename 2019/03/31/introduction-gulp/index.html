@@ -6,13 +6,11 @@
 <p>그런데 Webpack으로 파일을 묶기 위해서는 각각의 파일에는 <code>import</code>, <code>export</code>같은 ECMAScript 6의 모듈 시스템 구문을 추가해서 Webpack이 파일을 어떻게 번들링할지 알려줘야 합니다. 그리고 Webpack으로 묶여진 소스코드에는 Webpack이 부가적으로 삽입하는 코드도 포함되게 됩니다.</p>
 <p>담당하던 프로젝트에서는 아직 ECMAScript 5를 사용하고 있었고, 자동화가 필요한 부분이 주로 파일 복사와 소스 난독화 작업이었기 때문에, 소스 번들링이 주 목적인 Webpack과는 맞지 않다고 생각해서 Gulp를 적용했습니다.</p>
 <h2 id="3-환경-설정"><a href="#3-환경-설정" class="headerlink" title="3. 환경 설정"></a>3. 환경 설정</h2><p>Gulp 설치 방법은 공식 문서에도 잘 나와있는데, 설치 과정을 정리하면 아래와 같습니다.</p>
-<h3 id="3-1-Node-NPM-NPX-설치-확인"><a href="#3-1-Node-NPM-NPX-설치-확인" class="headerlink" title="3.1. Node, NPM, NPX 설치 확인"></a>3.1. Node, NPM, NPX 설치 확인</h3><p>먼저 개발 환경에 설치된 NodeJS, NPM, NPX의 버전을 확인해야 합니다. 콘솔에서 아래의 명령어를 실행해서 버전을 확인하고 버전을 업데이트하거나 설치해야 합니다. 각 버전들은 Gulp 공식 홈페이지를 참고해서 지정했습니다.</p>
+<h3 id="3-1-Node-NPM-NPX-설치-확인"><a href="#3-1-Node-NPM-NPX-설치-확인" class="headerlink" title="3.1. Node, NPM, NPX 설치 확인"></a>3.1. Node, NPM, NPX 설치 확인</h3><p>먼저 개발 환경에 설치된 NodeJS, NPM의 버전을 확인해야 합니다. 콘솔에서 아래의 명령어를 실행해서 버전을 확인하고 버전을 업데이트하거나 설치해야 합니다. 각 버전들은 Gulp 공식 홈페이지를 참고해서 지정했습니다.</p>
 <pre class=" language-bash"><code class="language-bash"><span class="token operator">></span> node --version
 v8.11.1
 <span class="token operator">></span> <span class="token function">npm</span> --version
 5.6.0
-<span class="token operator">></span> npx --version
-9.7.1
 </code></pre>
 <h3 id="3-2-gulp-cli-설치"><a href="#3-2-gulp-cli-설치" class="headerlink" title="3.2. gulp-cli 설치"></a>3.2. gulp-cli 설치</h3><pre class=" language-bash"><code class="language-bash"><span class="token operator">></span> <span class="token function">npm</span> <span class="token function">install</span> --global gulp-cli
 </code></pre>
