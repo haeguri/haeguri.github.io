@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://haeguri.github.io/"/>
-  <updated>2019-04-01T09:33:03.888Z</updated>
+  <updated>2019-08-25T11:12:41.059Z</updated>
   <id>https://haeguri.github.io/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>타입스크립트 데코레이터 살펴보기</title>
+    <link href="https://haeguri.github.io/2019/08/25/typescript-decorator/"/>
+    <id>https://haeguri.github.io/2019/08/25/typescript-decorator/</id>
+    <published>2019-08-25T11:07:00.000Z</published>
+    <updated>2019-08-25T11:12:41.059Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;타입스크립트의 데코레이터를 사용하면 클래스의 메서드, 프로퍼티, 접근자 혹은 함수의 파라미터에 이전에 제공하지 않던 방법으로 새로운 기능을 추가할 수 있습니다. 사실 데코레이터라는 문법은 이미 자바스크립트 표준으로써 논의되고 있는 단계이며
+        
+      
+    
+    </summary>
+    
+    
+      <category term="typescript" scheme="https://haeguri.github.io/tags/typescript/"/>
+    
+      <category term="decorator" scheme="https://haeguri.github.io/tags/decorator/"/>
+    
+  </entry>
   
   <entry>
     <title>자동화 도구 Gulp 살펴보기</title>
