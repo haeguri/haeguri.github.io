@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 타입스크립트 데코레이터 살펴보기 · Devlog</title><meta name="description" content="타입스크립트 데코레이터 살펴보기 - Haegyun Jung"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="https://haeguri.github.io/atom.xml" title="Devlog"><link rel="stylesheet" href="/css/prism.css" type="text/css"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="https://github.com/haeguri" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">타입스크립트 데코레이터 살펴보기</h1><div class="post-info">2019년 8월 25일</div><div class="post-content"><p>타입스크립트의 데코레이터를 사용하면 클래스의 메서드, 프로퍼티, 접근자 혹은 함수의 파라미터에 이전에 제공하지 않던 방법으로 새로운 기능을 추가할 수 있습니다. 사실 데코레이터라는 문법은 이미 자바스크립트 표준으로써 논의되고 있는 단계이며 현재는 초안 단계에 있습니다. 자바스크립트를 확장한 언어라고 할 수 있는 타입스크립트에서는 실험적인 기능으로써 데코레이터를 제공하고 있습니다. </p>
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 타입스크립트 Decorator · Devlog</title><meta name="description" content="타입스크립트 Decorator - Haegyun Jung"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="https://haeguri.github.io/atom.xml" title="Devlog"><link rel="stylesheet" href="/css/prism.css" type="text/css"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="https://github.com/haeguri" target="_blank" class="nav-list-link">GITHUB</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">타입스크립트 Decorator</h1><div class="post-info">2019년 8월 25일</div><div class="post-content"><p>타입스크립트의 데코레이터를 사용하면 클래스의 메서드, 프로퍼티, 접근자 혹은 함수의 파라미터에 이전에 제공하지 않던 방법으로 새로운 기능을 추가할 수 있습니다. 사실 데코레이터라는 문법은 이미 자바스크립트 표준으로써 논의되고 있는 단계이며 현재는 초안 단계에 있습니다. 자바스크립트를 확장한 언어라고 할 수 있는 타입스크립트에서는 실험적인 기능으로써 데코레이터를 제공하고 있습니다. </p>
 <h2 id="시작하기"><a href="#시작하기" class="headerlink" title="시작하기"></a>시작하기</h2><p> 데코레이터는 타입스크립트에서도 실험적인 기능으로써 사용할 수 있기 때문에 커맨드 라인이나 <code>tsconfig.json</code> 에서 <code>experimentalDecorators</code> 옵션을 추가해줘야 합니다. 여기에서 <code>target</code> 설정을 <code>ES5</code>로 하는 이유는 뒤에서 다시 살펴보겠습니다. </p>
 <h3 id="커맨드-라인"><a href="#커맨드-라인" class="headerlink" title="커맨드 라인"></a>커맨드 라인</h3><pre class=" language-shell"><code class="language-shell">tsc --target ES5 --experimentalDecorators
 </code></pre>
@@ -40,13 +40,13 @@ console<span class="token punctuation">.</span><span class="token function">log<
     prop <span class="token operator">=</span> ‘a'<span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
 
-console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'before in SomeClass'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'인스턴스가 만들어지기 전'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">SomeClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>실행결과</p>
 <pre class=" language-shell"><code class="language-shell">> factory
 > decorator
-> before instantiate
+> 인스턴스가 만들어지기 전
 </code></pre>
 <p> 실행 결과를 살펴보면 데코레이터는 클래스를 인스턴스화하기 위해 클래스를 호출하기 전에 실행됩니다. </p>
 <h3 id="Decorator-조합하기"><a href="#Decorator-조합하기" class="headerlink" title="Decorator 조합하기"></a>Decorator 조합하기</h3><p>데코레이터의 또 다른 장점으로는 하나의 선언에 동시에 여러 개의 데코레이터를 적용할 수 있는 점이 있습니다.</p>
@@ -153,7 +153,7 @@ console<span class="token punctuation">.</span><span class="token function">log<
 </code></pre>
 <p> <code>@inject</code> 를 사용하여 <code>dependencyPool</code> 에서 <code>Product</code> 클래스에 필요한 의존성인 <code>&#39;dep1&#39;</code>, <code>&#39;dep2&#39;</code> 를 추가합니다. 그러면 <code>Product</code>가 인스턴스화되는 시점에서 필요한 의존성을 주입받을 수 있습니다. </p>
 <h3 id="Method-Decorator"><a href="#Method-Decorator" class="headerlink" title="Method Decorator"></a>Method Decorator</h3><p> 메서드에 적용되는 데코레이터는 클래스와 마찬가지로 메서드의 기능을 확장할 수 있습니다. 클래스 데코레이터는 클래스(생성자 함수)를 <code>extends</code> 하는 방법으로 기능을 확장할 수 있었지만, 메서드 데코레이터는 메서드의 <strong>Property Descriptor</strong>를 수정하여 메서드를 확장합니다.</p>
-<p> <strong>Property Descriptor</strong>는 객체의 프로퍼티들을 기존보다 정교하게 정의할 수 있는 ES5에서 처음 소개된 스펙입니다. 이 Property Descriptor는 <code>Object.getOwnPropertyDescriptor</code> 를 사용해서 참조할 수 있습니다. </p>
+<p> <strong>Property Descriptor</strong>는 객체의 프로퍼티들을 기존보다 정교하게 정의할 수 있는 ES5에서 처음 소개된 스펙입니다. 이 Property Descriptor는 <code>Object.getOwnPropertyDescriptor</code> 를 사용해서 가져올 수 있습니다.</p>
 <pre class=" language-typescript"><code class="language-typescript"><span class="token keyword">class</span> <span class="token class-name">Product</span> <span class="token punctuation">{</span>
   <span class="token function">setPrice</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'setPrice'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -175,7 +175,7 @@ console<span class="token punctuation">.</span><span class="token function">log<
 <li>메서드의 Property Descriptor</li>
 </ol>
 <p>그리고 Property Descriptor 형식의 객체를 반환할 수 있습니다. Property Descriptor 형식의 객체를 반환하지 않더라도 3번 째 인자로 넘어오는 객체를 수정하면 Property Descriptor를 반환하는 것과 같은 동작을 하게 됩니다.</p>
-<p>예시로 작성한 <code>@logging</code> 메서드 데코레이터는 적용된 메서드에 넘어온 인자들과 메서드가 반환하는 값을 <code>console.log</code>로 출력하게 됩니다. </p>
+<p>예시로 작성한 <code>@logging</code> 데코레이터는 적용된 메서드에 넘어온 인자들과 메서드가 반환하는 값을 콘솔로 출력하게 됩니다. </p>
 <pre class=" language-typescript"><code class="language-typescript"><span class="token keyword">function</span> <span class="token function">logging</span><span class="token punctuation">(</span>target<span class="token punctuation">,</span> name<span class="token punctuation">,</span> descriptor<span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">const</span> originMethod <span class="token operator">=</span> descriptor<span class="token punctuation">.</span>value<span class="token punctuation">;</span>
   descriptor<span class="token punctuation">.</span>value <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -186,7 +186,7 @@ console<span class="token punctuation">.</span><span class="token function">log<
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<p> <code>@logging</code> 데코레이터에서는 Property Descriptor를 직접 반환하는 것보다 인자로 넘어온 <code>descriptor</code> 객체의 프로퍼티를 직접 수정하는 방식으로 메서드 동작 방법을 변경하였습니다.</p>
+<p> <code>@logging</code> 데코레이터에서는 Property Descriptor를 직접 반환하지 않고, 인자로 넘어온 <code>descriptor</code> 객체를 직접 수정하는 방식으로 메서드 동작 방법을 변경하였습니다.</p>
 <pre class=" language-typescript"><code class="language-typescript"><span class="token keyword">class</span> <span class="token class-name">Product</span> <span class="token punctuation">{</span>
   price<span class="token punctuation">:</span> <span class="token keyword">number</span> <span class="token operator">=</span> <span class="token number">1000</span><span class="token punctuation">;</span>
 
@@ -204,14 +204,14 @@ p<span class="token punctuation">.</span><span class="token function">setPrice</
 <span class="token comment" spellcheck="true">// setPrice method return:  1000</span>
 </code></pre>
 <p><code>@logging</code> 데코레이터를 적용 후 <code>setPrice</code> 메서드를 호출하면 콘솔에 인자와 반환값이 기록되는 것을 확인할 수 있습니다.</p>
-<h3 id="Accessor-Decorator"><a href="#Accessor-Decorator" class="headerlink" title="Accessor Decorator"></a>Accessor Decorator</h3><p> Accessor Decorator(접근자 데코레이터)는 <code>getter</code>, <code>setter</code> 에 적용되는 데코레이터를 말합니다. 데코레이터 함수에서는 메서드 데코레이터와 동일하게 3개의 인자를 받습니다.</p>
+<h3 id="Accessor-Decorator"><a href="#Accessor-Decorator" class="headerlink" title="Accessor Decorator"></a>Accessor Decorator</h3><p> Accessor Decorator(접근자 데코레이터)는 <code>getter</code>, <code>setter</code> 에 적용되는 데코레이터를 말합니다. 데코레이터 함수에서는 메서드 데코레이터와 동일한 인자를 받습니다.</p>
 <ol>
 <li><code>static</code> 메서드라면 클래스의 생성자 함수, 인스턴스의 메서드라면 클래스의  <code>prototype</code> 객체</li>
 <li>프로퍼티 이름</li>
 <li>Property Descriptor</li>
 </ol>
 <p>접근자 데코레이터도 메서드 데코레이터처럼 인자로 넘어온 Property Descriptor를 변경하거나, 새로운 Property Descriptor를 반환해서 원래 접근자의 기능을 확장할 수 있습니다.</p>
-<p>접근자 데코레이터에는 제약이 있는데, 하나의 프로퍼티에 대한 <code>get</code>, <code>set</code> 메서드에 동일한 데코레이터가 적용될 수 없다는 점입니다. 원래 자바스크립트에서는 하나의 프로퍼티가 <code>get</code>, <code>set</code>  메서드를 둘 다 가질 수 있습니다.</p>
+<p>접근자 데코레이터에는 제약이 있는데, 하나의 프로퍼티에 대한 <code>get</code>, <code>set</code> 메서드에 동일한 데코레이터가 적용될 수 없습니다. 원래 자바스크립트에서는 하나의 프로퍼티가 <code>get</code>, <code>set</code>  메서드를 둘 다 가질 수 있습니다.</p>
 <pre class=" language-typescript"><code class="language-typescript"><span class="token keyword">class</span> <span class="token class-name">Product</span> <span class="token punctuation">{</span>
   _price<span class="token punctuation">:</span> <span class="token keyword">number</span> <span class="token operator">=</span> <span class="token number">1000</span><span class="token punctuation">;</span>
 
@@ -286,12 +286,12 @@ Object<span class="token punctuation">.</span><span class="token function">defin
 <li><code>static</code> 으로 선언된 프로퍼티라면 클래스의 생성자 함수, 그게 아니라 인스턴스 프로퍼티람련 클래스의 <code>prototype</code> 객체</li>
 <li>프로퍼티 이름</li>
 </ol>
-<p>프로퍼티 데코레이터는 메서드 데코레이터와 다르게 데코레이터 함수에 <code>Property Descriptor</code> 가 인자로서 제공되지 않습니다. </p>
-<p>프로퍼티 데코레이터는 <code>Property Descriptor</code> 형식의 객체를 반환해서 프로퍼티의 설정을 바꿀 수 있습니다. 두 개의 인자는 다음과 같습니다.</p>
+<p>프로퍼티 데코레이터는 메서드 데코레이터와 다르게 데코레이터 함수에 Property Descriptor 가 인자로서 제공되지 않습니다. </p>
+<p>프로퍼티 데코레이터는 Property Descriptor 형식의 객체를 반환해서 프로퍼티의 설정을 바꿀 수 있습니다. 두 개의 인자는 다음과 같습니다.</p>
 <blockquote>
-<p>공식 문서의 프로퍼티 데코레이터를 설명하는 부분에서는 <code>&quot;the return value is ignored too&quot;</code>라고 되어있습니다. 이것을 보고 프로퍼티 데코레이터는 반환 값이 무시되는 줄 알았는데, 여러 예제를 살펴본 결과 프로퍼티 데코레이터에서  <code>Property Descriptor</code> 형식으로 객체를 반환할 때는, 프로퍼티에 정상적으로 적용되고 있었습니다. 처음에는 문서가 잘못된 것이 아닌가 생각했는데, 관련 이슈(<a href="https://github.com/microsoft/TypeScript/issues/32395)를" target="_blank" rel="noopener">https://github.com/microsoft/TypeScript/issues/32395)를</a> 읽어보니 의도된 문장이라고 하는 것 같습니다.  </p>
+<p>공식 문서의 프로퍼티 데코레이터를 설명하는 부분에서는 <code>&quot;the return value is ignored too&quot;</code>라고 되어있습니다. 이것을 보고 프로퍼티 데코레이터는 반환 값이 무시되는 줄 알았는데, 여러 예제를 살펴본 결과 프로퍼티 데코레이터에서  Property Descriptor 형식으로 객체를 반환할 때는, 프로퍼티에 정상적으로 적용되고 있었습니다. 처음에는 문서가 잘못된 것이 아닌가 생각했는데, 관련 이슈(<a href="https://github.com/microsoft/TypeScript/issues/32395)를" target="_blank" rel="noopener">https://github.com/microsoft/TypeScript/issues/32395)를</a> 읽어보니 의도된 문장이라고 합니다.</p>
 </blockquote>
-<p> 아래는 <code>Product</code>의 <code>name</code>, <code>price</code> 프로퍼티에  <code>@readOnly</code> 데코레이터를 적용한 예제입니다. <code>@readOnly</code> 데코레이터는 조건이 주어지면 해당 조건이 <code>true</code> 일 때만 프로퍼티를 read-only로 하고, 조건이 주어지지 않으면 무조건 read-only로 하는 데코레이터입니다. </p>
+<p> 아래는 <code>Product</code>의 <code>name</code>, <code>price</code> 프로퍼티에  <code>@readOnly</code> 데코레이터를 적용한 예제입니다. <code>@readOnly</code> 데코레이터는 조건이 주어지면 해당 조건이 <code>true</code> 일 때만 프로퍼티를 read-only로 하고, 조건이 주어지지 않으면 무조건 read-only로 설정합니다.</p>
 <pre class=" language-typescript"><code class="language-typescript"><span class="token keyword">function</span> <span class="token function">readOnly</span><span class="token punctuation">(</span>condition<span class="token operator">?</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">boolean</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">decorator</span><span class="token punctuation">(</span>target<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token keyword">any</span> <span class="token punctuation">{</span>  
     <span class="token keyword">return</span> <span class="token punctuation">{</span>
@@ -323,7 +323,7 @@ p1<span class="token punctuation">.</span>price <span class="token operator">=</
 <p><code>name</code> 프로퍼티는 2020년 1월 1일이 넘어가면 read-only가 되도록 처리되었고, <code>price</code> 프로퍼티는 무조건 read-only가 되어 값을 할당할 경우 에러가 발생하게 됩니다. </p>
 <h3 id="Parameter-Decorator"><a href="#Parameter-Decorator" class="headerlink" title="Parameter Decorator"></a>Parameter Decorator</h3><p>함수의 파라미터에 사용되는 파라미터 데코레이터는 세 개의 인자를 받고, 반환값은 무시됩니다. 세 개의 인자는 다음과 같습니다.</p>
 <ol>
-<li>static 메서드에서 사용되었다면 클래스의 생성자 함수, 보통 메서드에서 사용되었다면 <code>prototype</code> 객체</li>
+<li>static 메서드에서 사용되었다면 클래스의 생성자 함수, 인스턴스의 메서드에서 사용되었다면 <code>prototype</code> 객체</li>
 <li>파라미터 데코레이터가 적용된 메서드의 이름</li>
 <li>메서드 파라미터 목록에서의 index</li>
 </ol>
@@ -378,7 +378,7 @@ p1<span class="token punctuation">.</span><span class="token function">setPrice<
 <p> <code>setPrice</code> 의 <code>price</code> 인자에는 <code>@minNumber</code> 데코레이터가 적용되었습니다. 이 데코레이터는 인자로서 전달되는 값이 최소 몇 이상이 맞는지 확인하는 용도입니다. 실행 결과를 보면 <code>setPrice</code> 에 2000, 2001을 넘겨줄 때는 잘 실행되지만, 2000보다 작은 1000을 넘겨줄 경우 에러가 발생하는 것을 확인할 수 있습니다. </p>
 </div></article></div></main><footer><div class="paginator"><a href="/2019/03/31/introduction-gulp/" class="next">NEXT</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'haeguri';
 var disqus_identifier = '2019/08/25/typescript-decorator/';
-var disqus_title = '타입스크립트 데코레이터 살펴보기';
+var disqus_title = '타입스크립트 Decorator';
 var disqus_url = 'https://haeguri.github.io/2019/08/25/typescript-decorator/';
 (function() {
     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
