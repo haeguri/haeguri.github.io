@@ -323,7 +323,7 @@ p1<span class="token punctuation">.</span>price <span class="token operator">=</
 <p><code>name</code> 프로퍼티는 2020년 1월 1일이 넘어가면 read-only가 되도록 처리되었고, <code>price</code> 프로퍼티는 무조건 read-only가 되어 값을 할당할 경우 에러가 발생하게 됩니다. </p>
 <h3 id="Parameter-Decorator"><a href="#Parameter-Decorator" class="headerlink" title="Parameter Decorator"></a>Parameter Decorator</h3><p>함수의 파라미터에 사용되는 파라미터 데코레이터는 세 개의 인자를 받고, 반환값은 무시됩니다. 세 개의 인자는 다음과 같습니다.</p>
 <ol>
-<li>static 메서드에서 사용되었다면 클래스의 생성자 함수, 인스턴스의 메서드에서 사용되었다면 <code>prototype</code> 객체</li>
+<li>static 메서드의 파라미터 데코레이터라면 클래스의 생성자 함수, 인스턴스의 메서드라면 <code>prototype</code> 객체</li>
 <li>파라미터 데코레이터가 적용된 메서드의 이름</li>
 <li>메서드 파라미터 목록에서의 index</li>
 </ol>
