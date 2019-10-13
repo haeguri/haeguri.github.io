@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://haeguri.github.io/"/>
-  <updated>2019-10-13T14:06:24.100Z</updated>
+  <updated>2019-10-13T14:14:54.143Z</updated>
   <id>https://haeguri.github.io/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://haeguri.github.io/2019/10/13/react-hooks-basic/"/>
     <id>https://haeguri.github.io/2019/10/13/react-hooks-basic/</id>
     <published>2019-10-13T11:08:28.000Z</published>
-    <updated>2019-10-13T14:06:24.100Z</updated>
+    <updated>2019-10-13T14:14:54.143Z</updated>
     
     <summary type="html">
     
@@ -30,7 +30,7 @@
         
         
           &lt;blockquote&gt;
-&lt;p&gt;Note: Hooks를 공부하기 위해서 공식 문서를 읽으면서 개인적으로 정리한 내용입니다. 정리하는 과정에서 내용이 생략되거나 추가된 내용이 있을 수 있습니다.&lt;/p&gt;
+&lt;p&gt;Hooks를 공부하기 위해서 공식 문서를 읽으면서 개인적으로 정리한 내용입니다. 정리하는 과정에서 내용이 생략되거나 추가된 내용이 있을 수 있습니다.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;리액트 Hooks는
         
