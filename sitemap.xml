@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://haeguri.github.io/2019/11/30/book-effective-unit-testing/</loc>
+    
+    <lastmod>2019-11-30T14:06:56.123Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://haeguri.github.io/2019/10/13/react-hooks-basic/</loc>
     
     <lastmod>2019-10-13T14:14:54.143Z</lastmod>
