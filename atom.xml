@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://haeguri.github.io/"/>
-  <updated>2019-11-30T14:12:25.047Z</updated>
+  <updated>2020-01-12T08:08:05.958Z</updated>
   <id>https://haeguri.github.io/</id>
   
   <author>
@@ -15,6 +15,34 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Jest Mock 타이머 적용하기</title>
+    <link href="https://haeguri.github.io/2020/01/12/jest-mock-timer/"/>
+    <id>https://haeguri.github.io/2020/01/12/jest-mock-timer/</id>
+    <published>2020-01-12T08:04:39.000Z</published>
+    <updated>2020-01-12T08:08:05.958Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;자바스크립트의 네이티브 타이머 함수들은 실제 시간에 의존하기 때문에 테스트 환경에는 적합하지 않다. 예를 들어 n분 뒤에 실행되는 로직에 대한 테스트 결과를 실제로 n분이 지난 후에 알 수 있다면 테스트 실행 시간이 너무 길어질 것이다. 테스트
+        
+      
+    
+    </summary>
+    
+    
+      <category term="test" scheme="https://haeguri.github.io/tags/test/"/>
+    
+      <category term="frontend" scheme="https://haeguri.github.io/tags/frontend/"/>
+    
+      <category term="jest" scheme="https://haeguri.github.io/tags/jest/"/>
+    
+  </entry>
   
   <entry>
     <title>Effective Unit Testing 정리</title>

@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://haeguri.github.io/2020/01/12/jest-mock-timer/</loc>
+    
+    <lastmod>2020-01-12T08:08:05.958Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://haeguri.github.io/2019/11/30/book-effective-unit-testing/</loc>
     
     <lastmod>2019-11-30T14:12:25.047Z</lastmod>
