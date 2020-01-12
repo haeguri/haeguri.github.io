@@ -92,7 +92,7 @@ Received number of calls: 2
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p><code>jest.useFakeTimers()</code>를 실행하면 <code>setTimeout</code>, <code>setInterval</code>, <code>clearTimeout</code>, <code>clearInterval</code> 등의 네이티브 함수들이 Jest 타이머로 대체된다. 즉, 테스트 코드로 실행되는 타이머가 Jest 타이머가 된다.</p>
-<p><code>jest.advanceTimersByTime(ms)</code>은 모든 타이머들이 <code>ms</code> 밀리세컨드 만큼 시간이 경과되도록 한다. 이 코드를 통해 <code>ms</code> 밀리세컨드 후에 실행되어야 하는 콜백 함수들이 실행되는 것을 보장할 수 있다.</p>
+<p><code>jest.advanceTimersByTime(ms)</code>은 모든 타이머가 <code>ms</code> 밀리세컨드만큼 시간이 지나가게 한다. 이 코드를 통해 <code>ms</code> 밀리세컨드 후에 실행되어야 하는 콜백 함수들이 실행되는 것을 보장할 수 있다.</p>
 <p>마지막으로 <code>jest.clearAllTimers()</code>로 테스트 케이스가 실행된 후 Mock 타이머를 정리해서 테스트가 독립적으로 실행되는 것을 보장해줄 수 있다.</p>
 <p>테스트를 실행해보면 테스트의 실행 시간도 훨씬 짧아지고, 작성한 테스트 케이스가 모두 성공하는 것을 확인할 수 있다.</p>
 </div></article></div></main><footer><div class="paginator"><a href="/2019/11/30/book-effective-unit-testing/" class="next">NEXT</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'haeguri';
