@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://haeguri.github.io/2020/12/21/clean-up-jest-mock/</loc>
+    
+    <lastmod>2020-12-20T16:25:11.044Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://haeguri.github.io/2020/09/06/extreme-programming-review/</loc>
     
     <lastmod>2020-09-06T13:10:42.221Z</lastmod>

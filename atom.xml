@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://haeguri.github.io/"/>
-  <updated>2020-09-06T13:10:42.221Z</updated>
+  <updated>2020-12-20T16:25:11.044Z</updated>
   <id>https://haeguri.github.io/</id>
   
   <author>
@@ -15,6 +15,36 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Jest에서 Mock을 정리하는 방법</title>
+    <link href="https://haeguri.github.io/2020/12/21/clean-up-jest-mock/"/>
+    <id>https://haeguri.github.io/2020/12/21/clean-up-jest-mock/</id>
+    <published>2020-12-20T16:05:23.000Z</published>
+    <updated>2020-12-20T16:25:11.044Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h2 id=&quot;소개&quot;&gt;&lt;a href=&quot;#소개&quot; class=&quot;headerlink&quot; title=&quot;소개&quot;&gt;&lt;/a&gt;소개&lt;/h2&gt;&lt;p&gt;테스트에서는 Mock을 테스트 대역(Test Double)으로 부른다. &lt;strong&gt;테스트 대역&lt;/strong&gt;은 구현
+        
+      
+    
+    </summary>
+    
+    
+      <category term="frontend" scheme="https://haeguri.github.io/tags/frontend/"/>
+    
+      <category term="test" scheme="https://haeguri.github.io/tags/test/"/>
+    
+      <category term="jest" scheme="https://haeguri.github.io/tags/jest/"/>
+    
+      <category term="mock" scheme="https://haeguri.github.io/tags/mock/"/>
+    
+  </entry>
   
   <entry>
     <title>(리뷰) 익스트림 프로그래밍</title>
@@ -64,9 +94,9 @@
     </summary>
     
     
-      <category term="test" scheme="https://haeguri.github.io/tags/test/"/>
-    
       <category term="frontend" scheme="https://haeguri.github.io/tags/frontend/"/>
+    
+      <category term="test" scheme="https://haeguri.github.io/tags/test/"/>
     
       <category term="jest" scheme="https://haeguri.github.io/tags/jest/"/>
     
@@ -92,11 +122,11 @@
     </summary>
     
     
+      <category term="test" scheme="https://haeguri.github.io/tags/test/"/>
+    
       <category term="book" scheme="https://haeguri.github.io/tags/book/"/>
     
       <category term="review" scheme="https://haeguri.github.io/tags/review/"/>
-    
-      <category term="test" scheme="https://haeguri.github.io/tags/test/"/>
     
       <category term="unit-test" scheme="https://haeguri.github.io/tags/unit-test/"/>
     
