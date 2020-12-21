@@ -80,29 +80,29 @@
     </url>
 
     <url>
-        <loc>https://haeguri.github.io/tags/test/</loc>
-        <lastmod>2020-12-20T16:40:07.462Z</lastmod>
+        <loc>https://haeguri.github.io/tags/frontend/</loc>
+        <lastmod>2020-12-21T00:38:49.880Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
-        <loc>https://haeguri.github.io/tags/frontend/</loc>
-        <lastmod>2020-12-20T16:40:07.462Z</lastmod>
+        <loc>https://haeguri.github.io/tags/test/</loc>
+        <lastmod>2020-12-21T00:38:49.880Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
         <loc>https://haeguri.github.io/tags/jest/</loc>
-        <lastmod>2020-12-20T16:40:07.462Z</lastmod>
+        <lastmod>2020-12-21T00:38:49.880Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
         <loc>https://haeguri.github.io/tags/mock/</loc>
-        <lastmod>2020-12-20T16:40:07.462Z</lastmod>
+        <lastmod>2020-12-21T00:38:49.880Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>

@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://haeguri.github.io/"/>
-  <updated>2020-12-20T16:40:07.462Z</updated>
+  <updated>2020-12-21T00:38:49.880Z</updated>
   <id>https://haeguri.github.io/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://haeguri.github.io/2020/12/21/clean-up-jest-mock/"/>
     <id>https://haeguri.github.io/2020/12/21/clean-up-jest-mock/</id>
     <published>2020-12-20T16:05:23.000Z</published>
-    <updated>2020-12-20T16:40:07.462Z</updated>
+    <updated>2020-12-21T00:38:49.880Z</updated>
     
     <summary type="html">
     
@@ -36,9 +36,9 @@
     </summary>
     
     
-      <category term="test" scheme="https://haeguri.github.io/tags/test/"/>
-    
       <category term="frontend" scheme="https://haeguri.github.io/tags/frontend/"/>
+    
+      <category term="test" scheme="https://haeguri.github.io/tags/test/"/>
     
       <category term="jest" scheme="https://haeguri.github.io/tags/jest/"/>
     
@@ -94,9 +94,9 @@
     </summary>
     
     
-      <category term="test" scheme="https://haeguri.github.io/tags/test/"/>
-    
       <category term="frontend" scheme="https://haeguri.github.io/tags/frontend/"/>
+    
+      <category term="test" scheme="https://haeguri.github.io/tags/test/"/>
     
       <category term="jest" scheme="https://haeguri.github.io/tags/jest/"/>
     
@@ -122,11 +122,11 @@
     </summary>
     
     
+      <category term="test" scheme="https://haeguri.github.io/tags/test/"/>
+    
       <category term="book" scheme="https://haeguri.github.io/tags/book/"/>
     
       <category term="review" scheme="https://haeguri.github.io/tags/review/"/>
-    
-      <category term="test" scheme="https://haeguri.github.io/tags/test/"/>
     
       <category term="unit-test" scheme="https://haeguri.github.io/tags/unit-test/"/>
     
