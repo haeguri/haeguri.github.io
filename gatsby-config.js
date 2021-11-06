@@ -1,4 +1,4 @@
 // gatsby-config.js
 module.exports = {
-  plugins: ["gatsby-plugin-typescript"],
+  plugins: ["gatsby-plugin-typescript", "gatsby-plugin-postcss"],
 };
