@@ -21,23 +21,23 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   console.log("data is", site);
 
   return (
-    <>
-      <nav className="flex w-full h-16">
-        <div className="flex container mx-auto">
+    <div className="flex flex-col h-screen">
+      <nav className="flex w-full h-16 border-b">
+        <div className="flex items-center container mx-auto">
           <Link to="/">Devlog</Link>
-          <ul className="flex ">
+          <ul className="flex ml-auto">
             <li>
               <Link to="/about">About</Link>
             </li>
-            <li>
+            <li className="ml-2">
               <Link to="/">Posts</Link>
             </li>
           </ul>
         </div>
       </nav>
-      <main className="container mx-auto">{children}</main>
-      <footer>
-        <div className="container mx-auto">
+      <main className="container flex-1 mx-auto">{children}</main>
+      <footer className="">
+        <div className="container flex items-center mx-auto border-t h-16">
           ©{" "}
           <a href="https://github.com/haeguri" target="_blank">
             haeguri
@@ -45,7 +45,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           , Built with Gatsby
         </div>
       </footer>
-    </>
+    </div>
   );
 };
 

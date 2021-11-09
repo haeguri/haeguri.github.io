@@ -8,6 +8,7 @@ module.exports = {
         sm: "100%",
         md: "640px",
       },
+      padding: "1rem",
     },
     extend: {},
   },
