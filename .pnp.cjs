@@ -40,18 +40,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:16.11.6"],
             ["@types/react", "npm:17.0.34"],
             ["@types/react-dom", "npm:17.0.11"],
+            ["@types/react-helmet", "npm:6.1.4"],
             ["autoprefixer", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:10.4.0"],
             ["babel-preset-gatsby", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:2.1.0"],
             ["gatsby", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
             ["gatsby-plugin-image", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:2.1.0"],
             ["gatsby-plugin-mdx", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:3.1.0"],
             ["gatsby-plugin-postcss", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:5.1.0"],
+            ["gatsby-plugin-react-helmet", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:5.1.0"],
             ["gatsby-plugin-sharp", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
             ["gatsby-plugin-typescript", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
             ["gatsby-source-filesystem", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
             ["postcss", "npm:8.3.11"],
             ["react", "npm:17.0.2"],
             ["react-dom", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:17.0.2"],
+            ["react-helmet", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:6.1.0"],
             ["tailwindcss", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:2.2.19"],
             ["typescript", "patch:typescript@npm%3A4.4.4#~builtin<compat/typescript>::version=4.4.4&hash=ddd1e8"]
           ],
@@ -6011,6 +6014,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@types-react-dom-npm-17.0.11-fc2e584a96-4d5730dffb.zip/node_modules/@types/react-dom/",
           "packageDependencies": [
             ["@types/react-dom", "npm:17.0.11"],
+            ["@types/react", "npm:17.0.34"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@types/react-helmet", [
+        ["npm:6.1.4", {
+          "packageLocation": "./.yarn/cache/@types-react-helmet-npm-6.1.4-5c548fad42-62f506297d.zip/node_modules/@types/react-helmet/",
+          "packageDependencies": [
+            ["@types/react-helmet", "npm:6.1.4"],
             ["@types/react", "npm:17.0.34"]
           ],
           "linkType": "HARD",
@@ -11999,6 +12012,33 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["gatsby-plugin-react-helmet", [
+        ["npm:5.1.0", {
+          "packageLocation": "./.yarn/cache/gatsby-plugin-react-helmet-npm-5.1.0-9950cd61a6-77abcf4d04.zip/node_modules/gatsby-plugin-react-helmet/",
+          "packageDependencies": [
+            ["gatsby-plugin-react-helmet", "npm:5.1.0"]
+          ],
+          "linkType": "SOFT",
+        }],
+        ["virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:5.1.0", {
+          "packageLocation": "./.yarn/__virtual__/gatsby-plugin-react-helmet-virtual-94adc8411f/0/cache/gatsby-plugin-react-helmet-npm-5.1.0-9950cd61a6-77abcf4d04.zip/node_modules/gatsby-plugin-react-helmet/",
+          "packageDependencies": [
+            ["gatsby-plugin-react-helmet", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:5.1.0"],
+            ["@babel/runtime", "npm:7.16.0"],
+            ["@types/gatsby", null],
+            ["@types/react-helmet", "npm:6.1.4"],
+            ["gatsby", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
+            ["react-helmet", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:6.1.0"]
+          ],
+          "packagePeers": [
+            "@types/gatsby",
+            "@types/react-helmet",
+            "gatsby",
+            "react-helmet"
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["gatsby-plugin-sharp", [
         ["npm:4.1.0", {
           "packageLocation": "./.yarn/cache/gatsby-plugin-sharp-npm-4.1.0-b4538ec3c5-fcb2c6d0cf.zip/node_modules/gatsby-plugin-sharp/",
@@ -12818,18 +12858,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:16.11.6"],
             ["@types/react", "npm:17.0.34"],
             ["@types/react-dom", "npm:17.0.11"],
+            ["@types/react-helmet", "npm:6.1.4"],
             ["autoprefixer", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:10.4.0"],
             ["babel-preset-gatsby", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:2.1.0"],
             ["gatsby", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
             ["gatsby-plugin-image", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:2.1.0"],
             ["gatsby-plugin-mdx", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:3.1.0"],
             ["gatsby-plugin-postcss", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:5.1.0"],
+            ["gatsby-plugin-react-helmet", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:5.1.0"],
             ["gatsby-plugin-sharp", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
             ["gatsby-plugin-typescript", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
             ["gatsby-source-filesystem", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
             ["postcss", "npm:8.3.11"],
             ["react", "npm:17.0.2"],
             ["react-dom", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:17.0.2"],
+            ["react-helmet", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:6.1.0"],
             ["tailwindcss", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:2.2.19"],
             ["typescript", "patch:typescript@npm%3A4.4.4#~builtin<compat/typescript>::version=4.4.4&hash=ddd1e8"]
           ],
@@ -19093,6 +19136,41 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["react-fast-compare", [
+        ["npm:3.2.0", {
+          "packageLocation": "./.yarn/cache/react-fast-compare-npm-3.2.0-fbfa6627d9-8ef272c825.zip/node_modules/react-fast-compare/",
+          "packageDependencies": [
+            ["react-fast-compare", "npm:3.2.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["react-helmet", [
+        ["npm:6.1.0", {
+          "packageLocation": "./.yarn/cache/react-helmet-npm-6.1.0-20fd5447ff-a4998479da.zip/node_modules/react-helmet/",
+          "packageDependencies": [
+            ["react-helmet", "npm:6.1.0"]
+          ],
+          "linkType": "SOFT",
+        }],
+        ["virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:6.1.0", {
+          "packageLocation": "./.yarn/__virtual__/react-helmet-virtual-c908fc0ae8/0/cache/react-helmet-npm-6.1.0-20fd5447ff-a4998479da.zip/node_modules/react-helmet/",
+          "packageDependencies": [
+            ["react-helmet", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:6.1.0"],
+            ["@types/react", "npm:17.0.34"],
+            ["object-assign", "npm:4.1.1"],
+            ["prop-types", "npm:15.7.2"],
+            ["react", "npm:17.0.2"],
+            ["react-fast-compare", "npm:3.2.0"],
+            ["react-side-effect", "virtual:c908fc0ae8593f101b9fc751d3c3813c29785328b094f9dda5154d80fc2c20492bfef905c6da49fea822881aa3ad020544967b2548b8b01dfb170e439a1bdac0#npm:2.1.1"]
+          ],
+          "packagePeers": [
+            "@types/react",
+            "react"
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["react-is", [
         ["npm:16.13.1", {
           "packageLocation": "./.yarn/cache/react-is-npm-16.13.1-a9b9382b4f-f7a19ac349.zip/node_modules/react-is/",
@@ -19116,6 +19194,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/react-refresh-npm-0.9.0-02c61ee045-6440146176.zip/node_modules/react-refresh/",
           "packageDependencies": [
             ["react-refresh", "npm:0.9.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["react-side-effect", [
+        ["npm:2.1.1", {
+          "packageLocation": "./.yarn/cache/react-side-effect-npm-2.1.1-52222d7f8f-324511ea8f.zip/node_modules/react-side-effect/",
+          "packageDependencies": [
+            ["react-side-effect", "npm:2.1.1"]
+          ],
+          "linkType": "SOFT",
+        }],
+        ["virtual:c908fc0ae8593f101b9fc751d3c3813c29785328b094f9dda5154d80fc2c20492bfef905c6da49fea822881aa3ad020544967b2548b8b01dfb170e439a1bdac0#npm:2.1.1", {
+          "packageLocation": "./.yarn/__virtual__/react-side-effect-virtual-70ca987468/0/cache/react-side-effect-npm-2.1.1-52222d7f8f-324511ea8f.zip/node_modules/react-side-effect/",
+          "packageDependencies": [
+            ["react-side-effect", "virtual:c908fc0ae8593f101b9fc751d3c3813c29785328b094f9dda5154d80fc2c20492bfef905c6da49fea822881aa3ad020544967b2548b8b01dfb170e439a1bdac0#npm:2.1.1"],
+            ["@types/react", "npm:17.0.34"],
+            ["react", "npm:17.0.2"]
+          ],
+          "packagePeers": [
+            "@types/react",
+            "react"
           ],
           "linkType": "HARD",
         }]

@@ -1,6 +1,7 @@
 import { graphql, Link } from "gatsby";
 import React from "react";
 import Layout from "../components/Layout";
+import SEO from "../components/SEO";
 interface Mdx {
   id: string;
   slug: string;
@@ -18,17 +19,20 @@ interface Data {
 
 const Home: React.VFC<{ data: Data }> = ({ data }) => {
   return (
-    <Layout>
-      {data.allMdx.nodes.map((node) => (
-        <Link to={node.slug}>
-          <article key={node.id}>
-            <h2>{node.frontmatter.title}</h2>
-            <p> Posted: {node.frontmatter.date}</p>
-            <p>{node.frontmatter.description}</p>
-          </article>
-        </Link>
-      ))}
-    </Layout>
+    <>
+      <SEO />
+      <Layout>
+        {data.allMdx.nodes.map((node) => (
+          <Link to={node.slug}>
+            <article key={node.id}>
+              <h2>{node.frontmatter.title}</h2>
+              <p> Posted: {node.frontmatter.date}</p>
+              <p>{node.frontmatter.description}</p>
+            </article>
+          </Link>
+        ))}
+      </Layout>
+    </>
   );
 };
 

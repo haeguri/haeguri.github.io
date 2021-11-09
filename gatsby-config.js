@@ -1,9 +1,12 @@
 module.exports = {
   siteMetadata: {
     title: "Devlog",
+    description: "This blog posts about web frontend devlopement.",
+    url: "haeguri.github.io",
   },
   plugins: [
     "gatsby-plugin-typescript",
+    "gatsby-plugin-react-helmet",
     "gatsby-plugin-postcss",
     "gatsby-plugin-image",
     "gatsby-plugin-sharp",

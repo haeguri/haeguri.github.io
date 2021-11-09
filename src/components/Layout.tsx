@@ -1,7 +1,25 @@
-import { Link } from "gatsby";
+import { graphql, Link, useStaticQuery } from "gatsby";
 import React from "react";
+import { Helmet } from "react-helmet";
+import SEO from "./SEO";
 
-const Layout: React.FC = ({ children }) => {
+interface LayoutProps {
+  title?: string;
+  data?: {
+    site: {
+      siteMetadata: {
+        title: string;
+        description: string;
+        url: string;
+      };
+    };
+  };
+}
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const { site } = useStaticQuery(query);
+  console.log("data is", site);
+
   return (
     <>
       <nav className="flex w-full h-16">
@@ -17,16 +35,30 @@ const Layout: React.FC = ({ children }) => {
           </ul>
         </div>
       </nav>
-      <main>{children}</main>
+      <main className="container mx-auto">{children}</main>
       <footer>
-        ©{" "}
-        <a href="https://github.com/haeguri" target="_blank">
-          haeguri
-        </a>
-        , Built with Gatsby
+        <div className="container mx-auto">
+          ©{" "}
+          <a href="https://github.com/haeguri" target="_blank">
+            haeguri
+          </a>
+          , Built with Gatsby
+        </div>
       </footer>
     </>
   );
 };
+
+const query = graphql`
+  query {
+    site {
+      siteMetadata {
+        title
+        description
+        url
+      }
+    }
+  }
+`;
 
 export default Layout;

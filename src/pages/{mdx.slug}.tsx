@@ -2,6 +2,7 @@ import { graphql } from "gatsby";
 import { MDXRenderer } from "gatsby-plugin-mdx";
 import React from "react";
 import Layout from "../components/Layout";
+import SEO from "../components/SEO";
 
 interface Mdx {
   id: string;
@@ -15,10 +16,17 @@ interface Mdx {
 
 const BlogPost: React.VFC<{ data: { mdx: Mdx } }> = ({ data }) => {
   return (
-    <Layout>
-      <p>My blog post contents will go here (eventually).</p>
-      <MDXRenderer>{data.mdx.body}</MDXRenderer>
-    </Layout>
+    <>
+      <SEO
+        article
+        title={data.mdx.frontmatter.title}
+        description={data.mdx.frontmatter.description}
+      />
+      <Layout>
+        <p>My blog post contents will go here (eventually).</p>
+        <MDXRenderer>{data.mdx.body}</MDXRenderer>
+      </Layout>
+    </>
   );
 };
 
