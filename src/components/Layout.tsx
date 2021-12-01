@@ -24,13 +24,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className="flex flex-col h-screen">
       <nav className="flex w-full h-16 border-b">
         <div className="flex items-center container mx-auto">
-          <Link to="/">Devlog</Link>
+          <Link to="/">DEV LOG</Link>
           <ul className="flex ml-auto">
             <li>
-              <Link to="/about">About</Link>
+              <Link to="/">Posts</Link>
             </li>
             <li className="ml-2">
-              <Link to="/">Posts</Link>
+              <a href="https://github.com/haeguri" target="_blank">
+                Github
+              </a>
             </li>
           </ul>
         </div>
