@@ -18,5 +18,11 @@ module.exports = {
       },
     },
     "gatsby-plugin-mdx",
+    {
+      resolve: `gatsby-plugin-disqus`,
+      options: {
+        shortname: `haeguri`,
+      },
+    },
   ],
 };

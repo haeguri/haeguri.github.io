@@ -7451,6 +7451,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"gatsby-plugin-disqus@npm:^1.2.3":
+  version: 1.2.3
+  resolution: "gatsby-plugin-disqus@npm:1.2.3"
+  peerDependencies:
+    react: ^16.0.0 || ^17.0.0
+  checksum: 3f43d00851c859e4378b20b18b79dff6e61c7b462b830c2220c08cd94e54b057cc8e3c6b5b69a193b3c869a1e81f39bcba59c0f7286e05fafe231532affe7621
+  languageName: node
+  linkType: hard
+
 "gatsby-plugin-image@npm:^2.1.0":
   version: 2.1.0
   resolution: "gatsby-plugin-image@npm:2.1.0"
@@ -8382,6 +8391,7 @@ __metadata:
     autoprefixer: latest
     babel-preset-gatsby: ^2.1.0
     gatsby: ^4.1.0
+    gatsby-plugin-disqus: ^1.2.3
     gatsby-plugin-image: ^2.1.0
     gatsby-plugin-mdx: ^3.1.0
     gatsby-plugin-postcss: ^5.1.0

@@ -44,6 +44,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["autoprefixer", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:10.4.0"],
             ["babel-preset-gatsby", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:2.1.0"],
             ["gatsby", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
+            ["gatsby-plugin-disqus", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:1.2.3"],
             ["gatsby-plugin-image", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:2.1.0"],
             ["gatsby-plugin-mdx", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:3.1.0"],
             ["gatsby-plugin-postcss", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:5.1.0"],
@@ -11820,6 +11821,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["gatsby-plugin-disqus", [
+        ["npm:1.2.3", {
+          "packageLocation": "./.yarn/cache/gatsby-plugin-disqus-npm-1.2.3-4aeb94ae3d-3f43d00851.zip/node_modules/gatsby-plugin-disqus/",
+          "packageDependencies": [
+            ["gatsby-plugin-disqus", "npm:1.2.3"]
+          ],
+          "linkType": "SOFT",
+        }],
+        ["virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:1.2.3", {
+          "packageLocation": "./.yarn/__virtual__/gatsby-plugin-disqus-virtual-5b66085719/0/cache/gatsby-plugin-disqus-npm-1.2.3-4aeb94ae3d-3f43d00851.zip/node_modules/gatsby-plugin-disqus/",
+          "packageDependencies": [
+            ["gatsby-plugin-disqus", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:1.2.3"],
+            ["@types/react", "npm:17.0.34"],
+            ["react", "npm:17.0.2"]
+          ],
+          "packagePeers": [
+            "@types/react",
+            "react"
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["gatsby-plugin-image", [
         ["npm:2.1.0", {
           "packageLocation": "./.yarn/cache/gatsby-plugin-image-npm-2.1.0-3018d272b7-8751d10ca8.zip/node_modules/gatsby-plugin-image/",
@@ -12862,6 +12885,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["autoprefixer", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:10.4.0"],
             ["babel-preset-gatsby", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:2.1.0"],
             ["gatsby", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
+            ["gatsby-plugin-disqus", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:1.2.3"],
             ["gatsby-plugin-image", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:2.1.0"],
             ["gatsby-plugin-mdx", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:3.1.0"],
             ["gatsby-plugin-postcss", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:5.1.0"],

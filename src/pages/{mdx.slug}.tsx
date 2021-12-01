@@ -1,5 +1,7 @@
 import { graphql } from "gatsby";
 import { MDXRenderer } from "gatsby-plugin-mdx";
+import { Disqus, CommentCount } from "gatsby-plugin-disqus";
+
 import React from "react";
 import Layout from "../components/Layout";
 import SEO from "../components/SEO";
@@ -15,6 +17,12 @@ interface Mdx {
 }
 
 const BlogPost: React.VFC<{ data: { mdx: Mdx } }> = ({ data }) => {
+  // let disqusConfig = {
+  //   url: `${config.siteUrl + location.pathname}`,
+  //   identifier: post.id,
+  //   title: post.title,
+  // };
+
   return (
     <>
       <SEO
