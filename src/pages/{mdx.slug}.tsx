@@ -23,7 +23,6 @@ const BlogPost: React.VFC<{ data: { mdx: Mdx } }> = ({ data }) => {
         description={data.mdx.frontmatter.description}
       />
       <Layout>
-        <p>My blog post contents will go here (eventually).</p>
         <MDXRenderer>{data.mdx.body}</MDXRenderer>
       </Layout>
     </>

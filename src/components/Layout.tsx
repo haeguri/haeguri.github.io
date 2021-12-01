@@ -22,7 +22,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="flex flex-col h-screen">
-      <nav className="flex w-full h-16 border-b">
+      <nav className="flex flex-shrink-0 w-full h-16 border-b">
         <div className="flex items-center container mx-auto">
           <Link to="/">DEV LOG</Link>
           <ul className="flex ml-auto">
