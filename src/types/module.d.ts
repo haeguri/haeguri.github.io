@@ -1,7 +1,7 @@
 declare module "gatsby-plugin-disqus" {
   import React from "react";
 
-  export interface Disqus extends React.Component {
+  export const Disqus: React.FC<{
     config: {
       identifier: string;
       title: string;
@@ -10,22 +10,22 @@ declare module "gatsby-plugin-disqus" {
       remoteAuthS3?: string;
       apiKey?: string;
     };
-  }
+  }>;
 
-  export interface CommentCount {
+  export const CommentCount: React.FC<{
     config: {
       identifier: string;
       title: string;
       url?: string;
     };
     placeholder?: string;
-  }
+  }>;
 
-  export interface CommentEmbed {
+  export const CommentEmbed: React.FC<{
     commentId: string;
     width?: number;
     height?: number;
     showMedia?: boolean;
     showParentComment?: boolean;
-  }
+  }>;
 }

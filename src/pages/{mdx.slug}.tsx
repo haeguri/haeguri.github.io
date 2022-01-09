@@ -13,15 +13,22 @@ interface Mdx {
     title: string;
     date: string;
     description: string;
+    disqus_id?: string;
   };
 }
 
-const BlogPost: React.VFC<{ data: { mdx: Mdx } }> = ({ data }) => {
-  // let disqusConfig = {
-  //   url: `${config.siteUrl + location.pathname}`,
-  //   identifier: post.id,
-  //   title: post.title,
-  // };
+interface SiteMetadata {
+  url: string;
+}
+
+const BlogPost: React.VFC<{
+  data: { mdx: Mdx; site: { siteMetadata: SiteMetadata } };
+}> = ({ data }) => {
+  let disqusConfig = {
+    url: `${data.site.siteMetadata.url + location.pathname}`,
+    identifier: data.mdx.frontmatter.disqus_id ?? data.mdx.id,
+    title: data.mdx.frontmatter.title,
+  };
 
   return (
     <>
@@ -32,6 +39,8 @@ const BlogPost: React.VFC<{ data: { mdx: Mdx } }> = ({ data }) => {
       />
       <Layout>
         <MDXRenderer>{data.mdx.body}</MDXRenderer>
+        <CommentCount config={disqusConfig} placeholder={"..."} />
+        <Disqus config={disqusConfig} />
       </Layout>
     </>
   );
@@ -40,11 +49,19 @@ const BlogPost: React.VFC<{ data: { mdx: Mdx } }> = ({ data }) => {
 export const query = graphql`
   query ($id: String) {
     mdx(id: { eq: $id }) {
+      id
       body
       frontmatter {
         title
         date(formatString: "MMMM D, YYYY")
         description
+        disqus_id
+      }
+    }
+
+    site {
+      siteMetadata {
+        url
       }
     }
   }
