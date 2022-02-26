@@ -38,7 +38,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </nav>
       <main className="container flex-1 mx-auto">{children}</main>
-      <footer className="">
+      <footer className="mt-10">
         <div className="container flex items-center mx-auto border-t h-16">
           ©{" "}
           <a href="https://github.com/haeguri" target="_blank">
