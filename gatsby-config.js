@@ -5,6 +5,7 @@ module.exports = {
     url: "https://haeguri.github.io",
   },
   plugins: [
+    "gatsby-plugin-web-font-loader",
     "gatsby-plugin-typescript",
     "gatsby-plugin-react-helmet",
     "gatsby-plugin-postcss",

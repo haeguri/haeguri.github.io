@@ -51,6 +51,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["gatsby-plugin-react-helmet", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:5.1.0"],
             ["gatsby-plugin-sharp", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
             ["gatsby-plugin-typescript", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
+            ["gatsby-plugin-web-font-loader", "npm:1.0.4"],
             ["gatsby-source-filesystem", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
             ["postcss", "npm:8.3.11"],
             ["react", "npm:17.0.2"],
@@ -7523,6 +7524,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["babel-runtime", [
+        ["npm:6.26.0", {
+          "packageLocation": "./.yarn/cache/babel-runtime-npm-6.26.0-d38e7946b4-8aeade9466.zip/node_modules/babel-runtime/",
+          "packageDependencies": [
+            ["babel-runtime", "npm:6.26.0"],
+            ["core-js", "npm:2.6.12"],
+            ["regenerator-runtime", "npm:0.11.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["backo2", [
         ["npm:1.0.2", {
           "packageLocation": "./.yarn/cache/backo2-npm-1.0.2-e933aab18a-fda8d0a0f4.zip/node_modules/backo2/",
@@ -8732,6 +8744,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["core-js", [
+        ["npm:2.6.12", {
+          "packageLocation": "./.yarn/unplugged/core-js-npm-2.6.12-0b93d77d31/node_modules/core-js/",
+          "packageDependencies": [
+            ["core-js", "npm:2.6.12"]
+          ],
+          "linkType": "HARD",
+        }],
         ["npm:3.19.1", {
           "packageLocation": "./.yarn/unplugged/core-js-npm-3.19.1-772a85cbf5/node_modules/core-js/",
           "packageDependencies": [
@@ -12156,6 +12175,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["gatsby-plugin-web-font-loader", [
+        ["npm:1.0.4", {
+          "packageLocation": "./.yarn/cache/gatsby-plugin-web-font-loader-npm-1.0.4-e6329b179e-7cb4df8ed5.zip/node_modules/gatsby-plugin-web-font-loader/",
+          "packageDependencies": [
+            ["gatsby-plugin-web-font-loader", "npm:1.0.4"],
+            ["babel-runtime", "npm:6.26.0"],
+            ["webfontloader", "npm:1.6.28"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["gatsby-react-router-scroll", [
         ["npm:5.1.0", {
           "packageLocation": "./.yarn/cache/gatsby-react-router-scroll-npm-5.1.0-7f72047b6a-6ec749d8ff.zip/node_modules/gatsby-react-router-scroll/",
@@ -12892,6 +12922,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["gatsby-plugin-react-helmet", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:5.1.0"],
             ["gatsby-plugin-sharp", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
             ["gatsby-plugin-typescript", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
+            ["gatsby-plugin-web-font-loader", "npm:1.0.4"],
             ["gatsby-source-filesystem", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
             ["postcss", "npm:8.3.11"],
             ["react", "npm:17.0.2"],
@@ -19385,6 +19416,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["regenerator-runtime", [
+        ["npm:0.11.1", {
+          "packageLocation": "./.yarn/cache/regenerator-runtime-npm-0.11.1-a31e4f8dcd-3c97bd2c7b.zip/node_modules/regenerator-runtime/",
+          "packageDependencies": [
+            ["regenerator-runtime", "npm:0.11.1"]
+          ],
+          "linkType": "HARD",
+        }],
         ["npm:0.13.9", {
           "packageLocation": "./.yarn/cache/regenerator-runtime-npm-0.13.9-6d02340eec-65ed455fe5.zip/node_modules/regenerator-runtime/",
           "packageDependencies": [
@@ -22632,6 +22670,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/web-namespaces-npm-1.1.4-a6dfacb865-5149842ccb.zip/node_modules/web-namespaces/",
           "packageDependencies": [
             ["web-namespaces", "npm:1.1.4"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["webfontloader", [
+        ["npm:1.6.28", {
+          "packageLocation": "./.yarn/cache/webfontloader-npm-1.6.28-5e6803960c-cbebbe593c.zip/node_modules/webfontloader/",
+          "packageDependencies": [
+            ["webfontloader", "npm:1.6.28"]
           ],
           "linkType": "HARD",
         }]

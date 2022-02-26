@@ -27,7 +27,7 @@ const Home: React.VFC<{ data: Data }> = ({ data }) => {
           <Link to={node.slug}>
             <article className="my-8" key={node.id}>
               <h2 className="font-bold text-2xl">{node.frontmatter.title}</h2>
-              <p className="mt-2 mb-1">{node.excerpt}</p>
+              <p className="my-1">{node.excerpt}</p>
               <span className="text-gray-400 m-l-auto flex">
                 {node.frontmatter.date}
               </span>
