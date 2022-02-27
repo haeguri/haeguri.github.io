@@ -37,6 +37,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@mdx-js/mdx", "npm:1.6.22"],
             ["@mdx-js/react", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:1.6.22"],
+            ["@types/mdx-js__react", "npm:1.5.5"],
             ["@types/node", "npm:16.11.6"],
             ["@types/react", "npm:17.0.34"],
             ["@types/react-dom", "npm:17.0.11"],
@@ -54,6 +55,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["gatsby-plugin-web-font-loader", "npm:1.0.4"],
             ["gatsby-source-filesystem", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
             ["postcss", "npm:8.3.11"],
+            ["prism-react-renderer", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:1.3.1"],
             ["react", "npm:17.0.2"],
             ["react-dom", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:17.0.2"],
             ["react-helmet", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:6.1.0"],
@@ -5894,6 +5896,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@types/mdast", "npm:3.0.10"],
             ["@types/unist", "npm:2.0.6"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@types/mdx-js__react", [
+        ["npm:1.5.5", {
+          "packageLocation": "./.yarn/cache/@types-mdx-js__react-npm-1.5.5-4006dcef70-91229e9e4d.zip/node_modules/@types/mdx-js__react/",
+          "packageDependencies": [
+            ["@types/mdx-js__react", "npm:1.5.5"],
+            ["@types/react", "npm:17.0.34"]
           ],
           "linkType": "HARD",
         }]
@@ -11941,7 +11953,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@mdx-js/react", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:1.6.22"],
             ["@types/gatsby", null],
             ["@types/mdx-js__mdx", null],
-            ["@types/mdx-js__react", null],
+            ["@types/mdx-js__react", "npm:1.5.5"],
             ["@types/react", "npm:17.0.34"],
             ["@types/react-dom", "npm:17.0.11"],
             ["camelcase-css", "npm:2.0.1"],
@@ -12908,6 +12920,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["haeguri.github.io", "workspace:."],
             ["@mdx-js/mdx", "npm:1.6.22"],
             ["@mdx-js/react", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:1.6.22"],
+            ["@types/mdx-js__react", "npm:1.5.5"],
             ["@types/node", "npm:16.11.6"],
             ["@types/react", "npm:17.0.34"],
             ["@types/react-dom", "npm:17.0.11"],
@@ -12925,6 +12938,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["gatsby-plugin-web-font-loader", "npm:1.0.4"],
             ["gatsby-source-filesystem", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.1.0"],
             ["postcss", "npm:8.3.11"],
+            ["prism-react-renderer", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:1.3.1"],
             ["react", "npm:17.0.2"],
             ["react-dom", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:17.0.2"],
             ["react-helmet", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:6.1.0"],
@@ -18751,6 +18765,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/pretty-hrtime-npm-1.0.3-32fd75fcbd-bae0e6832f.zip/node_modules/pretty-hrtime/",
           "packageDependencies": [
             ["pretty-hrtime", "npm:1.0.3"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["prism-react-renderer", [
+        ["npm:1.3.1", {
+          "packageLocation": "./.yarn/cache/prism-react-renderer-npm-1.3.1-88d38c2477-883693ea59.zip/node_modules/prism-react-renderer/",
+          "packageDependencies": [
+            ["prism-react-renderer", "npm:1.3.1"]
+          ],
+          "linkType": "SOFT",
+        }],
+        ["virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:1.3.1", {
+          "packageLocation": "./.yarn/__virtual__/prism-react-renderer-virtual-b73ae616e9/0/cache/prism-react-renderer-npm-1.3.1-88d38c2477-883693ea59.zip/node_modules/prism-react-renderer/",
+          "packageDependencies": [
+            ["prism-react-renderer", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:1.3.1"],
+            ["@types/react", "npm:17.0.34"],
+            ["react", "npm:17.0.2"]
+          ],
+          "packagePeers": [
+            "@types/react",
+            "react"
           ],
           "linkType": "HARD",
         }]

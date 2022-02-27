@@ -1,6 +1,10 @@
 import { graphql } from "gatsby";
 import { MDXRenderer } from "gatsby-plugin-mdx";
 import { Disqus, CommentCount } from "gatsby-plugin-disqus";
+import Highlight, { defaultProps } from "prism-react-renderer";
+import { MDXProvider } from "@mdx-js/react";
+
+import dracula from "prism-react-renderer/themes/dracula";
 
 import React from "react";
 import Layout from "../components/Layout";
@@ -21,6 +25,38 @@ interface SiteMetadata {
   url: string;
 }
 
+const Test: React.FC<{ className: any; children: any }> = ({
+  children,
+  className,
+}) => {
+  const language = className.replace(/language-/, "");
+
+  return (
+    <Highlight
+      {...defaultProps}
+      code={children}
+      language={language}
+      theme={dracula}
+    >
+      {({ className, style, tokens, getLineProps, getTokenProps }) => (
+        <pre className={className} style={{ ...style, padding: "20px" }}>
+          {tokens.map((line, i) => (
+            <div key={i} {...getLineProps({ line, key: i })}>
+              {line.map((token, key) => (
+                <span key={key} {...getTokenProps({ token, key })} />
+              ))}
+            </div>
+          ))}
+        </pre>
+      )}
+    </Highlight>
+  );
+};
+
+const components = {
+  code: Test,
+};
+
 const BlogPost: React.VFC<{
   data: { mdx: Mdx; site: { siteMetadata: SiteMetadata } };
 }> = ({ data }) => {
@@ -38,7 +74,9 @@ const BlogPost: React.VFC<{
         description={data.mdx.frontmatter.description}
       />
       <Layout>
-        <MDXRenderer>{data.mdx.body}</MDXRenderer>
+        <MDXProvider components={components}>
+          <MDXRenderer>{data.mdx.body}</MDXRenderer>
+        </MDXProvider>
         <CommentCount config={disqusConfig} placeholder={"..."} />
         <Disqus config={disqusConfig} />
       </Layout>

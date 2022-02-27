@@ -19,7 +19,7 @@ disqus_id: 2020/12/21/clean-up-jest-mock/
 
 아래 테스트가 통과하는 것으로 위의 내용을 검증해볼 수 있다.
 
-```javascript
+```typescript
 const consoleLog = console.log;
 test("spyOn으로 console.log를 mocking하면, console.log는 다른 함수가 된다.", () => {
   jest.spyOn(console, "log");
