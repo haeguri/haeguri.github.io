@@ -15,7 +15,10 @@ const Test: React.FC<{ className: string; children: string }> = ({
       theme={dracula}
     >
       {({ style, tokens, getLineProps, getTokenProps }) => (
-        <pre className="p-5 overflow-x-scroll" style={{ ...style }}>
+        <pre
+          className="p-5 -mx-4 overflow-x-scroll sm:-mx-6 sm:rounded-md"
+          style={{ ...style }}
+        >
           {tokens.map((line, i) => (
             <div key={i} {...getLineProps({ line, key: i })}>
               {line.map((token, key) => (
