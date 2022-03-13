@@ -1,9 +1,10 @@
+import { styled } from "twin.macro";
 import { graphql } from "gatsby";
 import { MDXRenderer } from "gatsby-plugin-mdx";
-import { Disqus, CommentCount } from "gatsby-plugin-disqus";
+import { Disqus } from "gatsby-plugin-disqus";
 import { MDXProvider } from "@mdx-js/react";
 
-import React from "react";
+import React, { Children } from "react";
 import Layout from "../components/Layout";
 import SEO from "../components/SEO";
 import Code from "../components/Code";
@@ -23,8 +24,17 @@ interface SiteMetadata {
   url: string;
 }
 
-const components = {
+const components: Record<string, React.FC<any>> = {
   code: Code,
+  h2: ({ children }) => (
+    <h2 className="mt-7 mb-5 text-2xl font-semibold">{children}</h2>
+  ),
+  h3: ({ children }) => (
+    <h3 className="mt-5 mb-3 text-xl font-medium my-1">{children}</h3>
+  ),
+  p: ({ children }) => <p className="mb-4 leading-7">{children}</p>,
+  ul: ({ children }) => <ul className="pl-6 list-disc">{children}</ul>,
+  li: ({ children }) => <li className="mb-3 leading-6">{children}</li>,
 };
 
 const BlogPost: React.VFC<{
@@ -47,7 +57,6 @@ const BlogPost: React.VFC<{
         <MDXProvider components={components}>
           <MDXRenderer>{data.mdx.body}</MDXRenderer>
         </MDXProvider>
-        <CommentCount config={disqusConfig} placeholder={"..."} />
         <Disqus config={disqusConfig} />
       </Layout>
     </>

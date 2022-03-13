@@ -1,7 +1,9 @@
+const colors = require("tailwindcss/colors");
+
 // tailwind.config.js
 module.exports = {
   purge: ["./src/**/*.{js,jsx,ts,tsx}"],
-  darkMode: false, // or 'media' or 'class'
+  darkMode: "media", // or 'media' or 'class'
   theme: {
     container: {
       screens: {
@@ -10,10 +12,12 @@ module.exports = {
       },
       padding: "1rem",
     },
-    extend: {},
+    extend: {
+      colors: {
+        sky: colors.sky,
+        cyan: colors.cyan,
+        orange: colors.orange,
+      },
+    },
   },
-  variants: {
-    extend: {},
-  },
-  plugins: [],
 };

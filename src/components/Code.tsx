@@ -16,7 +16,7 @@ const Test: React.FC<{ className: string; children: string }> = ({
     >
       {({ style, tokens, getLineProps, getTokenProps }) => (
         <pre
-          className="p-5 -mx-4 overflow-x-scroll sm:-mx-6 sm:rounded-md"
+          className="text-sm p-5 mb-4 -mx-4 overflow-x-auto sm:-mx-6 sm:rounded-md"
           style={{ ...style }}
         >
           {tokens.map((line, i) => (

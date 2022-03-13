@@ -1,9 +1,8 @@
-import { graphql, Link, useStaticQuery } from "gatsby";
+import { Link } from "gatsby";
 import React from "react";
-import { Helmet } from "react-helmet";
-import SEO from "./SEO";
 
 interface LayoutProps {
+  className?: string;
   title?: string;
   data?: {
     site: {
@@ -16,12 +15,9 @@ interface LayoutProps {
   };
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { site } = useStaticQuery(query);
-  console.log("data is", site);
-
+const Layout: React.FC<LayoutProps> = ({ children, ...props }) => {
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen" {...props}>
       <nav className="flex flex-shrink-0 w-full h-16 border-b">
         <div className="flex items-center container mx-auto">
           <Link to="/">DEV LOG</Link>
@@ -50,17 +46,5 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     </div>
   );
 };
-
-const query = graphql`
-  query {
-    site {
-      siteMetadata {
-        title
-        description
-        url
-      }
-    }
-  }
-`;
 
 export default Layout;

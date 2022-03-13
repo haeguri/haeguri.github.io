@@ -12,7 +12,7 @@
     @apply text-3xl;
   }
 
-  h2 {
-    @apply text-2xl font-semibold;
+  code {
+    @apply bg-blue-50 px-1.5 py-1 rounded-md;
   }
 }
