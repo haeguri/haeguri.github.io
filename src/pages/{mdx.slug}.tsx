@@ -25,16 +25,55 @@ interface SiteMetadata {
 }
 
 const components: Record<string, React.FC<any>> = {
+  a: ({ children, href }) => (
+    <a
+      className="text-blue-500 font-semibold"
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+    >
+      {children}
+    </a>
+  ),
+  strong: ({ children }) => (
+    <strong className="font-semibold">{children}</strong>
+  ),
   code: Code,
   h2: ({ children }) => (
-    <h2 className="mt-7 mb-5 text-2xl font-semibold">{children}</h2>
+    <div className="mt-14 mb-5">
+      <h2 className="inline-block pb-0.5 text-2xl font-bold">{children}</h2>
+    </div>
   ),
   h3: ({ children }) => (
-    <h3 className="mt-5 mb-3 text-xl font-medium my-1">{children}</h3>
+    <h3 className="mt-8 mb-3 text-xl font-semibold my-1">{children}</h3>
+  ),
+  h4: ({ children }) => (
+    <h4 className="mt-8 mb-3 text-lg font-semibold my-1">{children}</h4>
   ),
   p: ({ children }) => <p className="mb-4 leading-7">{children}</p>,
-  ul: ({ children }) => <ul className="pl-6 list-disc">{children}</ul>,
-  li: ({ children }) => <li className="mb-3 leading-6">{children}</li>,
+  ul: ({ children }) => <ul className="mb-4 pl-6 list-disc">{children}</ul>,
+  li: ({ children }) => <li className="mb-2 leading-6">{children}</li>,
+  ol: ({ children }) => <ul className="mb-4 pl-6 list-decimal">{children}</ul>,
+  em: ({ children }) => (
+    <em className="font-semibold text-gray-500">{children}</em>
+  ),
+  blockquote: ({ children }) => (
+    <blockquote className="mb-4 pt-6 pb-1 px-6 bg-gray-100 rounded">
+      {children}
+    </blockquote>
+  ),
+};
+
+const PostHeader: React.FC = ({ children }) => {
+  return <div className="mb-10">{children}</div>;
+};
+
+const PostTitle: React.FC = ({ children }) => {
+  return <h1 className="font-bold text-4xl">{children}</h1>;
+};
+
+const PublishedDate: React.FC = ({ children }) => {
+  return <div className="mt-2 text-gray-400 m-l-auto flex">{children}</div>;
 };
 
 const BlogPost: React.VFC<{
@@ -54,9 +93,14 @@ const BlogPost: React.VFC<{
         description={data.mdx.frontmatter.description}
       />
       <Layout>
+        <PostHeader>
+          <PostTitle>{data.mdx.frontmatter.title}</PostTitle>
+          <PublishedDate>{data.mdx.frontmatter.date}</PublishedDate>
+        </PostHeader>
         <MDXProvider components={components}>
           <MDXRenderer>{data.mdx.body}</MDXRenderer>
         </MDXProvider>
+        <div className="mb-20"></div>
         <Disqus config={disqusConfig} />
       </Layout>
     </>

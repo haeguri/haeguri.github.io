@@ -25,12 +25,11 @@ const Home: React.VFC<{ data: Data }> = ({ data }) => {
       <Layout>
         {data.allMdx.nodes.map((node) => (
           <Link to={node.slug}>
-            <article
-              className="p-6 rounded-lg ease-in-out duration-300 hover:shadow-md"
-              key={node.id}
-            >
-              <h2 className="text-2xl">{node.frontmatter.title}</h2>
-              <p className="my-1">{node.excerpt}</p>
+            <article className="p-6 rounded-lg" key={node.id}>
+              <h2 className="text-2xl font-semibold">
+                {node.frontmatter.title}
+              </h2>
+              <p className="my-1 leading-7">{node.excerpt}</p>
               <span className="text-gray-400 m-l-auto flex">
                 {node.frontmatter.date}
               </span>
@@ -50,7 +49,7 @@ export const query = graphql`
         slug
         excerpt(truncate: true)
         frontmatter {
-          date(formatString: "YYYY.MM.DD")
+          date(formatString: "MMMM D, YYYY")
           title
           description
         }
