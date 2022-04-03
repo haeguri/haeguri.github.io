@@ -3,6 +3,7 @@ module.exports = {
     title: "Haeguri Devlog",
     description: "This blog posts about web frontend devlopement.",
     url: "https://haeguri.github.io",
+    siteUrl: "https://haeguri.github.io",
   },
   plugins: [
     "gatsby-plugin-web-font-loader",
@@ -11,7 +12,8 @@ module.exports = {
     "gatsby-plugin-postcss",
     "gatsby-plugin-image",
     "gatsby-plugin-sharp",
-    `gatsby-remark-images`,
+    "gatsby-remark-images",
+    "gatsby-plugin-robots-txt",
     {
       resolve: `gatsby-plugin-mdx`,
       options: {
