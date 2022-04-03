@@ -22,7 +22,26 @@ disqus_id: 2019/01/24/css-box-model/
 
 예를 들어서, `padding`, `border` 속성이 부여된 엘리먼트의 크기를 너비 200px, 높이 200px으로 하고 싶다면 다음처럼 소스를 작성하려고 할 수도 있다.
 
-{% jsfiddle dwv5tkmh/25/ html,result %}
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #ex1 {
+      background: yellow;
+      padding: 10px;
+      border: solid 10px red;
+      margin: 10px;
+      width: 200px;
+      height: 200px;
+    }
+  </style>
+</head>
+<body>
+  <div class="elem" id="ex1">width:200, height:200</div>
+</body>
+</html>
+```
 
 이 엘리먼트가 실제 화면에 보여지는 크기를 개발자 도구에서 확인해보면 다음과 같다. 
 
@@ -44,11 +63,32 @@ disqus_id: 2019/01/24/css-box-model/
 
 이제 앞서 살펴본 예제에서 `box-sizing: border-box;` 코드만을 추가한 버전을 살펴보자.
 
-{% jsfiddle dwv5tkmh/26/ html,result %}
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #ex1 {
+      box-sizing: border-box;
+      background: yellow;
+      padding: 10px;
+      border: solid 10px red;
+      margin: 10px;
+      width: 200px;
+      height: 200px;
+    }
+  </style>
+</head>
+<body>
+  <div class="elem" id="ex1">width:200, height:200</div>
+</body>
+</html>
+```
 
 개발자 도구를 통해서 엘리먼트의 크기를 살펴보면 아래와 같다.
 
-{% img /images/css-box-model/calculated-box-size-2.png 300 200 %}
+![css-box-model](./css-box-model.png)
+
 
 `box-sizing`이 `border-box`로 되어 있기 때문에 `width`, `height`가 **'border-box'**의 크기를 변경했다. 그리고 컨텐츠 영역의 크기는 `border`, `padding`을 제외한 크기로 계산됐다.
 
