@@ -13,7 +13,6 @@ module.exports = {
     "gatsby-plugin-image",
     "gatsby-plugin-sharp",
     "gatsby-remark-images",
-    "gatsby-plugin-robots-txt",
     {
       resolve: `gatsby-plugin-mdx`,
       options: {
@@ -40,5 +39,7 @@ module.exports = {
         shortname: `haeguri`,
       },
     },
+    "gatsby-plugin-robots-txt",
+    "gatsby-plugin-sitemap",
   ],
 };
