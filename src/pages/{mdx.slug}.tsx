@@ -80,7 +80,10 @@ const PublishedDate: React.FC = ({ children }) => {
 
 const BlogPost: React.VFC<{
   data: { mdx: Mdx; site: { siteMetadata: SiteMetadata } };
-}> = ({ data }) => {
+  location: {
+    pathname: string;
+  };
+}> = ({ data, location }) => {
   let disqusConfig = {
     url: `${data.site.siteMetadata.url + location.pathname}`,
     identifier: data.mdx.frontmatter.disqus_id ?? data.mdx.id,
