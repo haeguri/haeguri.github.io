@@ -1,0 +1,1334 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Haeguri Devlog]]></title><description><![CDATA[This blog posts about web frontend devlopement.]]></description><link>https://haeguri.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Sun, 03 Apr 2022 10:41:10 GMT</lastBuildDate><item><title><![CDATA[Jest에서 Mock을 정리하는 방법]]></title><description><![CDATA[소개 테스트에서는 Mock을 테스트 대역(Test Double…]]></description><link>https://haeguri.github.ioclean-up-jest-mock/</link><guid isPermaLink="false">https://haeguri.github.ioclean-up-jest-mock/</guid><pubDate>Mon, 21 Dec 2020 01:05:23 GMT</pubDate><content:encoded>&lt;h2&gt;소개&lt;/h2&gt;&lt;p&gt;테스트에서는 Mock을 테스트 대역(Test Double)으로 부른다. &lt;strong&gt;테스트 대역&lt;/strong&gt;은 구현 코드를 테스트하는데 필요한 것(객체, 함수, 데이터 등)들을 &lt;strong&gt;테스트를 실행하는 동안&lt;/strong&gt; 대신하는 요소들을 말한다. 테스트 대역이 구현 코드를 잠깐 대신한다는 점에서 영화 촬영할 때 액션 연기를 대신해주는 스턴트 배우와 비슷하다.&lt;/p&gt;&lt;h3&gt;왜 정리해야 하는가?&lt;/h3&gt;&lt;p&gt;다음 테스트 케이스를 실행하기 전에는 현재 테스트 케이스에서 사용했던 Mock을 정리해주는 것이 좋다. 다음 테스트 케이스에 영향을 줄 수도 있기 때문이다. 예를 들어 &lt;code&gt;console.log&lt;/code&gt; 의 테스트 대역을 만들기 위해 &lt;code&gt;jest.spyOn&lt;/code&gt;을 사용한 이후에는 &lt;code&gt;console.log&lt;/code&gt; 는 다른 함수가 될 수도 있다.&lt;/p&gt;&lt;p&gt;아래 테스트가 통과하는 것으로 위의 내용을 검증해볼 수 있다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;const consoleLog = console.log;
+test(&amp;quot;spyOn으로 console.log를 mocking하면, console.log는 다른 함수가 된다.&amp;quot;, () =&amp;gt; {
+  jest.spyOn(console, &amp;quot;log&amp;quot;);
+  const consoleLogAfterMocking = console.log;
+
+  // 결과는 Success.
+  // console.log는 spyOn으로 mocking한 이후 다른 함수가 된다.
+  expect(consoleLog).not.toBe(consoleLogAfterMocking);
+});
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;물론 &lt;code&gt;spyOn&lt;/code&gt;은 테스트 대역을 만들 때 유용하게 사용될 수 있지만, 다른 테스트 케이스 입장에서는 사이드 이펙트를 일으킨 주범이 될 수 있다. 따라서 모든 테스트 케이스가 독립적으로 실행되게 하기 위해선 mock을 정리하는 것이 좋다.&lt;/p&gt;&lt;h3&gt;어떻게 정리하는가?&lt;/h3&gt;&lt;p&gt;Jest에서 mock을 정리할 수 있는 방법은 크게 두 가지가 있다.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;테스트 코드에서 수동으로 mock을 정리하기&lt;/li&gt;&lt;li&gt;Jest의 어떤 설정을 활성화해서 mock이 자동으로 정리되게 하기&lt;/li&gt;&lt;/ul&gt;&lt;h2&gt;수동으로 정리하기&lt;/h2&gt;&lt;p&gt;Jest에서 테스트 코드에서 수동으로 mock을 정리하는 방법에도 여러 가지가 있다.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;code&gt;mockFn.mockClear&lt;/code&gt;&lt;/li&gt;&lt;li&gt;&lt;code&gt;mockFn.mockReset&lt;/code&gt;&lt;/li&gt;&lt;li&gt;&lt;code&gt;mockFn.mockRestore&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;code&gt;mockFn&lt;/code&gt; 은 Jest에서 생성한 mock 함수를 말한다. 참고로 mock 함수를 만드는 방법에도 여러 가지(...)가 있는데, 대표적으로 &lt;code&gt;jest.fn&lt;/code&gt;, &lt;code&gt;jest.spyOn&lt;/code&gt;이 있다.&lt;/p&gt;&lt;p&gt;혹은 &lt;code&gt;jest&lt;/code&gt; 객체에 있는 메서드로 정리할 수도 있다.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;code&gt;jest.clearMocks&lt;/code&gt;&lt;/li&gt;&lt;li&gt;&lt;code&gt;jest.resetMocks&lt;/code&gt;&lt;/li&gt;&lt;li&gt;&lt;code&gt;jest.restoreMocks&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;&lt;h3&gt;mockFn.mockClear&lt;/h3&gt;&lt;p&gt;&lt;code&gt;mockFn.mock.calls&lt;/code&gt;와 &lt;code&gt;mockFn.mock.instances&lt;/code&gt; 배열을 초기화한다. 다음 테스트 케이스를 실행하기 전에 mock 함수를 호출했던 정보를 비우고 싶을 때 유용하다.&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt;&lt;code&gt;mockFn.mock.calls&lt;/code&gt; 에는 mock 함수가 함수로 호출됐을 때의 매개변수의 목록이 있고, &lt;code&gt;mockFn.mock.instances&lt;/code&gt; 는 mock 함수가 생성자로 호출됐을 때 생성했던 인스턴스의 목록이 있다.&lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;예를 들어서 &lt;code&gt;jest.fn&lt;/code&gt; 으로 mock 함수를 생성하고 &lt;code&gt;mockFn.mockClear&lt;/code&gt; 로 &lt;code&gt;mockFn.mock.calls&lt;/code&gt; 와 &lt;code&gt;mockFn.mock.instances&lt;/code&gt; 를 초기화한다는 내용은 다음과 같은 테스트 코드로 확인해볼 수 있다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;test(&amp;quot;mock 함수를 호출한 후 mockClear를 호출하면, mock.calls는 초기화된다.&amp;quot;, () =&amp;gt; {
+  const mockFn = jest.fn();
+  mockFn(&amp;quot;1&amp;quot;);
+  mockFn(&amp;quot;1&amp;quot;, &amp;quot;2&amp;quot;);
+  expect(mockFn.mock.calls[0]).toEqual([&amp;quot;1&amp;quot;]);
+  expect(mockFn.mock.calls[1]).toEqual([&amp;quot;1&amp;quot;, &amp;quot;2&amp;quot;]);
+  expect(mockFn.mock.calls).toHaveLength(2);
+
+  mockFn.mockClear();
+
+  expect(mockFn.mock.calls).toHaveLength(0);
+});
+
+test(&amp;quot;mock 생성자를 호출한 후 mockClear를 호출하면, mock.instances는 초기화된다.&amp;quot;, () =&amp;gt; {
+  const MockConstructor = jest.fn();
+  const a = new MockConstructor();
+  const b = new MockConstructor();
+  expect(MockConstructor.mock.instances).toHaveLength(2);
+  expect(MockConstructor.mock.instances[0]).toBe(a);
+  expect(MockConstructor.mock.instances[1]).toBe(b);
+
+  MockConstructor.mockClear();
+
+  expect(MockConstructor.mock.instances).toHaveLength(0);
+});
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;mockFn.mockReset&lt;/h3&gt;&lt;p&gt;이 함수는 &lt;code&gt;mockFn.mockClear()&lt;/code&gt; 함수가 하는 일을 모두 할 수 있다. 이것에 더해 &lt;code&gt;mockFn.mockReset&lt;/code&gt;은 mock 함수의 구현(ex. &lt;code&gt;jest.fn()&lt;/code&gt; 에 넘기는 함수)을 &lt;code&gt;undefined&lt;/code&gt; 을 반환하는 빈 함수로 초기화한다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;test(&amp;quot;mock 함수를 호출한 후 mockReset을 호출하면, mock 함수는 undefined을 반환하는 함수가 된다.&amp;quot;, () =&amp;gt; {
+  const mockAdd = jest.fn((a, b) =&amp;gt; a + b);
+  expect(mockAdd(1, 2)).toBe(3);
+  expect(mockAdd.getMockImplementation()).toBe(add);
+
+  mockAdd.mockReset();
+
+  expect(mockAdd(1, 2)).toBe(undefined);
+  expect(mockAdd.getMockImplementation()).toBe(undefined);
+});
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;mockFn.mockRestore&lt;/h3&gt;&lt;p&gt;이 함수도 &lt;code&gt;mockReset&lt;/code&gt;이 그랬던 것처럼 &lt;code&gt;mockReset&lt;/code&gt; 함수가 하는 일을 모두 할 수 있다. 이것에 더해 &lt;code&gt;mockFn.mockRestore&lt;/code&gt;는 mocking 하면서 오염된(?) 함수를 다시 원래대로 되돌릴 수 있다. 말로 설명하면 복잡하니, &lt;code&gt;mockRestore&lt;/code&gt;가 필요한 이유를 코드로 살펴보자.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;const someModule = { api: () =&amp;gt; &amp;quot;origin&amp;quot; };
+test(&amp;quot;spyOn으로 테스트 더블을 만든 뒤에, someModule.api는 다른 함수가 된다.&amp;quot;, () =&amp;gt; {
+  const originApi = someModule.api;
+  const mockApi = jest.spyOn(someModule, &amp;quot;api&amp;quot;);
+
+  const changedApi = someModule.api;
+  expect(originApi).not.toBe(changedApi);
+  expect(changedApi()).toBe(&amp;quot;mock&amp;quot;);
+});
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;jest.spyOn&lt;/code&gt; 은 객체의 메서드를 테스트 대역으로 사용하고 싶을 때 유용하다. 하지만 이 테스트 케이스를 실행하고 나면 &lt;code&gt;someModule.api&lt;/code&gt; 는 다른 함수가 된다. 정리해주지 않으면 다음 테스트 케이스에서 의도하지 않은 결과가 나타날 수도 있다. 만약 객체의 메서드를 mocking했다면 &lt;code&gt;mockRestore&lt;/code&gt;를 호출하여 원래대로 되돌려줘야 한다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;const someModule = { api: () =&amp;gt; &amp;quot;origin&amp;quot; };
+test(&amp;quot;spyOn으로 테스트 더블을 만든 뒤에 mockRestore를 호출하면, someModule.api는 원래대로 돌아온다.&amp;quot;, () =&amp;gt; {
+  const originApi = someModule.api;
+  const mockApi = jest.spyOn(someModule, &amp;quot;api&amp;quot;);
+
+  mockApi.mockRestore();
+  const changedApi = someModule.api;
+
+  expect(originApi).toBe(changedApi);
+  expect(changedApi()).toBe(&amp;quot;origin&amp;quot;);
+});
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;주의해야 할 것은 &lt;code&gt;jest.fn&lt;/code&gt; 으로 만들어진 mock 함수에서는 &lt;code&gt;mockFn.mockRestore&lt;/code&gt; 가 동작하지 않는 점이다. 따라서 어떤 객체의 메서드를 테스트 대역으로 사용하고 싶을 때는 &lt;code&gt;jest.spyOn&lt;/code&gt;을 사용하는 것이 더 편리하고 안전하다.&lt;/p&gt;&lt;h3&gt;clear vs reset vs restore&lt;/h3&gt;&lt;p&gt;mock 함수를 정리하는 방법은 &lt;code&gt;mockClear&lt;/code&gt;, &lt;code&gt;mockReset&lt;/code&gt;, &lt;code&gt;mockRestore&lt;/code&gt; 순으로 강력(?)하다. 이는 Jest 소스코드를 살펴봐도 알 수 있다. &lt;code&gt;mockRestore&lt;/code&gt;는 &lt;code&gt;mockReset&lt;/code&gt;을 호출하고, &lt;code&gt;mockReset&lt;/code&gt;은 &lt;code&gt;mockClear&lt;/code&gt;를 호출한다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;// jest-mock/src/index.ts
+class ModuleMocker {
+  // ...
+  _makeComponent(metadata, restore) {
+    // ...
+    const f = this._createMockFunction(metaData, mockConstructor);
+
+    f.mockClear = () =&amp;gt; {
+      this._mockState.delete(f);
+      return f;
+    };
+
+    f.mockReset = () =&amp;gt; {
+      f.mockClear();
+      this._mockConfigRegistry.delete(f);
+      return f;
+    };
+
+    f.mockRestore = () =&amp;gt; {
+      f.mockReset();
+      return restore ? restore() : undefined;
+    };
+    // ...
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;&lt;code&gt;jest&lt;/code&gt;로 mock 정리하기&lt;/h3&gt;&lt;p&gt;Jest에서 제공하는 객체인 &lt;code&gt;jest&lt;/code&gt;를 활용하면 &lt;code&gt;mockFn&lt;/code&gt;마다 mock을 정리하는 번거로움을 조금 줄일 수 있다.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;code&gt;jest.clearAllMocks&lt;/code&gt; : 모든 mock 함수에서 &lt;code&gt;mockFn.clearAllMocks&lt;/code&gt; 을 호출한다.&lt;/li&gt;&lt;li&gt;&lt;code&gt;jest.resetAllMocks&lt;/code&gt; : 모든 mock 함수에서 &lt;code&gt;mockFn.resetAllMocks&lt;/code&gt; 을 호출한다.&lt;/li&gt;&lt;li&gt;&lt;code&gt;jest.restoreAllMocks&lt;/code&gt; : 모든 mock 함수에서 &lt;code&gt;mockFn.restoreAllMocks&lt;/code&gt; 을 호출한다.&lt;/li&gt;&lt;/ul&gt;&lt;h2&gt;자동으로 정리하기&lt;/h2&gt;&lt;p&gt;확실히 &lt;code&gt;jest&lt;/code&gt; 객체에 있는 메서드를 사용하는 것이 &lt;code&gt;mockFn&lt;/code&gt;에 있는 정리 메서드를 직접 호출하는 것보다는 쉬운 방법이다. 하지만 여전히 &lt;code&gt;afterEach&lt;/code&gt;, &lt;code&gt;beforeEach&lt;/code&gt; 와 같은 함수로 테스트 케이스가 실행되기 전이나, 후에 정리해줘야 하는 번거로움이 있다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;beforeEach(() =&amp;gt; {
+  jest.restoreAllMocks();
+});
+
+test(&amp;quot;테스트 케이스 1&amp;quot;, () =&amp;gt; {
+  // ...
+});
+
+test(&amp;quot;테스트 케이스 2&amp;quot;, () =&amp;gt; {
+  // ...
+});
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;가장 간단한 방법은 &lt;code&gt;jest.config.js&lt;/code&gt; 설정값을 변경하는 것이다. Jest 설정을 수정해서 테스트 케이스를 실행하기 전에 알아서 mock이 정리되게 할 수 있다.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;code&gt;clearMocks&lt;/code&gt; (default &lt;code&gt;false&lt;/code&gt;): &lt;code&gt;jest.clearAllMocks&lt;/code&gt; 를 각 테스트 케이스를 실행하기 전에 호출한다.&lt;/li&gt;&lt;li&gt;&lt;code&gt;resetMocks&lt;/code&gt; (default &lt;code&gt;false&lt;/code&gt;): &lt;code&gt;jest.restAllMocks&lt;/code&gt; 를 각 테스트 케이스를 실행하기 전에 호출한다.&lt;/li&gt;&lt;li&gt;&lt;code&gt;restoreMocks&lt;/code&gt; (default &lt;code&gt;false&lt;/code&gt;): &lt;code&gt;jest.restoreAllMocks&lt;/code&gt; 를 각 테스트 케이스를 실행하기 전에 호출한다.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;앞에서 설명한 것처럼 &lt;code&gt;restore&lt;/code&gt; 작업에는 &lt;code&gt;reset&lt;/code&gt;, &lt;code&gt;clear&lt;/code&gt; 가 포함되어 있다. 따라서 편하게 mock을 정리하고 싶다면 &lt;code&gt;jest.config.js&lt;/code&gt;에서 &lt;code&gt;restoreMocks&lt;/code&gt;만 활성화해도 된다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;module.exports = {
+  restoreMocks: true,
+};
+&lt;/code&gt;&lt;/pre&gt;&lt;h2&gt;참고&lt;/h2&gt;&lt;ul&gt;&lt;li&gt;Jest : &lt;a href=&quot;https://jestjs.io/docs/en/jest-object&quot;&gt;https://jestjs.io/docs/en/jest-object,&lt;/a&gt; &lt;a href=&quot;https://jestjs.io/docs/en/mock-function-api&quot;&gt;https://jestjs.io/docs/en/mock-function-api&lt;/a&gt;&lt;/li&gt;&lt;li&gt;Github Issue : &lt;a href=&quot;https://github.com/facebook/jest/issues/5143&quot;&gt;mockClear vs mockReset vs mockRestore&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[(리뷰) 익스트림 프로그래밍]]></title><description><![CDATA[…]]></description><link>https://haeguri.github.ioextreme-programming-review/</link><guid isPermaLink="false">https://haeguri.github.ioextreme-programming-review/</guid><pubDate>Sun, 06 Sep 2020 22:04:57 GMT</pubDate><content:encoded>&lt;p&gt;최근 들어서 정해진 프로세스를 따르기만하는 것이 아닌가 하는 생각이 들었다. 회사의 프로세스를 따르는 것도 중요하지만 어디든 개선해야 할 부분이 있기 마련이다. 그런데 나는 어떻게 개선해야 할지에 대한 아이디어가 잘 떠오르지 않았다.&lt;/p&gt;&lt;p&gt;익스트림 프로그래밍은 우리가 뛰어난 소프트웨어를 만들려면 어떻게 해야하는지 알려주는 책이다. 개발자도 행복하고, 코드 설계도 훌륭하고, 결함도 적고, 고객도 만족하는 소프트웨어를 만들기 위한 지침이다. 이상적인 개발 프로세스는 어떤 모습일지 궁금했는데 이 책에 그런 내용들이 있었다.&lt;/p&gt;&lt;h2&gt;가치, 원칙, 실천 방법&lt;/h2&gt;&lt;p&gt;익스트림 프로그래밍(Extreme Programming)은 사람들이 뛰어난 소프트웨어를 개발하기 위한 방법이다. 익스트림이란 단어가 포함된 이유는 개인이 극단으로 팀에 기여할 수 있는 방법을 안내하기 때문이다. 익스트림 프로그래밍은 가치와 원칙, 실천 방법, 이 세 가지 요소에 대해 설명하는 것으로 시작한다.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;실천 방법&lt;/strong&gt;은 익스트림 프로그래밍을 적용해 소프트웨어를 개발할 때 사용하는 &lt;strong&gt;기술&lt;/strong&gt;이다&lt;strong&gt;.&lt;/strong&gt; 여러 실천 방법이 있는데 대표적으로 함께 앉기, 짝 프로그래밍, 테스트 주도 프로그래밍이 있다. 하지만 단순히 실천 방법을 따르기만 한다고 익스트림 프로그래밍을 따라서 일한다고 말하기는 어렵다. 예를 들면 테스트 주도 프로그래밍을 한다면, 테스트를 먼저 작성해서 얻을 수 있는 &lt;strong&gt;가치&lt;/strong&gt;가 무엇인지 이해해야 한다.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;가치&lt;/strong&gt;는 실천 방법에 목적을 부여한다. 익스트림 프로그래밍에서의 가치는 의사소통, 단순성, 피드백, 존중, 용기가 있다. 다만 이러한 가치들은 다소 추상적인 개념인 반면 소프트웨어 개발을 하면서 일어나는 문제는 다양하고 복잡하다. 그래서 실천 방법을 실제로 적용하기는 어려울 수 있다. 저자는 가치와 실천 방법을 이어주는 것이 필요하다고 말하는데, 바로 원칙이다.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;원칙&lt;/strong&gt;은 가치와 실천 방법을 이어주는 다리와 같다. 원칙에는 인간성, 경제성, 자기 유사성, 상호 이익 등이 있다. 실천 방법을 적용하려고 하는데 어려움을 겪을 때 원칙을 제재로 이해하면 도움이 된다고 한다. 그리고 원칙을 잘 이해하고 있으면, 실천 방법이 책에 없더라도 새로운 실천 방법을 고안할 수도 있다.&lt;/p&gt;&lt;h2&gt;자주 릴리즈하기&lt;/h2&gt;&lt;p&gt;책에서 강조하는 것 중 하나는 릴리즈 주기를 짧게 가져가는 것이다. 릴리즈 주기가 길어지면 그 릴리즈에 포함되는 기능이 많아진다. 기능이 많아지면 결함이 발생할 확률도 높아진다. 결함이 많아서 고객의 불만이 쌓일 때 그것을 회피하고자 릴리즈 주기를 더 길게 가져가는 악순환이 시작될 수도 있다.&lt;/p&gt;&lt;p&gt;피드백은 익스트림 프로그래밍에서 아주 중요한 가치다. 피드백을 받음으로써 우리는 잘못된 부분을 개선할 수 있다. 익스트림 프로그래밍의 목표 중 하나는 내일 더 나아지는 것인데, 피드백을 받을 수 없다면 잘못된 것이 무엇인지 알 길이 없다. 따라서 한 달이나 최소 분기 단위로 릴리즈 주기를 짧게 가져가서 고객의 피드백을 주기적으로 받을 수 있게 한다.&lt;/p&gt;&lt;h2&gt;고객과 함께 계획하기&lt;/h2&gt;&lt;p&gt;한정된 자원으로 고객에게 의미있는 제품을 빠른 시간에 전달하기 위해서는 우선 순위가 높은 것부터 개발해야 한다. 우선 순위를 잘 아는 사람은 고객이기 때문에, 이터레이션을 계획할 때 고객이 구현할 직접 스토리를 고르게 하는 것이 좋다. (여기에서 고객은 꼭 제품을 사용하는 엔드 유저가 아니더라도, 고객에게 가까운 사람이나 개발 요구사항을 주는 사람을 고객으로 생각해도 된다.)&lt;/p&gt;&lt;p&gt;개발을 시작하기 전에 하는 추정은 크게 틀리기 쉽다. 실제로 개발해보면 예상하지 못한 상황들을 만나기 때문이다. 따라서 계획을 할 때는 추정치를 개선할 수 있도록 빠르게 개발해보는 것도 좋다. 예를 들어서 계획에 일주일이 걸리는 일이라면, 개발과 추정을 개선하는 일을 매일 반복하는 방법도 있다.&lt;/p&gt;&lt;h2&gt;서로에게 도움이 되는 일을 하기&lt;/h2&gt;&lt;p&gt;관계에서 어느 한 쪽이 손해만 보게 되면 결국 불편해지기 마련이다. 이 규칙은 나와 다른 사람 사이 뿐만 아니라, 나와 미래의 누군가 사이에도 적용될 수 있다. 예를 들어 개발자가 미래의 후임자나, 회사를 위해 장문의 문서를 작성해야 한다고 생각해보자. 문서를 작성하는 사람은 자기 시간을 할애하면서 지루한 문서 작업을 하는 것에 불만이 생길 수 있다. 그리고 긴 문서가 미래의 후임자에게 도움되는 내용이 있다는 보장도 없다.&lt;/p&gt;&lt;p&gt;이럴 때는 나에게도 도움이 되고 미래의 누군가에게도 도움되는 방법을 사용할 수 있다. 테스트 코드를 작성하여 문서를 대체할 수 있도록 하는 것은 좋은 방법이다. 테스트 코드는 업데이트되지 않으면 테스트 실행이 실패하기 때문에, 문서에 비해 업데이트를 하지 않아 문제가 발생할 확률이 적다. 또한 평소에 테스트 코드를 잘 작성하지 않았다면, 테스트 코드를 작성하면서 테스트를 작성하는 방법에 대한 공부도 할 수 있다.&lt;/p&gt;&lt;h2&gt;나부터 시작하고 공유하기&lt;/h2&gt;&lt;p&gt;이 책을 달달 외운다고 해서 익스트림 프로그래밍에 대해서 잘 이해할 수는 없을 것이다. 만약 이해한다고 하더라도 혼자서만 알고 있고 다른 사람들은 그 방법에 대해서 모른다면 이 책을 읽는 의미가 없어질 것이다. 우선 나부터 시작해야 한다. 그리고 힘들게 경험한 것들을 다른 사람에게 공유할 수도 있어야 한다.&lt;/p&gt;&lt;h2&gt;끝으로&lt;/h2&gt;&lt;p&gt;익스트림 프로그래밍이나 애자일에 대해 잘 몰랐지만 읽으면서 크게 어려운 내용은 없었다. 다만 이 책이 정말 의미있었던 책이 되기 위해서는 현실에서 직접 실천하려고 해보는 것이 중요할 것이다. 하나의 실천 방법이라도 적용해보고 어려움을 느낄 때는 이 책을 다시 읽으면서 가치와 원칙에 대해 새겨보는 것이 좋을 것 같다.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Jest Mock 타이머 적용하기]]></title><description><![CDATA[자바스크립트의 네이티브 타이머 함수들은 실제 시간에 의존하기 때문에 테스트 환경에는 적합하지 않다. 예를 들어 n분 뒤에 실행되는 로직에 대한 테스트 결과를 실제로 n…]]></description><link>https://haeguri.github.iojest-mock-timer/</link><guid isPermaLink="false">https://haeguri.github.iojest-mock-timer/</guid><pubDate>Sun, 12 Jan 2020 17:04:39 GMT</pubDate><content:encoded>&lt;p&gt;자바스크립트의 네이티브 타이머 함수들은 실제 시간에 의존하기 때문에 테스트 환경에는 적합하지 않다. 예를 들어 n분 뒤에 실행되는 로직에 대한 테스트 결과를 실제로 n분이 지난 후에 알 수 있다면 테스트 실행 시간이 너무 길어질 것이다. 테스트 환경에서는 네이티브 타이머를 Mock 타이머로 대체해서 n분 뒤에 실행되는 로직도 바로 실행해볼 수 있어야 한다.&lt;/p&gt;&lt;p&gt;Mock 타이머를 제공하는 다른 테스트 라이브러리도 있지만, Jest에서도 기본적으로 Mock 타이머를 제공하고 있다. 이 글에서는 Jest에서 제공하는 Mock 타이머로 타이머에 의존하는 로직을 테스트하는 방법을 다룬다.&lt;/p&gt;&lt;h2&gt;네이티브 타이머로 테스트&lt;/h2&gt;&lt;p&gt;먼저 다음의 코드가 있다고 가정해보자. 테트리스가 시작되면 1초에 1번 블록을 아래로 이동시키도록 구현된 코드다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;class Tetris {
+  constructor() {
+    this.timerId = undefined;
+  }
+
+  start() {
+    setInterval(this.tick, 1000);
+  }
+
+  tick() {
+    this.moveDown();
+  }
+
+  moveDown() {
+    // 테트리스 블록을 아래로 한 칸 이동시킨다.
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;그리고 만약 Mock 타이머 없이 테스트 코드를 작성한다면 다음과 같이 작성해야 할 것이다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;describe(&amp;quot;Tetris&amp;quot;, () =&amp;gt; {
+  const sleep = seconds =&amp;gt; new Promise(res =&amp;gt; setTimeout(() =&amp;gt; res(), seconds * 1000));
+
+  describe(&amp;quot;start&amp;quot;, () =&amp;gt; {
+    it(&amp;quot;1초 뒤에 블록을 1번 내린다.&amp;quot;, async () =&amp;gt; {
+      const tetris = new Tetris();
+      const moveDown = jest.spyOn(tetris, &amp;quot;moveDown&amp;quot;);
+
+      tetris.start();
+
+      await sleep(1);
+
+      expect(moveDown).toBeCalledTimes(1);
+    });
+
+    it(“3초 뒤에 블락을 3번 내린다.&amp;quot;, async () =&amp;gt; {
+      const tetris = new Tetris();
+      const moveDown = jest.spyOn(tetris, &amp;quot;moveDown&amp;quot;);
+
+      tetris.start();
+
+      await sleep(3);
+
+      expect(moveDown).toBeCalledTimes(3);
+    });
+  });
+});
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;start&lt;/code&gt;가 실행하는 네이티브 타이머의 결과를 테스트하기 위해서는 실제로 n초가 지나가는 것을 기다려야 한다. 따라서 &lt;code&gt;sleep&lt;/code&gt; 함수로 n초 동안 테스트 코드의 실행을 blocking하는 방법을 적용했다.&lt;/p&gt;&lt;p&gt;이 테스트의 &lt;strong&gt;첫 번째&lt;/strong&gt; 문제는 테스트가 부정확하다는 것이다. 실행해본 결과, 첫 번째 케이스는 통과하는데, 두 번째 케이스는 실패했다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;[FAIL] Tetris › start › 3초 뒤에 블락을 3번 내린다.
+
+expect(jest.fn()).toBeCalledTimes(expected)
+
+Expected number of calls: 3
+Received number of calls: 2
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;테스트 코드에서는 3초 뒤면 &lt;code&gt;moveDown&lt;/code&gt;이 3번 호출되길 기대했지만 결과는 2번 호출된다. 반면 첫 번째 케이스는 성공하고 있는데, 이렇게 되면 구현 코드의 어디가 문제인지 알아내기 힘들다.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers&quot;&gt;타이머 함수들의 스펙&lt;/a&gt;을 살펴보면, 인자로 전달되는 timeout은 실제로는 그 timeout 만큼 뒤에 interval 함수가 실행되는 것을 보장하지 않는다. &lt;code&gt;sleep&lt;/code&gt; 함수로 3000ms 동안 코드 실행이 blocking되는 것을 기대하지만, 실제로는 정확히 3000ms만큼 blocking되지 않는다는 의미다.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;두 번째&lt;/strong&gt; 문제는 테스트 실행 시간이 느려진다는 것이다. &lt;code&gt;sleep&lt;/code&gt;으로 테스트를 blocking하는 코드가 더 추가된다면, 개발자가 코드를 수정하고 테스트 실행 결과를 확인하기까지 수십초가 걸릴 수도 있다. 테스트가 프로덕트를 배포하는 과정에서도 실행된다면 배포 시간도 덩달아 느려진다.&lt;/p&gt;&lt;h2&gt;개선하기&lt;/h2&gt;&lt;p&gt;네이티브 타이머 대신 Jest의 Mock 타이머를 사용하도록 테스트 코드를 수정해보자.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;jest.useFakeTimers(); // 네이티브 타이머를 Jest 타이머로 대체
+
+describe(&amp;quot;Tetris&amp;quot;, () =&amp;gt; {
+  afterEach(() =&amp;gt; {
+    jest.clearAllTimers();
+  });
+
+  describe(&amp;quot;start&amp;quot;, () =&amp;gt; {
+    it(&amp;quot;1초 뒤에 블록을 1번 내린다.&amp;quot;, () =&amp;gt; {
+      const tetris = new Tetris();
+      const moveDown = jest.spyOn(tetris, &amp;quot;moveDown&amp;quot;);
+
+      tetris.start();
+
+      jest.advanceTimersByTime(1000); // 이후 1000ms 뒤에 실행되어야 하는 로직이 실행된다.
+
+      expect(moveDown).toBeCalledTimes(1);
+    });
+
+    it(&amp;quot;3초 뒤에 블락을 3번 내린다.&amp;quot;, () =&amp;gt; {
+      const tetris = new Tetris();
+      const moveDown = jest.spyOn(tetris, &amp;quot;moveDown&amp;quot;);
+
+      tetris.start();
+      jest.advanceTimersByTime(3000); // 이후 3000ms 뒤에 실행되어야 하는 로직이 실행된다.
+
+      expect(moveDown).toBeCalledTimes(3);
+    });
+  });
+});
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;jest.useFakeTimers()&lt;/code&gt;를 실행하면 &lt;code&gt;setTimeout&lt;/code&gt;, &lt;code&gt;setInterval&lt;/code&gt;, &lt;code&gt;clearTimeout&lt;/code&gt;, &lt;code&gt;clearInterval&lt;/code&gt; 등의 네이티브 함수들이 Jest 타이머로 대체된다. 즉, 테스트 코드로 실행되는 타이머가 Jest 타이머가 된다.&lt;/p&gt;&lt;p&gt;&lt;code&gt;jest.advanceTimersByTime(ms)&lt;/code&gt;은 모든 타이머가 &lt;code&gt;ms&lt;/code&gt; 밀리세컨드만큼 시간이 지나가게 한다. 이 코드를 통해 &lt;code&gt;ms&lt;/code&gt; 밀리세컨드 후에 실행되어야 하는 콜백 함수들이 실행되는 것을 보장할 수 있다.&lt;/p&gt;&lt;p&gt;마지막으로 &lt;code&gt;jest.clearAllTimers()&lt;/code&gt;로 테스트 케이스가 실행된 후 Mock 타이머를 정리해서 테스트가 독립적으로 실행되는 것을 보장해줄 수 있다.&lt;/p&gt;&lt;p&gt;테스트를 실행해보면 테스트의 실행 시간도 훨씬 짧아지고, 작성한 테스트 케이스가 모두 성공하는 것을 확인할 수 있다.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Effective Unit Testing 정리]]></title><description><![CDATA[…]]></description><link>https://haeguri.github.iobook-effective-unit-testing/</link><guid isPermaLink="false">https://haeguri.github.iobook-effective-unit-testing/</guid><pubDate>Sat, 30 Nov 2019 22:56:19 GMT</pubDate><content:encoded>&lt;p&gt;프로젝트가 끝나거나 새로운 프로젝트가 시작하기 전에는 &amp;quot;다음에는 꼭 테스트 코드를 작성하겠다&amp;quot;라고 다짐하지만 마음대로 되지 않았다. 가장 많이 했던 핑계는 &amp;quot;시간이 부족해서&amp;quot;였던 것 같다. 사실은 시간이 있었어도 어떻게 하면 테스트 코드를 잘 작성할 수 있는지 몰랐기 때문에 테스트를 잘 짜기는 힘들었을 것 같다. 그러던 중에 팀의 동료분에게 &amp;quot;Effective Unit Testing&amp;quot;이라는 책을 추천받아 읽게 되었다.&lt;/p&gt;&lt;p&gt;이 책은 좋은 테스트 코드를 작성하는 방법을 다루는 책이다. 유닛 테스트, E2E 테스트, 통합 테스트 등 테스트의 종류에도 여러 가지가 있는데, 그중에서 유닛 테스트를 작성하는 방법에 대해서 다룬다. 아쉬운 점은 테스트 코드에 대한 예제가 Java로 작성된 점이다. 하지만 이 책의 내용은 Java에 국한된 것은 아니고, 나와 같은 프론트엔드 개발자들도 충분히 읽을 수 있는 책이라고 생각한다.&lt;/p&gt;&lt;p&gt;이 글에서는 책을 읽으면서 개인적으로 생각했을 때 기억하고 싶은 내용을 정리했다.&lt;/p&gt;&lt;h2&gt;1. 기반 다지기&lt;/h2&gt;&lt;h3&gt;좋은 테스트의 이점&lt;/h3&gt;&lt;p&gt;테스트 코드를 어떤 목적으로 작성하는지에 따라 얻을 수 있는 테스트 가치는 두 가지로 나뉜다.&lt;/p&gt;&lt;p&gt;먼저 테스트 코드의 목적이 품질 검증일 때는 테스트 코드를 통해 프로그램의 신뢰성을 높이는 것에 집중한다. 이 목적은 프로젝트의 테스트 커버리지가 낮을 때 유용한 목표이다. 만약 테스트 코드의 커버리지가 95% 정도로 높아졌을 때 테스트를 작성하는 노력에 대비해 얻을 수 있는 가치는 적은 것처럼 보일 수 있다.&lt;/p&gt;&lt;p&gt;이때 테스트 코드의 작성으로 얻을 수 있는 가치를 설계의 관점으로 전환하는 것이 필요하다. 이러한 개발 방법론은 테스트 주도 개발(TDD)로 널리 알려졌다. TDD는 구현 코드를 작성하기 전 실패하는 테스트를 작성하고, 그 테스트를 통과하기 위한 구현 코드를 작성하고, 작성했던 코드를 리팩토링하는 과정을 반복하는 방법론을 말한다. 그리고 코드를 리팩토링하는 과정에서 프로그램을 설계한다. TDD는 테스트 코드를 통한 결과보다 그 과정에서 얻을 수 있는 이점이 많다.&lt;/p&gt;&lt;p&gt;이 책에서는 TDD에 관해서 설명하기보다 &amp;quot;효율적인 테스트&amp;quot;, &amp;quot;좋은 테스트&amp;quot;에 대해서 더 집중한다.&lt;/p&gt;&lt;h3&gt;좋은 테스트란?&lt;/h3&gt;&lt;p&gt;테스트 코드도 소스 코드이기 때문에 좋은 코드와 나쁜 코드로 구분할 수 있다. 저자가 경험했던 &amp;quot;좋은 테스트 코드&amp;quot;의 조건은 다음과 같다.&lt;/p&gt;&lt;h4&gt;가독성이 좋은 코드인가?&lt;/h4&gt;&lt;p&gt;읽기 쉬운 코드가 유지보수하기 좋다는 말이 있다. 읽기 쉬운 코드는 읽는 사람이 코드를 이해하는 데 필요한 시간을 줄여주며, 디버깅을 용이하게 해준다. 구현 코드와 마찬가지로 테스트 코드도 여러 사람에 의해 수정될 수 있는 코드이다. 가독성이 없는 코드는 테스트 코드를 이해하기 어렵게 하고, 테스트 코드를 수정하는 것을 어렵게 한다.&lt;/p&gt;&lt;h4&gt;구조화가 잘 되었는가?&lt;/h4&gt;&lt;p&gt;하나의 파일에서 너무 많은 테스트 코드가 있다면 테스트 코드의 전체적인 구조를 파악하기 힘들다. 이 경우 가능하면 작은 단위로 나눠야 하지만 무작위로 나누는 것은 오히려 여러 파일을 오가면서 테스트 코드를 읽어야 하는 불편함이 있다. 간단한 방법은 추상화된 개념을 단위로 테스트 코드를 쪼개는 방법이 있다.&lt;/p&gt;&lt;p&gt;잘 나누어진 테스트 코드는 구현 코드를 파악하는 것에도 도움이 된다. 구현 코드가 어떻게 실행되는지 파악하기 위해서는 테스트 코드를 읽는 것이 도움이 된다. 그리고 수정이 필요한 기능이 있다면, 어떤 테스트 코드를 봐야 할 지 파악하기도 쉬워진다.&lt;/p&gt;&lt;h4&gt;무엇을 검사하는가?&lt;/h4&gt;&lt;p&gt;테스트가 무엇을 검사하는지 파악하기 위해서 테스트의 이름을 살펴보는 것이 도움이 될 것이다. 그런데 테스트의 이름이 잘못 작성되었다면 테스트를 읽는 사람에게 잘못된 이정표로 길을 안내하는 것이 된다. 읽는 것만 못한 테스트 코드가 될 수 있다. 당연하지만 테스트 코드는 테스트가 하는 일에 맞게 작성되어야 한다.&lt;/p&gt;&lt;h4&gt;독립적으로 잘 실행되는 코드인가?&lt;/h4&gt;&lt;p&gt;&amp;#x27;시간&amp;#x27;, &amp;#x27;네트워킹&amp;#x27;, &amp;#x27;동시성(Concurrency)&amp;#x27; 등과 관련이 있는 테스트 코드는 독립적이라고 볼 수 없다. 이런 요소들은 테스트의 실행 결과를 외부 요인에 결정되게 만든다. 테스트의 실행 결과가 매번 달라지거나, 테스트를 실행하기 위해 준비해야 할 것들이 많아져서 단위 테스트를 복잡하게 만든다. 테스트를 격리시켜 독립적으로 만들기 위한 방법은 여러 가지가 있는데, 가장 중요한 것은 &lt;strong&gt;&amp;quot;테스트 더블&amp;quot;&lt;/strong&gt;이다.&lt;/p&gt;&lt;h4&gt;믿을만한 코드인가?&lt;/h4&gt;&lt;p&gt;테스트를 실행할 때 결과가 매번 달라서 꼭 테스트를 여러 번 실행해야 한다면, 그 테스트는 신뢰할 수 없는 테스트이다. 언제는 성공하고 언제는 실패하는 테스트는 구현 코드의 어느 부분에 문제가 있는지 파악하기 어렵게 한다. 그리고 테스트 케이스의 순서가 바뀌거나 다른 테스트 코드가 추가되면 실패하는 테스트도 신뢰할 수 없다. 테스트는 테스트가 실행되는 순서와 관계없이 잘 실행되어야 한다.&lt;/p&gt;&lt;h4&gt;어떤 테스트 도구를 사용하는가?&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;테스트 더블&lt;/strong&gt;은 스텁(Stuff), Mock 객체 등을 통칭하는 용어이다. 테스트 더블은 테스트를 위하여 진짜 객체를 대신하는 객체다. 테스트 더블을 사용하면 테스트 속도를 개선할 수 있고, 어떤 상황을 시뮬레이션하거나 테스트에 필요한 상태를 얻게 할 수도 있다. 또한 JUnit과 같은 테스트를 실행하는 도구도 중요하며, 테스트가 실패하면 빌드도 반드시 실패해야 하므로 빌드 도구를 어떤 것을 사용하는지도 중요하다.&lt;/p&gt;&lt;h3&gt;테스트 더블의 위력&lt;/h3&gt;&lt;h4&gt;구현 코드를 격리&lt;/h4&gt;&lt;p&gt;첫 번째 위력은 테스트 대상인 구현 코드를 격리할 수 있는 것이다. 테스트 대상 코드를 격리하는 것은, 테스트 대상 코드가 의존하는 것으로부터 분리하는 것에서 출발한다. 테스트 대상 외에 다른 것들은 테스트 더블로 대체하는 방법을 사용할 수 있다.&lt;/p&gt;&lt;h4&gt;테스트 속도 개선&lt;/h4&gt;&lt;p&gt;두 번째는 테스트의 속도를 개선한다. 테스트 대상에 집중하기 위해서 테스트를 실행하는데 시간이 오래 걸리는 종속 객체는 연산 없이 단순한 결과만 반환하는 가짜 객체로 대체할 수 있다. 이렇게 하면 테스트 코드의 피드백 과정을 빨라지게 할 수 있다.&lt;/p&gt;&lt;h4&gt;예측 불가능한 요소 제거&lt;/h4&gt;&lt;p&gt;세 번째는 예측 불가능한 실행 요소를 제거할 수 있다. 예를 들어 언제 실행하는지에 따라 결과가 달라지는 테스트는 비결정적인 테스트이다. 테스트 더블을 활용하면 테스트가 실행될 때는 시스템의 시간이 항상 일정한 값을 반환하게 동작을 변경할 수도 있다. 시간에 의존하는 테스트의 목적은 결국 특정 시간에 결과를 잘 반환하는지 확인하는 것이기 때문이다. 시스템 시간을 테스트 더블로 대체하게 되면, 테스트를 몇 번 실행하더라도 테스트의 결과를 예측할 수 있게 만들 수 있다.&lt;/p&gt;&lt;h4&gt;시뮬레이션&lt;/h4&gt;&lt;p&gt;네 번째는 특수한 상황을 시뮬레이션 할 수 있다. 예를 들어 서버에서 에러 응답을 반환하거나, 네트워크 연결이 갑자기 끊겼을 때 테스트 대상이 어떻게 대처하는지 검증하기 위한 테스트를 작성한다고 생각해보자. 이를 위해 인터넷 선을 뽑는 방법도 있지만, 네트워크 요청을 담당하는 객체를 가짜 객체로 변경하면 이 객체에서 예외를 던지게 만들고, 테스트 대상 코드가 어떻게 반응하는지 검증할 수 있다.&lt;/p&gt;&lt;h4&gt;감춰진 정보 접근&lt;/h4&gt;&lt;p&gt;다섯 번째로 감춰진 정보를 얻어낼 수 있다. &lt;code&gt;private&lt;/code&gt; 필드를 테스트해야 한다면 &lt;code&gt;private&lt;/code&gt; 필드에 접근하는 &lt;code&gt;public&lt;/code&gt; 메서드를 구현 코드에 추가하는 방법도 있다. 하지만 오직 테스트 코드를 위한 메서드를 구현 코드에 추가하는 것은 좋지 않다. 이 경우 구현 코드를 확장하는 가짜 객체를 만들고, 그 객체에서 &lt;code&gt;private&lt;/code&gt; 필드에 접근하는 &lt;code&gt;public&lt;/code&gt; 메서드를 방법이 있다. 이 방법을 사용하면 구현 코드를 수정하지 않고 &lt;code&gt;private&lt;/code&gt; 필드를 테스트할 수 있다.&lt;/p&gt;&lt;h3&gt;테스트 더블의 종류&lt;/h3&gt;&lt;p&gt;테스트 더블의 종류는 테스트 스텁, 가짜 객체, 테스트 스파이, Mock 객체가 있다.&lt;/p&gt;&lt;h4&gt;테스트 스텁&lt;/h4&gt;&lt;p&gt;테스트 스텁은 가장 짧고 단순한 형태의 테스트 더블이다. 항상 일정한 값을 반환하도록 만들어진 함수를 예로 들 수 있다.&lt;/p&gt;&lt;h4&gt;가짜 객체&lt;/h4&gt;&lt;p&gt;가짜 객체는 테스트 스텁보다는 정성이 들어간 테스트 더블이다. 가짜 객체는 영속성과 관련된 코드를 검사할 때 유용하다. 만약 테스트 코드가 실제 데이터베이스에 접근해야 한다면, 테스트 코드를 실행할 때도 데이터베이스에 접근하고 질의하는 것은 테스트 실행 속도를 느리게 만든다. 실제 데이터베이스가 아니라 인메모리 데이터베이스를 가짜 객체로 구현하면 훨씬 빠른 속도로 테스트 코드를 실행할 수 있다.&lt;/p&gt;&lt;h4&gt;테스트 스파이&lt;/h4&gt;&lt;p&gt;테스트 스파이는 프로그래머를 대신하여 테스트 대상에 잠입해 프로그래머가 궁금한 내용을 알려주는 역할을 한다. 예를 들어서 입력 파라미터로 사용되는 객체가 프로그래머가 원하는 정보를 제공해주는 API가 없다면, 그 객체를 테스트 스파이로 대체하면 된다.&lt;/p&gt;&lt;h4&gt;Mock 객체&lt;/h4&gt;&lt;p&gt;Mock 객체는 강력한 형태의 테스트 스파이라고 볼 수 있다. 특정 조건이 발생하면 약속된 행동을 하도록 할 수 있고, 예기치 않은 일이 발생했을 때 실패하도록 하는 정교한 테스트를 작성할 수도 있다. Mock 객체는 오픈소스로 공개된 성숙한 Mock 라이브러리를 사용하는 것이 좋다.&lt;/p&gt;&lt;h3&gt;테스트 더블 활용 지침&lt;/h3&gt;&lt;p&gt;테스트 더블도 용도에 맞게 잘 선택해야 한다. 간단한 원칙은 스텁은 질문하고 Mock은 행동하는 특성을 생각하는 것이다. 두 객체의 상호작용 결과로 어떤 메서드가 호출되어야 하는지 확인해야 한다면 Mock 객체를 써야 할률이 높다. 협력 객체는 원하는 값만 내려주면 되고 협력 객체가 테스트 대상 객체에 넘겨줄 응답도 테스트에서 통제할 수 있다면, 테스트 스텁을 사용하는 것이 좋다.&lt;/p&gt;&lt;p&gt;테스트 코드도 소스 코드기 때문에 프로그래머 사이에서 약속된 규약에 의해 작성하면 알아보기 쉽다. 가장 많이 사용되는 약속은 테스트를 준비하고, 시작하고, 단언하는 것이다.&lt;/p&gt;&lt;p&gt;테스트는 대상 코드의 동작을 확인해야 한다. Mock 객체를 작성하는 것에 너무 공을 들이다 보면 테스트 코드가 복잡해지면 테스트가 실패한 것이 대상 코드의 문제인지 테스트가 문제인지 파악하기 힘들게 만든다. 테스트 더블을 사용하기 전에 꼭 필요한 것인지 신중하게 선택하고 테스트를 작성해야 한다.&lt;/p&gt;&lt;p&gt;그리고 테스트 더블을 제공하는 라이브러리를 사용하는 것이 좋다. 어떤 것은 거대한 레거시 코드를 검증하기 위해 테스트 코드를 작성할 때 좋고, 어떤 것은 신규 프로젝트를 위해 테스트 코드를 작성할 때 좋은 것이 있다.&lt;/p&gt;&lt;h2&gt;2. 테스트 냄새&lt;/h2&gt;&lt;p&gt;좋은 테스트 코드를 작성하는 것 못지않게, 나쁜 테스트를 작성하지 않는 것도 중요하다. 구현 코드에서 나쁜 패턴이 의심되는 경우 &amp;quot;냄새가 난다&amp;quot;라고 표현하는 것처럼 테스트 코드에서도 &amp;quot;테스트 냄새&amp;quot;가 발생할 수 있다.&lt;/p&gt;&lt;h3&gt;가독성&lt;/h3&gt;&lt;p&gt;읽기 쉬운 테스트 코드가 이해하기도 쉽고 유지보수하기도 쉽다. 가독성을 떨어뜨리는 테스트 코드의 요소들을 정리하면 다음과 같다.&lt;/p&gt;&lt;h4&gt;기본 타입 단언&lt;/h4&gt;&lt;p&gt;기본 타입(Primitive Type)을 단언하는 것은 대상 코드가 테스트하는 것이 무엇인지 헷갈리게 만든다. 테스트 코드는 읽는 입장에서 이해할 수 있도록 높은 수준의 추상화가 되어야 한다. 테스트 코드를 읽는 목적은 테스트 대상이 어떻게 실행되고 어떻게 동작하는지인데, 너무 낮은 수준의 추상화로 테스트 코드를 이해하기 어렵게 만든다면 나쁜 테스트 코드이다. 단언문에 기본 타입의 값이 있다면 상수로 대체하는 등의 방법을 사용해야 하며, 기본 타입을 직접 사용하여 검증하는 것은 피해야 한다.&lt;/p&gt;&lt;h4&gt;광역 단언&lt;/h4&gt;&lt;p&gt;광역 단언은 테스트 코드에서 너무 많은 것들을 단언하는 것이다. 사소한 변경이 테스트를 깨뜨리면 테스트를 어렵게 만들고 테스트의 목적이 무엇인가를 희석한다. 테스트 코드에서 테스트가 실패하는 이유는 오직 하나여야 한다. 테스트가 실패했는데 단언이 너무 많아 도대체 무엇 때문에 테스트가 실패했는지 모르면 안 된다.&lt;/p&gt;&lt;h4&gt;부차적 상세정보&lt;/h4&gt;&lt;p&gt;광역 단언은 단언이 넘쳐흐르는 것이고, 부차적 상세정보는 정보가 넘쳐흐르는 것이다. 테스트 코드를 작성하는 사람이 너무 많은 정보를 주고 싶은 마음에 이것저것 테스트 코드에 넣다 보면 부차적인 정보가 넘쳐흐르게 된다. 테스트 코드를 작성할 때는 핵심이 아닌 설정들은 별도의 셋업 메서드로 추출해야 한다.&lt;/p&gt;&lt;h4&gt;다중 인격&lt;/h4&gt;&lt;p&gt;다중 인격 테스트는 테스트는 오직 한 가지만 검사해야 한다는 원칙에 위배되는 테스트 냄새이다. 하나의 테스트 클래스에서 너무 많은 것들을 테스트한다면, &amp;quot;무엇을 테스트 하려는 것인지&amp;quot;를 기준으로 테스트를 쪼개야 한다.&lt;/p&gt;&lt;h4&gt;셋업 설교&lt;/h4&gt;&lt;p&gt;셋업은 테스트를 실행하기 위해 너무 장황한 셋업들을 하는 경우를 말한다. 테스트를 이해하기 위해서는 테스트를 실행하기 위한 준비 과정인 셋업도 이해해야 한다. 하지만 셋업이 너무 장황해진다면 테스트를 이해하기 어렵게 된다. 테스트의 셋업이 너무 장황하다고 느껴진다면 별도의 메서드로 분리해야 한다. 그리고 그에 맞는 서술적인 이름을 사용해야 한다.&lt;/p&gt;&lt;h4&gt;과잉 보호 테스트&lt;/h4&gt;&lt;p&gt;테스트 대상의 결과를 검증하면서, 의미 없는 것들을 함께 단언하는 것을 말한다. 핵심 단언이 실패하면 당연히 실패하게 될 단언을 작성하는 것을 예로 들 수 있다. 반대로 핵심 단언이 성공하면 실패할 리가 없는 단언들이 있다면 테스트 냄새를 유발하는 나쁜 테스트다.&lt;/p&gt;&lt;h3&gt;유지보수성&lt;/h3&gt;&lt;p&gt;코드는 작성하는 일보다 읽을 일이 더 많다는 말이 있다. 보통은 코드를 읽은 후 코드를 작성하는 단계로 넘어간다. 누군가의 코드를 수정하던 새로운 것을 개발하든 그 코드는 결국에는 유지보수되어야 한다. 다음은 테스트 코드를 유지보수하기 어렵게 만드는 테스트 냄새들이다.&lt;/p&gt;&lt;h4&gt;중복&lt;/h4&gt;&lt;p&gt;중복은 필요 없는 것이 반복되는 것을 말한다. 중복의 유형은 상수 중복, 구조 중복, 의미 중복이 있다. 상수 중복은 특정 문자열이나 숫자가 테스트 코드에서 반복되는 것을 말하는데, 이 경우 지역 변수를 하나 선언하여 해결할 수 있다. 구조 중복은 동일한 코드가 여러 곳에 중복된 경우를 말하는데, 별도의 메서드로 분리하여 해결할 수 있다. 해결하기 힘든 의미 중복은 동일한 역할을 하지만 다른 코드를 가진 중복을 말한다. 구조 중복을 포함하고 있지만, 눈에 띄지 않기 때문에 알아채기 어렵다. 의미 중복은 우선 구조 중복으로 바꾸고, 구조 중복을 개선하는 것으로 해결한다.&lt;/p&gt;&lt;h4&gt;양치기 테스트&lt;/h4&gt;&lt;p&gt;양치기 테스트는 외부의 요소에 의존하는 테스트에서 쉽게 일어날 수 있다. 시간에 의존하는 테스트 코드는 테스트를 실행할 때마다 결과가 달라질 수 있다. 처음 테스트 코드를 작성했을 때는 테스트가 실패하다가 빌드할 때 운 좋게 성공해서 문제가 없는 코드라고 오해할 수도 있다. 이것은 시간에 의존하는 테스트는 시스템 시간을 테스트 더블로 대체하거나, 난수에 의존하는 코드는 가짜 난수 발생기 등을 사용하여 랜덤한 상황을 테스트해볼 수도 있다.&lt;/p&gt;&lt;h4&gt;잠자는 달팽이&lt;/h4&gt;&lt;p&gt;테스트 실행을 느리게 만드는 요소 중의 하나는 테스트 코드를 실행하는 동안 일정 시간 동안 메인 쓰레드를 Blocking하는 코드들이다. 비동기 로직들이 실행된 후의 시점을 알 수 없어서, 예측하는 시간 동안 메인 쓰레드를 Blocking하는 방법을 사용한 것인데, 이런 테스트는 정확하지도 않고, 테스트 실행 속도를 느리게 만든다. 비동기 로직의 실행 완료 시점을 알 수 없다면, 관련 라이브러리를 사용하는 것도 좋다.&lt;/p&gt;&lt;h4&gt;픽셀 퍼펙션&lt;/h4&gt;&lt;p&gt;컴퓨터 그래픽 분야의 테스트 코드에서 빈번하게 발견되는 냄새이다. 예를 들어 두 박스 사이의 연결 여부를 테스트하는 코드가 있다면, 두 박스 사이의 연결 여부를 알 수 있는 유일한 방법은 선이 그려져 있는지 코드로 확인하는 방법이다. 그런데 선이 그려져 있는지 여부를 픽셀 단위로 검사하는 테스트 코드가 있다면 그 테스트 코드는 실패하기 쉬운 테스트 코드이다. 입력을 조금만 다르게 줘도 실패하기 때문이다. 만약 두 박스 사이의 연결 여부를 검증한다면 점이나 좌표를 직접 단언할 필요는 없다. 대신 사용자가 정의한 메서드로 추상화해서 복잡한 것을 숨겨야 한다.&lt;/p&gt;&lt;h3&gt;신뢰성&lt;/h3&gt;&lt;p&gt;프로젝트를 처음 인수인계 받는 상황에서 테스트 코드는 동작을 이해하기 좋은 문서처럼 읽을 수 있다. 하지만 신뢰할 수 없는 테스트를 읽는다면 프로그램의 동작을 오해할 수도 있다. 신뢰성이 없는 테스트는 개발자의 시간을 뺏고, 발목을 잡기 마련이다.&lt;/p&gt;&lt;h4&gt;주석으로 변한 테스트&lt;/h4&gt;&lt;p&gt;통째로 주석으로 변한 테스트를 보면 일단 주석 처리된 이유가 가장 궁금할 것이다. 테스트가 깨졌지만 급해서 일단 넘어간 것인지, 필요할 때만 주석 해제하면 성공하는 건지 알 수 없기 때문에 테스트 코드를 읽는 사람을 힘들게 한다. 주석으로 된 테스트 코드를 이해하기 위해서는 히스토리를 아는 사람을 찾거나 테스트의 주석을 해제해서 실행해보거나 코드를 분석하는 방법밖에 없다.&lt;/p&gt;&lt;h4&gt;오해를 낳는 주석&lt;/h4&gt;&lt;p&gt;소스 코드에 주석이 달려있으면 읽는 사람 입장에서 참 고맙다. 그런데 잘못된 주석은 있는 것만 못한 주석이 된다. 주석의 내용이 실제 동작과 다른지 검증하는 것은 테스트 실행기에서 해주지 않는다. 가장 좋은 것은 주석이 필요 없는 테스트 코드를 작성하는 것이다. 설명이 필요한 코드는 별도의 메서드로 분리하고 메서드의 이름을 알아보기 쉽게 만든다. 그래도 주석이 정말 필요하다면, 주석은 &amp;quot;How&amp;quot;가 아니라 &amp;quot;Why&amp;quot;를 설명해야 한다. 코드의 동작을 일일이 설명하고 있는 주석은 나중에는 거짓말을 하는 주석이 될 확률이 높다.&lt;/p&gt;&lt;h4&gt;절대 실패하지 않는 테스트&lt;/h4&gt;&lt;p&gt;대상 코드의 예외 처리 로직을 검증하고자 한다면, &lt;code&gt;try&lt;/code&gt; , &lt;code&gt;catch&lt;/code&gt; 문으로 검증하게 될 것이다. 그런데 예외가 발생하지 않아 &lt;code&gt;catch&lt;/code&gt; 블락으로 진입하지 않아도 단언이 실행되지 않기 때문에, 그 테스트는 성공한 테스트가 된다. 예외가 발생해야 하는데 예외가 발생하지 않은 테스트는 실패한 것이다. 이 경우 &lt;code&gt;try&lt;/code&gt; 블락의 끝에 무조건 실패하는 단언문을 넣고, &lt;code&gt;try&lt;/code&gt; 문이 끝까지 실행되지는 않는지 검증해야 한다. 만약 &lt;code&gt;try&lt;/code&gt; 블락이 끝까지 실행된다면 테스트는 무조건 실패하는 단언문을 만나게 되고, 테스트가 원하는 바를 잘 검증할 수 있게 된다.&lt;/p&gt;&lt;h4&gt;지키지 못할 약속&lt;/h4&gt;&lt;p&gt;테스트 케이스의 이름을 보면 테스트가 하는 일을 파악할 수 있다. &amp;quot;주석으로 변한 테스트&amp;quot;와 비슷한 경우인데, 막상 테스트 코드를 보면 테스트의 이름과 실제 검증 로직이 다른 경우가 있다. 이 경우 테스트 이름을 작성할 때와 마지막으로 단언문을 작성하는 사이에 테스트의 목적이 달라진 경우이다. 테스트의 이름을 짓기 어려운 경우 TODO라는 이름으로 남겨두고 단언문을 작성한 이후, 테스트를 작성하는 방법도 있다.&lt;/p&gt;&lt;h4&gt;플랫폼 편견&lt;/h4&gt;&lt;p&gt;플랫폼에 의존하는 테스트 코드는 테스트를 어디서 실행하는지에 따라서 테스트의 실행 결과를 달라지게 만든다. 다른 플랫폼에서 실패하는 테스트지만, 작성자의 환경에서 성공하여 테스트가 성공했다고 믿게 만든다. 플랫폼별로 테스트를 해야 하는 상황이라면, 우선 대상 코드를 리팩토링하는 것을 검토해야 한다. 대상 코드 내부에 플랫폼에 종속된 로직을 제거하고, 플랫폼별로 달라지는 요소를 파라미터로 받을 수 있게 한다.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[React Hooks 살펴보기]]></title><description><![CDATA[Hooks를 공부하기 위해서 공식 문서를 읽으면서 개인적으로 정리한 내용입니다. 정리하는 과정에서 내용이 생략되거나 추가된 내용이 있을 수 있습니다. 리액트 Hooks는 16.8.…]]></description><link>https://haeguri.github.ioreact-hooks-basic/</link><guid isPermaLink="false">https://haeguri.github.ioreact-hooks-basic/</guid><pubDate>Sun, 13 Oct 2019 20:08:28 GMT</pubDate><content:encoded>&lt;blockquote&gt;&lt;p&gt;Hooks를 공부하기 위해서 공식 문서를 읽으면서 개인적으로 정리한 내용입니다. 정리하는 과정에서 내용이 생략되거나 추가된 내용이 있을 수 있습니다.&lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;리액트 Hooks는 16.8.0에서 새로 도입된 기능입니다. 기존에는 함수형 컴포넌트에서 상태를 관리하기 위해서는 클래스 컴포넌트 다시 작성해야 했던 반면에, Hooks가 나오면서 함수형 컴포넌트에서도 상태를 가질 수 있게 되었습니다. Hooks는 이것 외에도 다양한 기능들을 제공합니다.&lt;/p&gt;&lt;p&gt;Hooks를 프로젝트에 도입하기 위해서, Hooks로 작성된 컴포넌트가 기존의 컴포넌트와 호환되는지 여부에 대해 검토해야 할 필요도 있습니다. 이 부분에 대해 공식 문서를 보면 Hooks를 도입했을 때의 기존 코드와 호환이 깨지는 이른바 Breaking Change는 없다고 합니다. 일부 컴포넌트만 Hooks로 전환하는 것도 가능하며 모든 컴포넌트를 Hooks로 변경할 필요는 없습니다. 또 클래스 컴포넌트가 리액트에서 제거될 계획도 없습니다.&lt;/p&gt;&lt;p&gt;그리고 Hooks를 도입한다고 해서 이전에 배웠던 리액트에 대한 개념들이 필요 없어지거나 하지는 않습니다. Hooks는 우리가 이미 알고 있던 props, state, context, refs, lifecycle 등에 대해서 더 직접적인 API를 제공해줄 뿐입니다.&lt;/p&gt;&lt;h2&gt;왜 필요한가?&lt;/h2&gt;&lt;p&gt;Hooks로 개발된 컴포넌트를 보면서 Hooks를 사용하면 좋은 이유에 대해서 궁금했었습니다. 단순히 &lt;em&gt;&amp;quot;함수형 컴포넌트에서 상태를 관리할 수 있다는 점 때문에 리액트 팀에서 Hooks를 개발했을까?&amp;quot;&lt;/em&gt;라는 의문이 들었습니다. 공식 문서에서는 Hooks를 개발하게 된 동기에 대해서 다음과 같이 소개합니다.&lt;/p&gt;&lt;h3&gt;1. 상태에 의존하는 로직을 재사용하기 어렵다.&lt;/h3&gt;&lt;p&gt;그동안 리액트에서는 API 레벨에서 컴포넌트에 재사용 가능한 로직을 추가하는 방법을 제공하지 않고 있었습니다. 그래서 개발자들은 render props나 higher-order components와 같은 기법으로 컴포넌트에 재사용 가능한 로직을 추가했습니다. 하지만 이 패턴들을 사용했을 때 컴포넌트 계층을 다시 구성해야 했고, 어떤 사람들에게는 코드를 이해하기 힘들게 만들기도 했습니다. 그리고 이 패턴들을 사용하면 결국 &lt;code&gt;Wrapper&lt;/code&gt;가 추가되었기 때문에 리액트 개발자 도구로 컴포넌트 구조를 확인해 보면 &amp;quot;Wrapper Hell&amp;quot;이 펼쳐지곤 했습니다.&lt;/p&gt;&lt;p&gt;Hooks를 사용하면 상태를 가진 로직을 추출해서 독립적으로 테스트할 수 있고, 재사용할 수도 있습니다. 그리고 상태를 가진 로직을 재사용하기 위해서 컴포넌트 계층을 굳이 변경하지 않아도 됩니다.&lt;/p&gt;&lt;h3&gt;2. 컴포넌트가 복잡해진다.&lt;/h3&gt;&lt;p&gt;클래스 컴포넌트에 lifecycle 메서드를 사용하면 컴포넌트가 복잡해질 수 있습니다.&lt;/p&gt;&lt;p&gt;예를 들어서 Friend라는 컴포넌트가 있고, 이 컴포넌트에서는 친구가 서비스에 접속했는지 여부를 실시간으로 구독(&lt;strong&gt;subscribe&lt;/strong&gt;)하고, 친구의 데이터를 가져온다고(&lt;strong&gt;fetch&lt;/strong&gt;) 가정해보겠습니다. 그리고 Friend 컴포넌트가 제거될 때는 친구의 접속 여부를 구독 해제(&lt;strong&gt;unsubscribe&lt;/strong&gt;)해야 합니다. 기존의 클래스 컴포넌트에서는 다음과 같이 작성해야 했습니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;class Friend extends React.Component {
+  // ...
+  componentDidMount() {
+    ChatAPI.subscribeToFriendStatus(
+      this.props.friend.id,
+      this.handleStatusChange
+    );
+    ChatApi.fetchFriend();
+  }
+
+  componentWillUnmount() {
+    ChatAPI.unsubscribeFromFriendStatus(
+      this.props.friend.id,
+      this.handleStatusChange
+    );
+  }
+  // ...
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;위의 &lt;code&gt;componentDidMount&lt;/code&gt;에는 친구의 상태를 구독하는 로직과 친구의 데이터를 가져오는 로직이 함께 있습니다. 어떻게 보면 관련이 없는 두 개의 로직이 하나의 메서드에 있습니다. 나중에 사이드 이펙트를 일으키는 다른 로직이 추가된다면 &lt;code&gt;componentDidMount&lt;/code&gt;는 더 복잡해질 수 있습니다.&lt;/p&gt;&lt;p&gt;그리고 친구의 상태를 subscribe하면 언젠가는 반드시 unsubscribe하게 되므로 subscribe와 unsubscribe는 연관된 로직입니다. 그런데 클래스 컴포넌트에서는 두 개의 연관된 로직을 다른 메서드에 쪼개서 작성할 수밖에 없었습니다.&lt;/p&gt;&lt;p&gt;Hooks는 이것을 해결하기 위해서 하나의 컴포넌트를 여러 개의 작은 함수로 나누는데, 이때 lifecycle 메서드 단위로 나누는 것이 아니라 연관된 것들에 기반하여 나누도록 합니다.&lt;/p&gt;&lt;h3&gt;3. 클래스는 사람, 컴퓨터 모두 이해하기 어렵다.&lt;/h3&gt;&lt;p&gt;리액트 팀은 자바스크립트의 클래스가 리액트를 배우는데 장애물이 될 수 있겠다는 사실을 깨달았습니다. 자바스크립트에서 &lt;strong&gt;this&lt;/strong&gt;가 동작하는 방법은 대부분의 다른 언어에서 this가 동작하는 방법과는 다릅니다. 그래서 매번 메서드를 &lt;code&gt;bind&lt;/code&gt;하거나 화살표 함수를 클래스의 프로퍼티로 추가해야만 했습니다.&lt;/p&gt;&lt;p&gt;리액트 팀은 &lt;strong&gt;Prepack&lt;/strong&gt;을 사용한 &lt;strong&gt;컴포넌트 폴딩&lt;/strong&gt;을 실험해왔고, 의미있는 결과를 확인했습니다. 그러나 클래스 컴포넌트가 의도치 않은 패턴을 조장할 수 있고, 그것이 이러한 최적화를 방해할 수 있다는 사실을 알았습니다. 클래스는 최근의 도구들에서 이슈가 있는데, 예로 클래스는 코드 압축(minify)이 잘 안됩니다. 그리고 클래스 컴포넌트들은 hot reloading을 신뢰할 수 없게 만듭니다. 그래서 우리는 최적화 가능한 코드를 유지하기 위한 API를 도입하고 싶었습니다.&lt;/p&gt;&lt;p&gt;이러한 문제들을 해결하기 위해서 Hooks는 클래스 없이 리액트의 기능들을 사용할 수 있게 해줍니다. 개념적으로는 리액트 컴포넌트는 거의 함수에 가까웠습니다. Hooks는 함수를 받아들이지만 리액트의 핵심적인 정신을 희생시키지는 않습니다. Hooks는 복잡한 함수형, 반응형 프로그래밍 기술을 배우는 것을 필요로하지 않고, 긴요한 해결책을 위한 접근법을 제공합니다.&lt;/p&gt;&lt;h2&gt;Hooks API&lt;/h2&gt;&lt;p&gt;공식 문서에는 10개의 Hooks API를 소개하고 있지만 이 글에서는 7개의 API &lt;code&gt;useState&lt;/code&gt;, &lt;code&gt;useEffect&lt;/code&gt;, &lt;code&gt;useContext&lt;/code&gt;, &lt;code&gt;useReducer&lt;/code&gt;, &lt;code&gt;useCallback&lt;/code&gt;, &lt;code&gt;useMemo&lt;/code&gt;, &lt;code&gt;useRef&lt;/code&gt;에 대해서만 정리하였습니다.&lt;/p&gt;&lt;h3&gt;1. useState&lt;/h3&gt;&lt;p&gt;&lt;code&gt;useState&lt;/code&gt;는 함수형 컴포넌트에서 state를 가질 수 있게 하는 Hook입니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;const [state, setState] = useState(initialState);
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;useState는 두 개의 요소가 담긴 배열을 반환합니다. 첫 번째 요소는 컴포넌트의 &lt;strong&gt;현재 상태&lt;/strong&gt;이고 두 번째 요소는 &lt;strong&gt;상태를 설정할 수 있는 함수&lt;/strong&gt;입니다. 위의 &lt;code&gt;const [ state, setState ]&lt;/code&gt;에서 &lt;code&gt;[ … ]&lt;/code&gt;으로 변수들을 감싸는 문법은 Array Destructuring이라는 ES6 문법입니다. useState가 배열을 반환하기 때문에 Array Destructuring으로 배열의 요소들을 지역 변수로 바로 할당할 수 있습니다.&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt;리액트는 컴포넌트가 다시 렌더링되도 &lt;code&gt;setState&lt;/code&gt;가 동일한 참조값을 가지는 것을 보장합니다. 따라서 뒤에서 설명할 useEffect나 useCallback으로 넘겨주는 디펜던시 목록에 &lt;code&gt;setState&lt;/code&gt;를 넘겨줄 필요는 없습니다.&lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;그리고 useState는 하나의 인자를 받을 수 있습니다. 이 인자는 &lt;strong&gt;상태의 초기값&lt;/strong&gt;이며, 초기값이기 때문에 첫 번째 렌더링 이후에서는 인자가 무시됩니다.&lt;/p&gt;&lt;p&gt;만약 새로운 상태가 이전의 상태에 기반하여 계산되어야 하면, 클래스 컴포넌트에서의 &lt;code&gt;this.setState&lt;/code&gt;처럼 &lt;code&gt;setState&lt;/code&gt;에 함수를 넘겨줄 수 있습니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;import React, { useState } from &amp;quot;react&amp;quot;;
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  return (
+    &amp;lt;div&amp;gt;
+      &amp;lt;p&amp;gt;Current COUNT : {count}&amp;lt;/p&amp;gt;
+      &amp;lt;button onClick={() =&amp;gt; setCount(prev =&amp;gt; prev - 1)}&amp;gt;-&amp;lt;/button&amp;gt;
+      &amp;lt;button onClick={() =&amp;gt; setCount(prev =&amp;gt; prev + 1)}&amp;gt;+&amp;lt;/button&amp;gt;
+      &amp;lt;button onClick={() =&amp;gt; setCount(0)}&amp;gt;Reset&amp;lt;/button&amp;gt;
+    &amp;lt;/div&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;a href=&quot;https://codesandbox.io/s/usestate-ex-1-3zxv5?fontsize=14&quot;&gt;&lt;img src=&quot;https://codesandbox.io/static/img/play-codesandbox.svg&quot; alt=&quot;Edit useCallback-2&quot;/&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;useState의 인자인 &lt;strong&gt;초기값&lt;/strong&gt;은 컴포넌트가 처음 렌더링될 때만 사용됩니다. 그런데 복잡한 계산 로직의 결과값이 초기값으로 사용된다면 매번 렌더링될 때마다 계산 로직이 실행되어 연산이 낭비되는 결과를 가져올 수 있습니다. 이때 useState에 함수를 넘기면 그 함수에서 반환하는 값이 초기값으로 사용되고, 함수는 첫 번째 렌더링에서만 실행됩니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;// 컴포넌트가 렌더링될 때마다 `someExpensiveComputation`이 실행된다.
+const [state, setState] = useState(someExpensiveComputation(props));
+
+// 컴포넌트가 처음 렌더링 될 때만 실행된다.
+const [state, setState] = useState(() =&amp;gt; {
+  const initialState = someExpensiveComputation(props);
+  return initialState;
+});
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;2. useEffect&lt;/h3&gt;&lt;p&gt;&lt;code&gt;useEffect&lt;/code&gt;는 &lt;strong&gt;사이드 이펙트&lt;/strong&gt;를 일으킬 수 있는 함수를 전달 받습니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;useEffect(() =&amp;gt; {
+ // side effect logic.
+);
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;외부의 데이터를 변경한다거나, 특정 데이터를 구독한다거나, 타이머 설정, 로깅 등의 동작을 가리켜서 사이드 이펙트라고 하는데, 이 사이드 이펙트는 함수형 컴포넌트의 body에 작성해서는 안 됩니다. 함수에 본문에 작성된다면 컴포넌트가 렌더링될 때마다 실행되기 때문에 UI에 버그를 일으킬 수 있습니다. 그래서 함수형 컴포넌트에서는 useEffect로 사이드 이펙트를 일으키는 타이밍을 제어합니다.&lt;/p&gt;&lt;p&gt;useEffect는 첫 번째 인자로 사이드 이펙트를 일으킬 함수를 받고, 두 번째 인자로 디펜던시 목록을 받습니다. 만약 디펜던시 목록을 넘겨주지 않으면, 컴포넌트가 화면에 렌더링될 때마다 이펙트가 실행되어 버립니다. 그래서 &lt;code&gt;useEffect&lt;/code&gt;에 두 번째 인자로 디펜던시 목록을 넘겨주는 것이 좋고, 이렇게 하면 특정 값이 변할 때만 이펙트가 실행되게 할 수 있습니다.&lt;/p&gt;&lt;h4&gt;이펙트의 뒤처리(cleaning up)&lt;/h4&gt;&lt;p&gt;어떤 사이드 이펙트들은 &lt;strong&gt;뒤처리(cleaning up)&lt;/strong&gt;가 필요한 경우가 있습니다. 예를 들어 데이터를 구독(subscribe)했다면 구독을 해제(unsubsribe)해야 하고, 타이머를 실행했다면 &lt;code&gt;clearTimeout&lt;/code&gt;로 타이머를 제거해줘야 합니다. 이펙트에 필요한 뒤처리 작업은 useEffect로 전달하는 이펙트에서 &lt;strong&gt;또 다른 함수를 반환&lt;/strong&gt;해서 지정할 수 있습니다. 뒤처리 작업은 컴포넌트에서 메모리 누수를 방지하고 다음 이펙트가 실행되기 전 이전의 이펙트를 정리해주는 역할을 합니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;import React, { useState, useEffect } from &amp;quot;react&amp;quot;;
+
+function App() {
+  const [count, setCount] = useState(0);
+  const [title, setTitle] = useState(&amp;quot;&amp;quot;);
+
+  useEffect(() =&amp;gt; {
+    console.log(&amp;quot;[effect] setInterval&amp;quot;);
+    const timerId = setInterval(() =&amp;gt; {
+      console.log(count);
+    }, 1000);
+
+    return () =&amp;gt; {
+      console.log(&amp;quot;[cleaning up] clearInterval&amp;quot;);
+      clearInterval(timerId);
+    };
+  });
+
+  return (
+    &amp;lt;div&amp;gt;
+      Title : &amp;lt;input value={title} onChange={e =&amp;gt; setTitle(e.target.value)} /&amp;gt;
+      &amp;lt;p&amp;gt;Current COUNT : {count}&amp;lt;/p&amp;gt;
+      &amp;lt;button onClick={() =&amp;gt; setCount(prev =&amp;gt; prev - 1)}&amp;gt;-&amp;lt;/button&amp;gt;
+      &amp;lt;button onClick={() =&amp;gt; setCount(prev =&amp;gt; prev + 1)}&amp;gt;+&amp;lt;/button&amp;gt;
+      &amp;lt;button onClick={() =&amp;gt; setCount(0)}&amp;gt;Reset&amp;lt;/button&amp;gt;
+    &amp;lt;/div&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;a href=&quot;https://codesandbox.io/s/useeffect-ex-1-oljbc?fontsize=14&quot;&gt;&lt;img src=&quot;https://codesandbox.io/static/img/play-codesandbox.svg&quot; alt=&quot;Edit Code&quot;/&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;위의 코드처럼 useEffect의 두 번째 인자로 디펜던시 목록을 넘겨주지 않으면, 컴포넌트가 렌더링될 때마다 이펙트와 이펙트에 대한 뒤처리가 실행됩니다. 위에서 &lt;code&gt;title&lt;/code&gt; 필드를 변경하면, &lt;code&gt;App&lt;/code&gt; 컴포넌트가 다시 렌더링되고, 타이머와 관련된 이펙트와 이펙트의 뒤처리가 계속해서 실행됩니다. 이때 이펙트와 관련된 디펜던시가 변경되었을 때만 넘겨줘서 useEffect가 이펙트가 되게 할 수 있습니다.&lt;/p&gt;&lt;h4&gt;특정 조건에서 이펙트 실행&lt;/h4&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;import React, { useState, useEffect } from &amp;quot;react&amp;quot;;
+
+function App() {
+  const [count, setCount] = useState(0);
+  const [title, setTitle] = useState(&amp;quot;&amp;quot;);
+
+  useEffect(() =&amp;gt; {
+    console.log(&amp;quot;[effect] setInterval&amp;quot;);
+    const timerId = setInterval(() =&amp;gt; {
+      console.log(count);
+    }, 1000);
+
+    return () =&amp;gt; {
+      console.log(&amp;quot;[cleaning up] clearInterval&amp;quot;);
+      clearInterval(timerId);
+    };
+  }, [count]);
+
+  return (
+    &amp;lt;div&amp;gt;
+      Title : &amp;lt;input value={title} onChange={e =&amp;gt; setTitle(e.target.value)} /&amp;gt;
+      &amp;lt;p&amp;gt;Current COUNT : {count}&amp;lt;/p&amp;gt;
+      &amp;lt;button onClick={() =&amp;gt; setCount(prev =&amp;gt; prev - 1)}&amp;gt;-&amp;lt;/button&amp;gt;
+      &amp;lt;button onClick={() =&amp;gt; setCount(prev =&amp;gt; prev + 1)}&amp;gt;+&amp;lt;/button&amp;gt;
+      &amp;lt;button onClick={() =&amp;gt; setCount(0)}&amp;gt;Reset&amp;lt;/button&amp;gt;
+    &amp;lt;/div&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;a href=&quot;https://codesandbox.io/s/useeffect-ex-2-1678x?fontsize=14&quot;&gt;&lt;img src=&quot;https://codesandbox.io/static/img/play-codesandbox.svg&quot; alt=&quot;Edit Code&quot;/&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;위의 예제에서는 디펜던시 목록으로 &lt;code&gt;[count]&lt;/code&gt; 를 넘겨줘서 &lt;code&gt;count&lt;/code&gt; 가 변경되었을 때만 이펙트가 다시 실행되도록 하였습니다. 앞의 예제와 다르게 &lt;code&gt;Title&lt;/code&gt; 을 변경한다고 해서 이펙트가 다시 실행되지는 않습니다.&lt;/p&gt;&lt;p&gt;만약 클래스 컴포넌트의 &lt;code&gt;componentDidMount&lt;/code&gt; 혹은 &lt;code&gt;componentWillUnmount&lt;/code&gt; 메서드처럼, 컴포넌트가 처음 렌더링될 때와 마지막으로 컴포넌트가 제거될 때 실행하고 싶은 이펙트는 어떻게 정의할까요? 두 번째 인자로 빈 배열을 넘겨주면 됩니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;import React, { useState, useEffect } from &amp;quot;react&amp;quot;;
+
+function App() {
+  const [isShowPannel, setIsShowPannel] = useState(true);
+  return (
+    &amp;lt;div&amp;gt;
+      &amp;lt;button onClick={() =&amp;gt; setIsShowPannel(!isShowPannel)}&amp;gt;
+        toggle pannel
+      &amp;lt;/button&amp;gt;
+      &amp;lt;hr /&amp;gt;
+      {isShowPannel &amp;amp;&amp;amp; &amp;lt;Pannel /&amp;gt;}
+    &amp;lt;/div&amp;gt;
+  );
+}
+
+function Pannel() {
+  useEffect(() =&amp;gt; {
+    console.log(&amp;quot;component did mount&amp;quot;);
+
+    return () =&amp;gt; {
+      console.log(&amp;quot;component will unmount&amp;quot;);
+    };
+  }, []);
+  return &amp;lt;div&amp;gt;Pannel&amp;lt;/div&amp;gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;a href=&quot;https://codesandbox.io/s/useeffect-ex-3-26dgt?fontsize=14&quot;&gt;&lt;img src=&quot;https://codesandbox.io/static/img/play-codesandbox.svg&quot; alt=&quot;Edit Code&quot;/&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;예제를 보면 버튼을 클릭하여 &lt;code&gt;Pannel&lt;/code&gt; 컴포넌트가 보일 때는 콘솔에 &lt;code&gt;component did mount&lt;/code&gt; 라는 메시지가 출력되고, 컴포넌트가 사라질 때는 &lt;code&gt;component will unmount&lt;/code&gt;라는 메시지가 출력되는 것을 확인할 수 있습니다. 이것이 가능한 이유는 빈 배열을 넘겼을 때 특별한 동작을 하도록 설계된 것은 아니고, 단순히 useEffect가 디펜던시 목록에 기반하여 이펙트를 실행하는 원리에 기반한 것입니다.&lt;/p&gt;&lt;h3&gt;3. useContext&lt;/h3&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;const value = useContext(MyContext);
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;useContext는 &lt;code&gt;React.createContext&lt;/code&gt;로 생성된 컨텍스트 객체를 인자로 받고 그 컨텍스트의 현재 값을 반환합니다. 현재 컨텍스트 값은, useContext를 호출하는 컴포넌트의 상위 컴포넌트 중 가장 가까운 &lt;code&gt;&amp;lt;MyContext.Provider&amp;gt;&lt;/code&gt;에서 제공하는 &lt;code&gt;value&lt;/code&gt; prop에 의해 결정됩니다.&lt;/p&gt;&lt;p&gt;가장 가까운 &lt;code&gt;&amp;lt;MyContext.Provider&amp;gt;&lt;/code&gt;가 업데이트되면 이 Hook은 &lt;code&gt;MyContext&lt;/code&gt; 프로바이더에 넘겨진 가장 최신의 컨텍스트 value와 함께 리-렌더링을 일으킬 것입니다.&lt;/p&gt;&lt;p&gt;useContext를 호출하는 컴포넌트는 컨텍스트 값이 변경될 때마다 리-렌더링될 것입니다. 컴포넌트 리-렌더링 비용이 크다고 생각된다면 뒤에서 설명할 메모이제이션으로 최적화할 수도 있습니다.&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt;&lt;code&gt;useContext(MyContext)&lt;/code&gt;는 &lt;code&gt;MyContext&lt;/code&gt;의 현재 값을 읽고, 변경 사항을 구독할 뿐입니다. Hooks가 나오기 전처럼 &lt;code&gt;&amp;lt;MyContext.Provider&amp;gt;&lt;/code&gt;를 상위 컴포넌트에 위치시켜야 해줘야 하는 것은 동일합니다.&lt;/p&gt;&lt;/blockquote&gt;&lt;h3&gt;4. useReducer&lt;/h3&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;const [state, dispatch] = useReducer(reducer, initialArg, init);
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;useReducer는 useState의 &lt;strong&gt;대안&lt;/strong&gt;입니다. useReducer는 &lt;code&gt;(state, action) =&amp;gt; newState&lt;/code&gt; 형태의 리듀서를 받고, &lt;code&gt;dispatch&lt;/code&gt; 메서드와 함께 현재 상태를 반환합니다. 공식 문서에서는 Redux에 친숙하다면 이것이 어떻게 동작하는지 잘 안다고 나와있는데, 저는 Redux를 잘 모르기때문에 조금 더 정리해보겠습니다.&lt;/p&gt;&lt;p&gt;useReducer가 useState보다 더 적합한 상황은 여러개의 부수적인 값들(예를 들면, 객체의 프로퍼티들)을 포함하거나, 이전의 상태에 다음 상태가 의존하는 경우 상태 관련 로직이 복잡해질 수 있는데, 이때는 useState보다 useReducer가 적합합니다.&lt;/p&gt;&lt;h4&gt;Dispatch 전달하기&lt;/h4&gt;&lt;p&gt;useReducer에서 반환하는 &lt;code&gt;dispatch&lt;/code&gt;를 하위 컴포넌트에 내려주는 방법 중에는 먼저 prop으로 하위 컴포넌트에 콜백을 전달하는 방법이 있습니다. 하지만 &lt;code&gt;dispatch&lt;/code&gt;를 필요로 하지 않은 중간 계층의 컴포넌트에서도 &lt;code&gt;dispatch&lt;/code&gt;를 하위로 내려주는 코드를 작성해줘야만 합니다. 이때 &lt;code&gt;React.createContext&lt;/code&gt;를 사용하여 &lt;code&gt;dispatch&lt;/code&gt;를 위한 컨텍스트 객체를 만든 후, &lt;code&gt;dispatch&lt;/code&gt;를 호출할 하위 컴포넌트에서 &lt;code&gt;useContext&lt;/code&gt;로 전달받는 방법이 있습니다.&lt;/p&gt;&lt;p&gt;코드로 설명하면 &lt;code&gt;dispatch&lt;/code&gt;를 전달하기 위한 컨텍스트 객체를 만들고 프로바이더의 &lt;code&gt;value&lt;/code&gt; prop으로 &lt;code&gt;dispatch&lt;/code&gt; 함수를 넘겨줍니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;const TodosDispatch = React.createContext(null);
+
+function TodosApp() {
+  const [todos, dispatch] = useReducer(todosReducer);
+  return (
+    &amp;lt;TodosDispatch.Provider value={dispatch}&amp;gt;
+      &amp;lt;DeepTree todos={todos} /&amp;gt;
+    &amp;lt;/TodosDispatch.Provider&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;dispatch&lt;/code&gt;를 호출할 컴포넌트에서는 useContext를 사용하여 &lt;code&gt;dispatch&lt;/code&gt;를 가져오면 됩니다. 이때 &lt;code&gt;dispatch&lt;/code&gt; 함수에 대한 참조는 절대 변하지 않기 때문에, &lt;code&gt;dispatch&lt;/code&gt;로 인해 &lt;code&gt;TodosDispatch&lt;/code&gt;를 참조하는 하위 컴포넌트들이 다시 렌더링되는 일은 없습니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;function DeepChildComponent(props) {
+  const dispatch = useContext(TodosDispatch);
+  function handleClick() {
+    dispatch({ type: &amp;quot;add&amp;quot;, text: &amp;quot;hello&amp;quot; });
+  }
+  return &amp;lt;button onClick={handleClick}&amp;gt;Add todo&amp;lt;/button&amp;gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h4&gt;초기 상태 설정&lt;/h4&gt;&lt;p&gt;useReducer가 어떻게 사용되는지에 따라서 다른 방법으로 초기 상태를 설정할 수 있습니다. 가장 간단한 방법은useReducer의 두 번째 인자로 초기 상태을 넘겨주는 방법입니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;const [state, dispatch] = useReducer(reducer, { count: initialCount });
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;useState처럼 useReducer도 초기 상태를 계산하기 위한 함수를 사용할 수 있습니다. useReducer의 세 번째 인자인 &lt;code&gt;init&lt;/code&gt;으로 초기 상태를 반환하는 함수를 넘겨주면 됩니다. 단, 이 경우 두 번째 인자인 &lt;code&gt;initialState&lt;/code&gt;를 기반으로 만들어지는데, &lt;code&gt;init(initialState)&lt;/code&gt;의 결과값이 초기 상태로 설정됩니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;import React, { useReducer } from &amp;quot;react&amp;quot;;
+
+function App() {
+  return &amp;lt;Counter initialCount={0} /&amp;gt;;
+}
+
+function init(initialCount) {
+  return {
+    count: initialCount
+  };
+}
+
+function reducer(state, action) {
+  switch (action.type) {
+    case &amp;quot;increment&amp;quot;:
+      return {
+        count: state.count + 1
+      };
+    case &amp;quot;decrement&amp;quot;:
+      return {
+        count: state.count - 1
+      };
+    case &amp;quot;reset&amp;quot;:
+      return init(action.payload);
+    default:
+      throw new Error(&amp;quot;not valid action type&amp;quot;);
+  }
+}
+
+function Counter({ initialCount }) {
+  const [state, dispatch] = useReducer(reducer, initialCount, init);
+  console.log(initialCount);
+  console.log(state);
+
+  return (
+    &amp;lt;div&amp;gt;
+      &amp;lt;p&amp;gt;Current COUNT : {state.count}&amp;lt;/p&amp;gt;
+      &amp;lt;button onClick={() =&amp;gt; dispatch({ type: &amp;quot;decrement&amp;quot; })}&amp;gt;-&amp;lt;/button&amp;gt;
+      &amp;lt;button onClick={() =&amp;gt; dispatch({ type: &amp;quot;increment&amp;quot; })}&amp;gt;+&amp;lt;/button&amp;gt;
+      &amp;lt;button
+        onClick={() =&amp;gt; dispatch({ type: &amp;quot;reset&amp;quot;, payload: initialCount })}
+      &amp;gt;
+        Reset
+      &amp;lt;/button&amp;gt;
+    &amp;lt;/div&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;a href=&quot;https://codesandbox.io/s/usereducer-ex-1-i2g91?fontsize=14&quot;&gt;&lt;img src=&quot;https://codesandbox.io/static/img/play-codesandbox.svg&quot; alt=&quot;Edit Code&quot;/&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;마지막으로 useState처럼 useReducer도 현재 상태와 이전의 상태가 같다면 리액트는 자식 컴포넌트를 리-렌더링하지 않고, 이펙트도 발생시키지 않습니다.&lt;/p&gt;&lt;h3&gt;5. useCallback&lt;/h3&gt;&lt;p&gt;useCallback은 메모이즈된 콜백을 반환합니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;const memoizedCallback = useCallback(() =&amp;gt; {
+  doSomething(a, b);
+}, [a, b]);
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;인자로는 콜백 함수와 디펜던시 배열을 넘깁니다. useCallback은 콜백의 메모이즈된 버전을 반환합니다. 메모이즈된 콜백은 디펜던시 중 하나가 변경되었을 때만 변경됩니다. 이것은 불필요한 렌더를 방지하기 위하여 레퍼런스 비교에 의존하도록 최적화된 자식 컴포넌트에 콜백을 넘길 때 유용합니다.&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt;useCallback은 뒤에서 설명하게 될 useMemo를 편하게 사용하기 위한 일종의 shortcut으로 볼 수도 있습니다. &lt;code&gt;useCallback(fn, deps)&lt;/code&gt; 는 &lt;code&gt;useMemo(() =&amp;gt; fn, deps)&lt;/code&gt;와 동일한 표현입니다.&lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;아래의 예제는 디펜던시 목록에 정의된 것 중 하나가 변경되었을 때만 새로운 콜백 함수를 생성하는지 테스트하기 위한 예제입니다. 예제에서는 &lt;code&gt;firstname&lt;/code&gt;, &lt;code&gt;lastname&lt;/code&gt; 두 개의 인풋이 있는데, &lt;code&gt;firstname&lt;/code&gt;이 변경될 때만 useCallback으로 새로운 콜백 함수를 생성하는 것을 확인할 수 있습니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;import React, { useState, useCallback, useMemo } from &amp;quot;react&amp;quot;;
+
+let prev;
+
+function App() {
+  const [firstname, setFirstname] = useState(&amp;quot;&amp;quot;);
+  const [lastname, setLastname] = useState(&amp;quot;&amp;quot;);
+
+  const handleFirstnameChange = useMemo(() =&amp;gt; {
+    console.log(&amp;quot;handleFirstnameChange is recreated&amp;quot;);
+    return e =&amp;gt; {
+      setFirstname(e.target.value);
+      console.log(&amp;quot;previous firstname&amp;quot;, firstname);
+    };
+  }, [firstname]);
+
+  const handleLastnameChange = useCallback(
+    e =&amp;gt; {
+      setLastname(e.target.value);
+      console.log(&amp;quot;previous lastname&amp;quot;, lastname);
+    },
+    [lastname]
+  );
+
+  if (prev !== undefined &amp;amp;&amp;amp; prev !== handleLastnameChange) {
+    console.log(&amp;quot;handleLastnameChange recreated by lastname change&amp;quot;);
+  }
+
+  prev = handleLastnameChange;
+
+  return (
+    &amp;lt;div&amp;gt;
+      &amp;lt;input onChange={handleFirstnameChange} value={firstname} /&amp;gt;
+      &amp;lt;input onChange={handleLastnameChange} value={lastname} /&amp;gt;
+    &amp;lt;/div&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;a href=&quot;https://codesandbox.io/s/usecallback-2-8zpvw?fontsize=14&quot;&gt;&lt;img src=&quot;https://codesandbox.io/static/img/play-codesandbox.svg&quot; alt=&quot;Edit Code&quot;/&gt;&lt;/a&gt;&lt;/p&gt;&lt;h3&gt;6. useMemo&lt;/h3&gt;&lt;p&gt;&lt;code&gt;useMemo&lt;/code&gt;는 메모이즈된 값을 반환합니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;const memoizedValue = useMemo(() =&amp;gt; computeExpensiveValue(a, b), [a, b]);
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;인자로는 “create” 함수와 디펜던시 배열을 받습니다. useMemo는 디펜던시 중 하나가 변경되었을 때만 메모이즈된 값을 다시 계산할 것입니다. useMemo의 기능을 활용하면 렌더링이 일어날 때마다 시간이 오래 걸리는 연산을 실행하는 것을 피할 수 있습니다. 만약 배열이 제공되지 않으면 컴포넌트가 렌더링될 때마다 새로운 값이 계산될 것이기 때문에 useMemo를 사용하는 의미가 거의 없어집니다.&lt;/p&gt;&lt;p&gt;useMemo는 렌더링 과정에서 넘겨받은 함수를 실행한다는 점을 기억해야 합니다. 렌더링 과정에서 해서는 안 되는 것들을 useMemo에 넘기는 콜백 함수에 작성해서는 안 됩니다. 예를 들어서 사이드 이펙트가 포함되어 있다면 useMemo가 아니라 useEffect를 사용해야 합니다.&lt;/p&gt;&lt;p&gt;또 useMemo는 최적화의 수단으로 사용되어야 합니다. 미래의 리액트에서는 useMemo로 메모이즈된 값을 &amp;quot;잊어버리는&amp;quot; 방법을 선택할 수도 있습니다. 예를 들어서 스크린에서 벗어난 컴포넌트 메모리의 해제가 필요한 상황이 있습니다. 공식 문서에서는 우선 useMemo없이 코드가 동작하도록 만들고, 최적화하는 단계에서 useMemo를 사용하는 것을 권장합니다.&lt;/p&gt;&lt;h3&gt;7. useRef&lt;/h3&gt;&lt;p&gt;useRef는 mutable한 ref 객체를 반환합니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;const refContainer = useRef(initialValue);
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;useRef에 &lt;code&gt;initialValue&lt;/code&gt; 인자를 전달하면 그 값은 ref 객체의 &lt;code&gt;current&lt;/code&gt; 프로퍼티의 초기값이 됩니다. 반환된 객체는 컴포넌트가 살아있는 시간동안에 계속해서 유지됩니다.&lt;/p&gt;&lt;p&gt;&lt;code&gt;useRef&lt;/code&gt;는 Hooks가 나오기 전의 refs처럼 리액트에서 DOM을 참조하기 위한 방법으로 사용될 수도 있습니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;function TextInputWithFocusButton() {
+  const inputEl = useRef(null);
+  const onButtonClick = () =&amp;gt; {
+    // `current` points to the mounted text input element
+    inputEl.current.focus();
+  };
+  return (
+    &amp;lt;&amp;gt;
+      &amp;lt;input ref={inputEl} type=&amp;quot;text&amp;quot; /&amp;gt;
+      &amp;lt;button onClick={onButtonClick}&amp;gt;Focus the input&amp;lt;/button&amp;gt;
+    &amp;lt;/&amp;gt;
+  );
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;위의 예제에서 리액트는 노드가 변경될 때마다 그 당시의 DOM 노드를 ref 객체의 &lt;code&gt;current&lt;/code&gt; 프로퍼티에 설정할 것입니다.&lt;/p&gt;&lt;p&gt;&lt;code&gt;useRef&lt;/code&gt;는 DOM을 참조하는 것 외에 다른 용도로도 사용할 수 있는데, 바로 클래스에서 인스턴스 필드를 사용하는 것처럼 mutable한 값을 간편하게 저장하는 것입니다. &lt;code&gt;useRef&lt;/code&gt;는 순수 자바스크립트 객체를 생성하지만, &lt;code&gt;{current: …}&lt;/code&gt;와의 차이점은 &lt;code&gt;useRef&lt;/code&gt;는 렌더링이 일어나도 동일한 참조 객체를 유지한다는 점입니다. &lt;code&gt;useRef&lt;/code&gt;의 &lt;code&gt;current&lt;/code&gt;는 그 값이 변경되어도 렌더링을 일으키거나 하지 않습니다.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[타입스크립트의 Decorator 살펴보기]]></title><description><![CDATA[…]]></description><link>https://haeguri.github.iotypescript-decorator/</link><guid isPermaLink="false">https://haeguri.github.iotypescript-decorator/</guid><pubDate>Sun, 25 Aug 2019 20:07:00 GMT</pubDate><content:encoded>&lt;p&gt;타입스크립트의 데코레이터를 사용하면 클래스, 프로퍼티, 메서드 등에 이전에는 제공하지 않던 방법으로 새로운 기능을 추가할 수 있습니다. 사실 데코레이터라는 문법은 이미 자바스크립트 표준으로써 논의되고 있는 단계이며 현재는 초안 단계에 있습니다. 자바스크립트를 확장한 언어라고 할 수 있는 타입스크립트에서는 실험적인 기능으로 데코레이터를 제공하고 있습니다. &lt;/p&gt;&lt;h2&gt;시작하기&lt;/h2&gt;&lt;p&gt; 데코레이터는 타입스크립트에서도 실험적인 기능으로써 사용할 수 있기 때문에 커맨드 라인이나 &lt;code&gt;tsconfig.json&lt;/code&gt; 에서 &lt;code&gt;experimentalDecorators&lt;/code&gt; 옵션을 추가해줘야 합니다. 여기에서 &lt;code&gt;target&lt;/code&gt; 설정을 &lt;code&gt;ES5&lt;/code&gt;로 하는 이유는 뒤에서 다시 살펴보겠습니다. &lt;/p&gt;&lt;h3&gt;커맨드 라인&lt;/h3&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;tsc --target ES5 --experimentalDecorators
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;tsconfig.json&lt;/h3&gt;&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+    &amp;quot;compilerOptions&amp;quot;: {
+        &amp;quot;target&amp;quot;: &amp;quot;ES5&amp;quot;,
+        &amp;quot;experimentalDecorators&amp;quot;: true
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h2&gt;살펴보기&lt;/h2&gt;&lt;p&gt; 데코레이터는 앞에서 말한 것처럼 &amp;quot;클래스&amp;quot;, &amp;quot;메서드&amp;quot;, &amp;quot;접근자&amp;quot;, &amp;quot;프로퍼티&amp;quot;, &amp;quot;파라미터&amp;quot;에 적용할 수 있습니다. 데코레이터는 &lt;code&gt;@expression&lt;/code&gt; 형식으로 적용하는데, 여기에서 &lt;code&gt;expression&lt;/code&gt; 은 반드시 &lt;strong&gt;함수&lt;/strong&gt;여야 합니다. &lt;/p&gt;&lt;p&gt; 간단한 예로 &lt;code&gt;@firstDecorator&lt;/code&gt; 라는 데코레이터를 클래스의 프로퍼티에 적용하고 싶다면 &lt;code&gt;findDecorator&lt;/code&gt; 함수를 다음과 같이 작성하면 됩니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;function fistDecorator(target, name) {
+    console.log(&amp;#x27;fistDecorator&amp;#x27;);
+}
+
+class Person {
+    @fistDecorator
+    job = &amp;#x27;programmer&amp;#x27;;
+}
+
+const p = new Person();
+console.log(p.job);
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;실행결과&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;&amp;gt; fistDecorator
+&amp;gt; programmer
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;Decorator Factory&lt;/h3&gt;&lt;p&gt; 위의 예제에서 &lt;code&gt;@firstDecorator&lt;/code&gt; 데코레이터를 일반화해서 조금 더 다양한 상황에서 사용할 수 있도록 &lt;strong&gt;파라미터&lt;/strong&gt;를 전달해야 할 수도 있습니다. 그러면 데코레이터 함수를 생성하는 함수인 &lt;strong&gt;데코레이터 팩토리&lt;/strong&gt;를 작성하면 됩니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;function firstDecorator(param) {
+    console.log(&amp;#x27;factory’);
+    return function(target, name) {
+        console.log(&amp;#x27;decorator&amp;#x27;);
+    }
+}
+
+class SomeClass {
+    @firstDecorator(123)
+    prop = ‘a&amp;#x27;;
+}
+
+console.log(&amp;#x27;인스턴스가 만들어지기 전&amp;#x27;);
+console.log(new SomeClass());
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;실행결과&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;&amp;gt; factory
+&amp;gt; decorator
+&amp;gt; 인스턴스가 만들어지기 전
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt; 실행 결과를 살펴보면 데코레이터는 클래스를 인스턴스화하기 위해 클래스를 호출하기 전에 실행됩니다. &lt;/p&gt;&lt;h3&gt;Decorator 조합하기&lt;/h3&gt;&lt;p&gt;데코레이터의 또 다른 장점으로는 하나의 선언에 동시에 여러 개의 데코레이터를 적용할 수 있는 점이 있습니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;function decoA(param) {
+    console.log(&amp;#x27;decoA factory&amp;#x27;);
+    return function(target, name) {
+        console.log(&amp;#x27;decyA decorator&amp;#x27;)
+    }
+}
+
+function decoB(target, name) {
+    console.log(&amp;#x27;decoB decorator&amp;#x27;);
+}
+
+function decoC(param) {
+    console.log(&amp;#x27;decoC factory&amp;#x27;);
+    return function(target, name) {
+        console.log(&amp;#x27;decoC decorator&amp;#x27;);
+    }
+}
+
+class SomeClass {
+    @decoA(1)
+    @decoB
+    @decoC(2)
+    prop = 1;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;여러 개의 데코레이터가 적용될 때 실행되는 순서는 다음과 같습니다. &lt;/p&gt;&lt;p&gt;실행결과&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot;&gt;&amp;gt; decoA factory
+&amp;gt; decoC factory
+&amp;gt; decoC decorator
+&amp;gt; decoB decorator
+&amp;gt; decoA decorator
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;  &lt;code&gt;@expression&lt;/code&gt; 에서 &lt;code&gt;expression&lt;/code&gt; 표현식을 함수로 평가하는 순서는 &lt;strong&gt;&amp;quot;위에서 아래&amp;quot;&lt;/strong&gt;입니다. 실행결과에서 &lt;code&gt;&amp;quot;decoA factory&amp;quot;&lt;/code&gt; , &lt;code&gt;&amp;quot;decoC factory&amp;quot;&lt;/code&gt; 만 출력되고 &lt;code&gt;&amp;quot;decoB decorator&amp;quot;&lt;/code&gt; 가 출력되지 않은 이유는 &lt;code&gt;@decoB&lt;/code&gt; 는 팩토리 함수가 없기 때문입니다.&lt;/p&gt;&lt;p&gt; 그리고 &lt;code&gt;expression&lt;/code&gt; 이 함수로 평가된 후에 데코레이터 함수가 실행되는 순서는 &lt;strong&gt;&amp;quot;아래에서 위&amp;quot;&lt;/strong&gt;입니다. 여기에서 말하는 데코레이터 함수란 &lt;code&gt;@decoA&lt;/code&gt;, &lt;code&gt;@decoC&lt;/code&gt;의 경우에는 팩토리 함수에서 반환하는 익명 함수이고, &lt;code&gt;@decoB&lt;/code&gt;의 경우에는 &lt;code&gt;decoB&lt;/code&gt; 함수입니다.&lt;/p&gt;&lt;h2&gt;Decorator 종류&lt;/h2&gt;&lt;p&gt; 데코레이터는 클래스, 메서드, 프로퍼티, 접근자, 파라미터의 선언에 적용될 수 있습니다. 앞에서는 프로퍼티 데코레이터만을 예로 들었지만, 데코레이터가 어디에 적용되는지에 따라서, 데코레이터 함수로 넘어오는 인자의 길이나 구성이 달라집니다. 그래도 공통되는 부분도 있는데 공식 문서에 나와있는 것들을 추려보면 다음과 같습니다. &lt;/p&gt;&lt;ul&gt;&lt;li&gt;데코레이터는 declaration 파일(&lt;code&gt;*.d.ts&lt;/code&gt;), 혹은 &lt;code&gt;declare class&lt;/code&gt; 안에서는 사용될 수 없습니다.&lt;/li&gt;&lt;li&gt;데코레이터 표현식은 런타임에 함수로서 호출됩니다.&lt;/li&gt;&lt;/ul&gt;&lt;h3&gt;Class Decorator&lt;/h3&gt;&lt;p&gt; 클래스 선언에 사용되는 클래스 데코레이터는 기존의 클래스 정의를 확장하는 용도로 사용할 수 있습니다. &lt;/p&gt;&lt;p&gt; 클래스 데코레이터 함수의 인자로는 &lt;strong&gt;클래스(생성자 함수)&lt;/strong&gt;가 전달됩니다. 클래스 데코레이터 함수에서는 &lt;strong&gt;새로운 클래스(생성자 함수)&lt;/strong&gt;만을 반환할 수 있고, 함수 외의 값들은 무시됩니다. &lt;/p&gt;&lt;p&gt; 다음은 타입스크립트 공식 문서에서 볼 수 있는 예제입니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;function classDecorator&amp;lt;T extends {new(...args:any[]):{}}&amp;gt;(constructor:T) {
+  return class extends constructor {
+      newProperty = &amp;quot;new property&amp;quot;;
+      hello = &amp;quot;override&amp;quot;;
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt; &lt;code&gt;@classDecorator&lt;/code&gt; 데코레이터는 자신이 적용되는 클래스를 &lt;code&gt;extends&lt;/code&gt;해서 새로운 프로퍼티를 추가하거나 기존의 프로퍼티를 오버라이드하는 역할을 합니다. &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;@classDecorator
+class Greeter {
+  property = &amp;quot;property&amp;quot;;
+  hello: string;
+  constructor(m: string) {
+      this.hello = m;
+  }
+}
+
+console.log(new Greeter(&amp;quot;world&amp;quot;)); 
+// {property: &amp;quot;property&amp;quot;, hello: &amp;quot;override&amp;quot;, newProperty: &amp;quot;new property&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt; 실행결과를 보시면 &lt;code&gt;Greeter&lt;/code&gt; 클래스에서 직접 선언하지 않았던 &lt;code&gt;newProperty&lt;/code&gt; 프로퍼티가 추가되었고, &lt;code&gt;hello&lt;/code&gt; 프로퍼티가 오버라이드된 것을 확인할 수 있습니다.&lt;/p&gt;&lt;p&gt; 위의 예제를 조금 응용해서 &lt;code&gt;@inject&lt;/code&gt; 라는 데코레이터를 작성했습니다. 이 데코레이터는 &amp;quot;&lt;em&gt;클래스에 필요한 의존성을 클래스의 &lt;code&gt;constructor&lt;/code&gt; 를 통해 주입(inject)&lt;/em&gt;&amp;quot;하는 기능을 수행하게 했습니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;const dependencyPool = {
+  dep1: {name: &amp;#x27;dep1&amp;#x27;},
+  dep2: {name: &amp;#x27;dep2&amp;#x27;},
+  dep3: {name: &amp;#x27;dep3&amp;#x27;},
+  dep4: {name: &amp;#x27;dep4&amp;#x27;},
+};
+
+function inject(...depNames) {
+  return function&amp;lt;T extends {new(...args: any[]): {}}&amp;gt; (constructor: T) {
+    return class extends constructor {
+      constructor(...args: any[]) {
+        const deps = depNames.reduce((deps, name) =&amp;gt; ({
+          ...deps,
+          [name]: dependencyPool[name],
+        }), {});
+
+        super(deps);
+      }
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt; &lt;code&gt;@inject&lt;/code&gt; 데코레이터는  &lt;code&gt;dependencyPool&lt;/code&gt; 이라는 객체로부터, &lt;code&gt;depNames&lt;/code&gt; 으로 넘어오는 프로퍼티 이름을 가진 디펜던시만 골라 &lt;code&gt;@inject&lt;/code&gt; 데코레이터가 적용된 클래스의 생성자 함수로 넘겨주는 역할을 합니다. &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;@inject(&amp;#x27;dep1&amp;#x27;, &amp;#x27;dep2&amp;#x27;)
+class Product {
+  constructor(deps) {
+    console.log(&amp;#x27;product dependency is&amp;#x27;, deps);
+  }
+}
+
+function createProduct(...args) {
+  return new Product(args);
+}
+
+const p = createProduct(); 
+// product dependency is {dep1: {…}, dep2: {…}}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt; &lt;code&gt;@inject&lt;/code&gt; 를 사용하여 &lt;code&gt;dependencyPool&lt;/code&gt; 에서 &lt;code&gt;Product&lt;/code&gt; 클래스에 필요한 의존성인 &lt;code&gt;&amp;#x27;dep1&amp;#x27;&lt;/code&gt;, &lt;code&gt;&amp;#x27;dep2&amp;#x27;&lt;/code&gt; 를 추가합니다. 그러면 &lt;code&gt;Product&lt;/code&gt;가 인스턴스화되는 시점에서 필요한 의존성을 주입받을 수 있습니다. &lt;/p&gt;&lt;h3&gt;Method Decorator&lt;/h3&gt;&lt;p&gt; 메서드에 적용되는 데코레이터는 클래스와 마찬가지로 메서드의 기능을 확장할 수 있습니다. 클래스 데코레이터는 클래스(생성자 함수)를 &lt;code&gt;extends&lt;/code&gt; 하는 방법으로 기능을 확장할 수 있었지만, 메서드 데코레이터는 메서드의 &lt;strong&gt;Property Descriptor&lt;/strong&gt;를 수정하여 메서드를 확장합니다.&lt;/p&gt;&lt;p&gt; &lt;strong&gt;Property Descriptor&lt;/strong&gt;는 객체의 프로퍼티들을 기존보다 정교하게 정의할 수 있는 ES5에서 처음 소개된 스펙입니다. 이 Property Descriptor는 &lt;code&gt;Object.getOwnPropertyDescriptor&lt;/code&gt; 를 사용해서 가져올 수 있습니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;class Product {
+  setPrice() {
+    console.log(&amp;#x27;setPrice&amp;#x27;);
+  }
+}
+
+const descriptor = Object.getOwnPropertyDescriptor(Product.prototype, &amp;#x27;setPrice&amp;#x27;);
+console.log(descriptor); 
+// {value: ƒ, writable: true, enumerable: false, configurable: true}
+console.log(descriptor.value === Product.prototype.setPrice); 
+// true
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt; &lt;code&gt;descriptor&lt;/code&gt; 에는 &lt;code&gt;value&lt;/code&gt;, &lt;code&gt;enumerable&lt;/code&gt; 등의 키가 들어있는 것을 확인할 수 있습니다. 여기에서 &lt;code&gt;value&lt;/code&gt; 프로퍼티는 프로퍼티의 값이나 참조를 가지고 있는데, 마지막 출력 결과를 보면 &lt;code&gt;value&lt;/code&gt;는  &lt;code&gt;setPrice&lt;/code&gt; 함수에 대한 참조를 가리키고 있습니다. &lt;/p&gt;&lt;blockquote&gt;&lt;p&gt;Property Descriptor는 ES5에서 처음 소개된 스펙이기 때문에 &lt;code&gt;tsconfig.json&lt;/code&gt;의 &lt;code&gt;target&lt;/code&gt;으로 가리키는 자바스크립트 버전이 &lt;code&gt;es5&lt;/code&gt; 보다 낮게 되어있을 경우 Property Descriptor가 &lt;code&gt;undefined&lt;/code&gt;으로 할당되어 사용할 수 없습니다.&lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt; 다시 메서드 데코레이터로 돌아와서, 메서드 데코레이터의 함수는 3개의 인자를 받을 수 있습니다.&lt;/p&gt;&lt;ol&gt;&lt;li&gt;&lt;code&gt;static&lt;/code&gt; 메서드라면 클래스의 생성자 함수, 인스턴스의 메서드라면 클래스의 &lt;code&gt;prototype&lt;/code&gt; 객체&lt;/li&gt;&lt;li&gt;메서드 이름&lt;/li&gt;&lt;li&gt;메서드의 Property Descriptor&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;그리고 Property Descriptor 형식의 객체를 반환할 수 있습니다. Property Descriptor 형식의 객체를 반환하지 않더라도 3번 째 인자로 넘어오는 객체를 수정하면 Property Descriptor를 반환하는 것과 같은 동작을 하게 됩니다.&lt;/p&gt;&lt;p&gt;예시로 작성한 &lt;code&gt;@logging&lt;/code&gt; 데코레이터는 적용된 메서드에 넘어온 인자들과 메서드가 반환하는 값을 콘솔로 출력하게 됩니다. &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;function logging(target, name, descriptor) {
+  const originMethod = descriptor.value;
+  descriptor.value = function(...args) {
+    const res = originMethod.apply(this, args);
+    console.log(`${name} method arguments: `, args);
+    console.log(`${name} method return: `, res);
+    return res;
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt; &lt;code&gt;@logging&lt;/code&gt; 데코레이터에서는 Property Descriptor를 직접 반환하지 않고, 인자로 넘어온 &lt;code&gt;descriptor&lt;/code&gt; 객체를 직접 수정하는 방식으로 메서드 동작 방법을 변경하였습니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;class Product {
+  price: number = 1000;
+
+  @logging
+  setPrice(p: number) {
+    this.price = p;
+
+    return this.price;
+  }
+}
+
+const p = new Product();
+p.setPrice(1000);
+// setPrice method arguments:  [1000]
+// setPrice method return:  1000
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;@logging&lt;/code&gt; 데코레이터를 적용 후 &lt;code&gt;setPrice&lt;/code&gt; 메서드를 호출하면 콘솔에 인자와 반환값이 기록되는 것을 확인할 수 있습니다.&lt;/p&gt;&lt;h3&gt;Accessor Decorator&lt;/h3&gt;&lt;p&gt; Accessor Decorator(접근자 데코레이터)는 &lt;code&gt;getter&lt;/code&gt;, &lt;code&gt;setter&lt;/code&gt; 에 적용되는 데코레이터를 말합니다. 데코레이터 함수에서는 메서드 데코레이터와 동일한 인자를 받습니다.&lt;/p&gt;&lt;ol&gt;&lt;li&gt;&lt;code&gt;static&lt;/code&gt; 메서드라면 클래스의 생성자 함수, 인스턴스의 메서드라면 클래스의  &lt;code&gt;prototype&lt;/code&gt; 객체&lt;/li&gt;&lt;li&gt;프로퍼티 이름&lt;/li&gt;&lt;li&gt;Property Descriptor&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;접근자 데코레이터도 메서드 데코레이터처럼 인자로 넘어온 Property Descriptor를 변경하거나, 새로운 Property Descriptor를 반환해서 원래 접근자의 기능을 확장할 수 있습니다.&lt;/p&gt;&lt;p&gt;접근자 데코레이터에는 제약이 있는데, 하나의 프로퍼티에 대한 &lt;code&gt;get&lt;/code&gt;, &lt;code&gt;set&lt;/code&gt; 메서드에 동일한 데코레이터가 적용될 수 없습니다. 원래 자바스크립트에서는 하나의 프로퍼티가 &lt;code&gt;get&lt;/code&gt;, &lt;code&gt;set&lt;/code&gt;  메서드를 둘 다 가질 수 있습니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;class Product {
+  _price: number = 1000;
+
+  get price() {
+    return this._price;
+  }
+
+  set price(p) {
+    this._price = p;
+  }
+}
+
+const p = new Product();
+p.price = 123;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;그런데 타입스크립트에서는 &lt;code&gt;price&lt;/code&gt; 프로퍼티에 동일한 데코레이터를 적용하려고 하면 컴파일 에러가 발생하고, 실행 결과를 보더라도 &lt;code&gt;get&lt;/code&gt; 메서드에만 데코레이터가 적용된 것을 확인할 수 있습니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;function accessorDeco(accessorType) {
+  console.log(&amp;#x27;decorator for&amp;#x27;, accessorType);
+  return function(target, name, descriptor) {
+
+  }
+}
+
+class Product {
+  _price: number = 1000;
+
+  @accessorDeco(&amp;#x27;getter&amp;#x27;)
+  get price() {
+    return this._price;
+  }
+
+  // Compile Error
+  // Decorators cannot be applied to multiple get/set accessors of the same name.
+  @accessorDeco(&amp;#x27;setter&amp;#x27;)
+  set price(p) {
+    this._price = p;
+  }
+}
+
+const p = new Product();
+// decorator for getter
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;타입스크립트 문서에서는 하나의 프로퍼티에 &lt;code&gt;get&lt;/code&gt;, &lt;code&gt;set&lt;/code&gt; 접근자가 모두 있고, 두 접근자에 동일한 데코레이터가 적용되었을 경우 소스코드 상에서 순서가 앞선 접근자에만 데코레이터가 적용된다고 나와있습니다. 이유는 접근자 데코레이터 또한 Property Descriptor에 적용되는데, 접근자의 Property Descriptor는 &lt;code&gt;get&lt;/code&gt;, &lt;code&gt;set&lt;/code&gt; 접근자를 모두 포함할 뿐 각 접근자에 대한 Property Descriptor가 없기 때문입니다.&lt;/p&gt;&lt;p&gt; 다음은 프로퍼티의 Property Descriptor를 변경 여부를 설정할 수 있게 해주는 &lt;code&gt;@configurable&lt;/code&gt;입니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;function configurable(value: boolean) {
+  return function (target, name, descriptor) {
+      descriptor.configurable = value;
+  };
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt; 단순히 Property Descriptor의 &lt;code&gt;configurable&lt;/code&gt; 속성을 변경해주는 &lt;code&gt;@configurable&lt;/code&gt; 데코레이터는, 앞에서 살펴 본 메서드 데코레이터로서도 적용될 수 있습니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;class Product {
+  _price: number = 1000;
+  _count: number = 0;
+
+  @configurable(false)
+  get price() { return this._price; }
+}
+
+const p = new Product();
+
+Object.defineProperty(Product.prototype, &amp;#x27;price&amp;#x27;, {
+  get() {
+    console.log(&amp;#x27;new price getter!&amp;#x27;);
+    return this._price;
+  }
+});
+// Uncaught TypeError: Cannot redefine property: price
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt; &lt;code&gt;Object.defineProperty&lt;/code&gt; 로 &lt;code&gt;price&lt;/code&gt; 의 속성을 변경하려고 하면 런타임 에러가 발생됩니다.&lt;/p&gt;&lt;h3&gt;Property Decorator&lt;/h3&gt;&lt;p&gt; 클래스의 프로퍼티 선언에 사용되는 프로퍼티 데코레이터는 두 개의 인자를 받습니다.&lt;/p&gt;&lt;ol&gt;&lt;li&gt;&lt;code&gt;static&lt;/code&gt; 프로퍼티라면 클래스의 생성자 함수, 인스턴스 프로퍼티라면 클래스의 &lt;code&gt;prototype&lt;/code&gt; 객체&lt;/li&gt;&lt;li&gt;프로퍼티 이름&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;프로퍼티 데코레이터는 메서드 데코레이터와 다르게 데코레이터 함수에 Property Descriptor 가 인자로서 제공되지 않습니다. 대신에 프로퍼티 데코레이터는 Property Descriptor 형식의 객체를 반환해서 프로퍼티의 설정을 바꿀 수 있습니다. &lt;/p&gt;&lt;blockquote&gt;&lt;p&gt;공식 문서의 프로퍼티 데코레이터를 설명하는 부분에서는 &lt;code&gt;&amp;quot;the return value is ignored too&amp;quot;&lt;/code&gt;라고 되어있습니다. 이것을 보고 프로퍼티 데코레이터는 반환 값이 무시되는 줄 알았는데, 여러 예제를 살펴본 결과 프로퍼티 데코레이터에서  Property Descriptor 형식으로 객체를 반환할 때는, 프로퍼티에 정상적으로 적용되고 있었습니다. 처음에는 문서가 잘못된 것이 아닌가 생각했는데, &lt;a href=&quot;https://github.com/microsoft/TypeScript/issues/32395&quot;&gt;관련 이슈&lt;/a&gt;를 읽어보니 의도된 문장이라고 합니다.&lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;아래는 &lt;code&gt;Product&lt;/code&gt;의 &lt;code&gt;name&lt;/code&gt;, &lt;code&gt;price&lt;/code&gt; 프로퍼티에  &lt;code&gt;@readOnly&lt;/code&gt; 데코레이터를 적용한 예제입니다. &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;function readOnly(condition?: () =&amp;gt; boolean) {
+  return function decorator(target, name): any {  
+    return {
+      writable: condition ? condition() : true,
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;@readOnly&lt;/code&gt; 데코레이터는 조건이 주어지면 해당 조건이 &lt;code&gt;true&lt;/code&gt; 일 때만 프로퍼티를 read-only로 하고, 조건이 주어지지 않으면 무조건 read-only로 설정합니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;class Product {
+  @readOnly(() =&amp;gt; {
+    return new Date &amp;gt; new Date(2020, 0, 1)
+  })
+  name: string;
+
+  @readOnly()
+  price: number;
+
+  constructor(name: string, price: number) {
+    this.name = name;
+    this.price = price;
+  }
+}
+
+const p1 = new Product(&amp;#x27;foo&amp;#x27;, 2000);
+
+p1.name = &amp;#x27;foo&amp;#x27;;
+p1.price = 3000;
+// Cannot assign to read only property &amp;#x27;price&amp;#x27; of object &amp;#x27;#&amp;lt;Product&amp;gt;&amp;#x27;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;name&lt;/code&gt; 프로퍼티는 2020년 1월 1일이 넘어가면 read-only가 되도록 처리되었고, &lt;code&gt;price&lt;/code&gt; 프로퍼티는 무조건 read-only가 되어 값을 할당할 경우 에러가 발생하게 됩니다. &lt;/p&gt;&lt;h3&gt;Parameter Decorator&lt;/h3&gt;&lt;p&gt;함수의 파라미터에 사용되는 파라미터 데코레이터는 세 개의 인자를 받고, 반환값은 무시됩니다. 세 개의 인자는 다음과 같습니다.&lt;/p&gt;&lt;ol&gt;&lt;li&gt;static 메서드의 파라미터 데코레이터라면 클래스의 생성자 함수, 인스턴스의 메서드라면 &lt;code&gt;prototype&lt;/code&gt; 객체&lt;/li&gt;&lt;li&gt;파라미터 데코레이터가 적용된 메서드의 이름&lt;/li&gt;&lt;li&gt;메서드 파라미터 목록에서의 index&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;아래는 메서드 데코레이터인 &lt;code&gt;@validate&lt;/code&gt;와 파라미터 데코레이터인 &lt;code&gt;@minNumber&lt;/code&gt;를 작성한 예제입니다. &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;function minNumber(min: number) {
+  return function decorator(target, name, index) {
+    target.validators = {
+      minNumber: function(args) {
+        return args[index] &amp;gt;= min;
+      }
+    }
+  }
+}
+
+function validate(target, name, descriptor) {
+  const originMethod = target[name];
+  descriptor.value = function(...args) {
+    Object.keys(target.validators).forEach(key =&amp;gt; {
+      if (!target.validators[key](args)) {
+        throw new Error(&amp;quot;Not Valid!&amp;quot;);
+      }
+    })
+    originMethod.apply(this, args);
+  }
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;blockquote&gt;&lt;p&gt;공식 문서와 다른 자료를 찾아본 결과 파라미터 데코레이터는 다른 데코레이터들처럼 단독으로 사용되는 경우보다 메서드 데코레이터와 함께 사용되는 경우가 많았습니다. 예제 코드를 작성하면서도 파라미터 데코레이터는 메서드 데코레이터와 함께 사용하면 더 좋겠다는 생각이 들었습니다. &lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;&lt;code&gt;@minNumber&lt;/code&gt; 파라미터 데코레이터는 파라미터의 최소값을 검사하기 위한 데코레이터입니다. 우선 클래스의 &lt;code&gt;prototype&lt;/code&gt; 객체에 &lt;code&gt;validators&lt;/code&gt;라는 객체를 만들고, 이 객체에 파라미터를 검증하기 위한 함수를 추가합니다.&lt;/p&gt;&lt;p&gt;그리고 &lt;code&gt;@validate&lt;/code&gt; 메서드 데코레이터에서는 &lt;code&gt;prototype.validators&lt;/code&gt;에 있는 함수들을 실행하는데, 파라미터 데코레이터 함수 안에서 파라미터의 값을 알 수 있도록 전체 인자 목록 &lt;code&gt;args&lt;/code&gt;을 넘겨줍니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;class Product {
+  name: string;
+  price: number;
+  purchased: number = 0;
+
+  constructor(name: string, price: number) {
+    this.name = name;
+    this.price = price;
+  }
+
+  @validate
+  public setPrice(@minNumber(2000) price: number) {
+    this.price = price;
+  }
+}
+
+const p1 = new Product(&amp;#x27;foo&amp;#x27;, 2000);
+p1.setPrice(2000);
+p1.setPrice(2001);
+p1.setPrice(1000);
+// Uncaught Error: Not Valid!
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;Product&lt;/code&gt; 클래스에 &lt;code&gt;@validate&lt;/code&gt; 데코레이터와 &lt;code&gt;minNumber&lt;/code&gt; 데코레이터를 적용하였습니다. 실행 결과를 보면 &lt;code&gt;setPrice&lt;/code&gt; 메서드에 2000, 2001을 넘겨줄 때는 잘 실행되지만, 2000보다 작은 1000을 넘겨줄 경우 에러가 발생하는 것을 확인할 수 있습니다. &lt;/p&gt;</content:encoded></item><item><title><![CDATA[자동화 도구 Gulp 살펴보기]]></title><description><![CDATA[1. 소개 Gulp는 Node.js 기반의 프로세스 자동화 도구이며 MIT 라이센스의 오픈소스 프로젝트입니다. 회사 일을 하면서 스크립트를 난독화하거나 파일을 복사하는 등의 작업이 반복될 때가 많았는데, Gulp…]]></description><link>https://haeguri.github.iointroduction-gulp/</link><guid isPermaLink="false">https://haeguri.github.iointroduction-gulp/</guid><pubDate>Sun, 31 Mar 2019 23:12:21 GMT</pubDate><content:encoded>&lt;h2&gt;1. 소개&lt;/h2&gt;&lt;p&gt;Gulp는 Node.js 기반의 프로세스 자동화 도구이며 MIT 라이센스의 오픈소스 프로젝트입니다. 회사 일을 하면서 스크립트를 난독화하거나 파일을 복사하는 등의 작업이 반복될 때가 많았는데, Gulp는 이런 반복되는 작업들을 자동화하기 위해 개발된 도구입니다. 또한 Gulp의 플러그인을 사용하면 기능을 다양하게 확장할 수도 있습니다. &lt;/p&gt;&lt;blockquote&gt;&lt;p&gt;Gulp 문서 : &lt;a href=&quot;https://gulpjs.com&quot;&gt;https://gulpjs.com&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;&lt;h2&gt;2. Gulp를 사용한 이유&lt;/h2&gt;&lt;p&gt;최근에는 Gulp보다는 Webpack을 사용하고 있는 것 같습니다. Webpack의 주 목적은 원래 여러 개의 파일들을 하나의 파일로 묶는 &lt;strong&gt;번들러&lt;/strong&gt;입니다. 그리고 플러그인들을 사용하면 번들링하는 과정에서 Gulp처럼 자동화 작업도 함께 처리할 수 있습니다.&lt;/p&gt;&lt;p&gt;그런데 Webpack으로 파일을 묶기 위해서는 각각의 파일에는 &lt;code&gt;import&lt;/code&gt;, &lt;code&gt;export&lt;/code&gt;같은 ECMAScript 6의 모듈 시스템 구문을 추가해서 Webpack이 파일을 어떻게 번들링할지 알려줘야 합니다. 그리고 Webpack으로 묶여진 소스코드에는 Webpack이 부가적으로 삽입하는 코드도 포함되게 됩니다.&lt;/p&gt;&lt;p&gt;담당하던 프로젝트에서는 아직 ECMAScript 5를 사용하고 있었고, 자동화가 필요한 부분이 주로 파일 복사와 소스 난독화 작업이었기 때문에, 소스 번들링이 주 목적인 Webpack과는 맞지 않다고 생각해서 Gulp를 적용했습니다.&lt;/p&gt;&lt;h2&gt;3. 환경 설정&lt;/h2&gt;&lt;p&gt;Gulp 설치 방법은 공식 문서에도 잘 나와있는데, 설치 과정을 정리하면 아래와 같습니다.&lt;/p&gt;&lt;h3&gt;3.1. Node, NPM 설치 확인&lt;/h3&gt;&lt;p&gt;먼저 개발 환경에 설치된 NodeJS, NPM의 버전을 확인해야 합니다. 콘솔에서 아래의 명령어를 실행해서 버전을 확인하고 버전을 업데이트하거나 설치해야 합니다. 각 버전들은 Gulp 공식 홈페이지를 참고해서 지정했습니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;&amp;gt; node --version
+v8.11.1
+&amp;gt; npm --version
+5.6.0
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;3.2. gulp-cli 설치&lt;/h3&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;&amp;gt; npm install --global gulp-cli
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;gulp-cli&lt;/code&gt;는 Gulp를 콘솔에서 편리하게 실행할 수 있게 해주는 유틸리티 도구입니다. 콘솔에서 위의 명령어를 입력해서 &lt;code&gt;gulp-cli&lt;/code&gt;를 글로벌 영역에 설치합니다.&lt;/p&gt;&lt;h3&gt;3.3 gulp 설치&lt;/h3&gt;&lt;p&gt;Gulp는 &lt;code&gt;gulp-cli&lt;/code&gt;와 다르게 전역으로 설치하지 않고, 개발 프로젝트에만 설치하면 됩니다. 먼저 &lt;code&gt;gulp&lt;/code&gt;를 테스트해볼 샘플 개발 프로젝트인 &lt;code&gt;gulp-example&lt;/code&gt;를 생성합니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;&amp;gt; mkdir gulp-example
+&amp;gt; cd ./gulp-example
+&amp;gt; npm init
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;npm init&lt;/code&gt; 명령어는 &amp;#x27;gulp-exmaple&amp;#x27; 프로젝트에 NPM 패키지들을 설치하기 위한 초기화 작업을 합니다. &lt;code&gt;npm init&lt;/code&gt; 명령어를 입력하면 콘솔에서 프로젝트 이름이나 버전 등의 정보들을 물어보는데, 모두 &amp;#x27;enter&amp;#x27; 키를 입력하면 디폴트값으로 세팅됩니다. &lt;/p&gt;&lt;p&gt;입력이 모두 끝나면 &amp;#x27;gulp-example&amp;#x27; 프로젝트에는 &lt;code&gt;package.json&lt;/code&gt;라는 파일이 생성되고, 이 파일을 살펴보면 &lt;code&gt;npm init&lt;/code&gt;으로 입력한 정보가 들어간 것을 확인할 수 있습니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;&amp;gt; npm install --save-dev gulp
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;다음으로 위의 명령어를 실행해서 Gulp를 설치합니다. &lt;code&gt;--save-dev&lt;/code&gt; 옵션을 추가하는 이유는 Gulp가 개발 단계에서만 필요한 패키지이기 때문입니다. Gulp가 설치되고 나면 &lt;code&gt;package.json&lt;/code&gt;의 &lt;code&gt;devDependencies&lt;/code&gt;에 &lt;code&gt;gulp&lt;/code&gt;가 추가되는 것을 확인할 수 있습니다.&lt;/p&gt;&lt;p&gt;이제 간단한 예제를 실행해보기 위해서 현재 경로에서 &lt;strong&gt;gulpfile.js&lt;/strong&gt;를 만들고, 다음의 내용을 작성합니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;function defaultTask(cb) {
+    cb();
+}
+
+exports.default = defaultTask;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;그리고 콘솔에서 Gulp를 실행하고 결과를 확인합니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;&amp;gt; gulp
+[17:51:24] Using gulpfile ~/Workspace/gulp-example/gulpfile.js
+[17:51:24] Starting &amp;#x27;default&amp;#x27;...
+[17:51:24] Finished &amp;#x27;default&amp;#x27; after 3.62 ms
+&lt;/code&gt;&lt;/pre&gt;&lt;h2&gt;4. 태스크&lt;/h2&gt;&lt;p&gt;Gulp에서 수행하는 작업의 단위를 &lt;strong&gt;Task(태스크)&lt;/strong&gt;라고 부르고, 태스크는 &lt;strong&gt;gulpfile.js&lt;/strong&gt;에 작성합니다.&lt;/p&gt;&lt;p&gt;3.X 버전까지는 &lt;code&gt;task()&lt;/code&gt; 메서드로 태스크를 등록할 수 있었지만, 4.0 버전부터는 함수로도 태스크를 선언할 수 있게 되었습니다. Gulp가 제공하는 파일 시스템이나 Command Line을 쉽게 다루기 위한 API를 제외하고는,  그 외의 나머지 것들은 순수 자바스크립트나 Node 모듈을 이용해서 태스크를 작성할 수 있습니다.&lt;/p&gt;&lt;h3&gt;4.1 실행&lt;/h3&gt;&lt;p&gt;태스크는 외부에서 사용할 수 있는 &lt;strong&gt;Public&lt;/strong&gt; 태스크와 내부에서 사용하는 &lt;strong&gt;Private&lt;/strong&gt; 태스크로 나눌 수 있습니다. 태스크를 외부에서 사용하게 하려면 &lt;code&gt;exports&lt;/code&gt; 객체에 태스크(함수)를 추가해야 합니다. 이렇게 내보내진 Public 태스크는 Command Line에서 실행할 수 있게 됩니다.&lt;/p&gt;&lt;p&gt;Private 태스크는 Command Line에서 실행할 수 없지만, gulpfile에서는 사용할 수 있습니다. 예를 들어서, 순차적으로 태스크를 실행하는 &lt;code&gt;series()&lt;/code&gt; 메서드 혹은 최대한 동시에 태스크를 실행하는 &lt;code&gt;parallel()&lt;/code&gt; 메서드에서도 사용할 수 있습니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;const { series } = require(&amp;#x27;gulp&amp;#x27;);
+
+// Private 태스크
+function clean(cb) {
+  // clean 태스크 내용..
+  cb();
+}
+
+// Public 태스크
+function build(cb) {
+  // build 태스크 내용..
+  cb();
+}
+
+exports.build = build;
+exports.default = series(clean, build);
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;exports.default&lt;/code&gt;로 내보내진 태스크를 실행하기 위해서는 다음의 명령어를 입력합니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;&amp;gt; gulp
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;exports.build&lt;/code&gt;로 내보내진 태스크를 실행하려면 다음의 명령어를 입력합니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;&amp;gt; gulp build
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;4.2 비동기 완료&lt;/h3&gt;&lt;p&gt;gulpfile에서 작성하는 태스크들의 연산들은 파일의 읽기/쓰기가 대부분인데, 대부분 비동기적으로 처리됩니다. 그래서 Gulp에서는 자신의 시스템에 등록된 비동기 태스크들이 완료 시점과 성공 여부를 알 수 있어야 합니다. 그래야 태스크의 성공/실패에 따른 처리를 할 수 있기 때문입니다.&lt;/p&gt;&lt;p&gt;태스크가 Gulp에게 이러한 정보를 알려주는 방법은 크게 두 가지로 나눌 수 있습니다.&lt;/p&gt;&lt;ol&gt;&lt;li&gt;&amp;#x27;error-first callback&amp;#x27;(에러-우선 콜백)을 받아서 그 콜백을 호출&lt;/li&gt;&lt;li&gt;stream, promise, event emitter, child process, observable 중 하나를 반환&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;&amp;#x27;에러-우선 콜백&amp;#x27;은 Node.js 공식 문서에서도 설명하고 있는 패턴인데, 비동기 콜백 함수에서 비동기 연산의 완료와 성공여부를 알 수 있는 방법입니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;// nodejs의 &amp;#x27;에러-우선 콜백&amp;#x27; 예제
+const fs = require(&amp;#x27;fs&amp;#x27;);
+
+function errorFirstCallback(err, data) {
+  if (err) {
+    console.error(&amp;#x27;There was an error&amp;#x27;, err);
+    return;
+  }
+  console.log(data);
+}
+
+fs.readFile(&amp;#x27;/some/file/that/does-not-exist&amp;#x27;, errorFirstCallback);
+fs.readFile(&amp;#x27;/some/file/that/does-exist&amp;#x27;, errorFirstCallback);
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&amp;#x27;에러-우선 콜백&amp;#x27;은 첫 번째 인자로 에러 객체(위에서는 &lt;code&gt;err&lt;/code&gt;)를 받는데, 이게 &lt;code&gt;null&lt;/code&gt;이나 &lt;code&gt;undefined&lt;/code&gt;이면 성공했다는 의미이고, 아니면 에러가 발생했다는 의미입니다.&lt;/p&gt;&lt;p&gt;다시 Gulp로 돌아와서, 태스크의 첫 번째 인자로는 콜백 함수가 넘어오는데, 이 콜백 함수가 &lt;strong&gt;&amp;#x27;에러-우선 콜백&amp;#x27;&lt;/strong&gt; 입니다. &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;function task1(cb) {
+    if (isSuccess) {
+        cb(); // 에러-우선 콜백에 undefined 전달
+    } else {
+        cb(new Error(’some error raised’); // 에러가 발생하면, 에러 객체를 전달
+    }
+}
+
+exports.task1 = task1;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&amp;#x27;에러-우선 콜백&amp;#x27;을 호출하는 경우가 아니면, 태스크는 stream, promise, event emitter, child process, observable 중 하나를 반환해야 합니다. 이 중에서 stream을 반환하는 예제는 다음과 같습니다. &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;const { src } = require(&amp;#x27;gulp&amp;#x27;);
+
+function task1() {
+    return gulp
+        .src(&amp;#x27;./a.js&amp;#x27;)
+        .pipe(dest(&amp;#x27;./output/&amp;#x27;));
+}
+
+exports.task1 = task1;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;src()&lt;/code&gt; 와 &lt;code&gt;dest()&lt;/code&gt; 메서드는 Gulp에서 제공하는 API 입니다. &lt;code&gt;src()&lt;/code&gt; 메서드는 주어진 경로에 있는 파일을 읽어서 읽기 가능한 Node.js &lt;a href=&quot;https://github.com/FEDevelopers/tech.description/wiki/Node.js-Stream-%EB%8B%B9%EC%8B%A0%EC%9D%B4-%EC%95%8C%EC%95%84%EC%95%BC%ED%95%A0-%EB%AA%A8%EB%93%A0-%EA%B2%83&quot;&gt;Stream&lt;/a&gt;을 생성합니다.  &lt;code&gt;dest()&lt;/code&gt; 메서드는 인자로 주어진 파일 경로에 파일을 쓸 수 있는 Stream을 생성합니다. &lt;/p&gt;&lt;p&gt;&lt;code&gt;pipe()&lt;/code&gt; 는 Node.js Stream API 중 하나입니다. &lt;code&gt;pipe()&lt;/code&gt;는 쓰기 가능한 스트림을 읽기 가능한 스트림으로 연결할 수 있는 메서드이고, 역시 Stream을 반환합니다. 위의 gulpfile에서는 &lt;code&gt;task1()&lt;/code&gt; 함수를 실행하면 &lt;code&gt;.pipe&lt;/code&gt;에 의해 Stream을 반환하기 때문에, Gulp에서 태스크 완료나 성공 여부를 알 수 있습니다.&lt;/p&gt;&lt;h3&gt;4.3 Stream에 파일 추가하기&lt;/h3&gt;&lt;p&gt;&lt;code&gt;src()  &lt;/code&gt; 메서드는 파이프라인의 중간에도 위치해서 기존의 Stream에 파일을 추가할 수도 있습니다. 예를 들어서, 모든 소스코드를 난독화하기 전에, 특정 파일을 babel로 트랜스파일하는 것과 같은 작업을 할 수 있습니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;const { src, dest } = require(&amp;#x27;gulp&amp;#x27;);
+const uglify = require(&amp;#x27;gulp-uglify&amp;#x27;);
+const babel = require(&amp;#x27;gulp-babel&amp;#x27;);
+
+function minifyCode() {
+  return src(&amp;#x27;./src/*&amp;#x27;)
+    .pipe(babel({
+      presets:[&amp;#x27;@babel/preset-env&amp;#x27;]
+    }))
+    .pipe(src(&amp;#x27;./vendor/*&amp;#x27;))
+    .pipe(uglify())
+    .pipe(dest(&amp;#x27;./output&amp;#x27;));
+}
+
+exports.default = minifyCode;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;4.4 현재 Stream 출력하기&lt;/h3&gt;&lt;p&gt;&lt;code&gt;dest()&lt;/code&gt; 메서드도 파이프라인의 중간에 위치할 수 있습니다. &lt;code&gt;dest()&lt;/code&gt; 는 현재의 Stream을 주어진 경로에 파일을 출력하는 역할을 합니다. 소스를 난독화 할 때, 난독화 하지 않은 원본 소스도 함께 출력하고 싶을 때 유용합니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;const { src, dest } = require(&amp;#x27;gulp&amp;#x27;);
+const uglify = require(&amp;#x27;gulp-uglify&amp;#x27;);
+const babel = require(&amp;#x27;gulp-babel&amp;#x27;);
+const rename = require(&amp;#x27;gulp-rename&amp;#x27;);
+
+function minifyCode() {
+  return src(&amp;#x27;src/*.js&amp;#x27;)
+    .pipe(babel({
+      presets: [&amp;#x27;@babel/preset-env&amp;#x27;]
+    }))
+    .pipe(src(&amp;#x27;vendor/*.js&amp;#x27;))
+    .pipe(dest(&amp;#x27;output/&amp;#x27;))
+    .pipe(uglify())
+    .pipe(rename({ extname: &amp;#x27;.min.js&amp;#x27; }))
+    .pipe(dest(&amp;#x27;output/&amp;#x27;));
+}
+
+exports.default = minifyCode;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;위에서 &lt;code&gt;minifyCode&lt;/code&gt;라는 태스크가 처리하는 작업들을 순서대로 작성해보면 다음과 같습니다.&lt;/p&gt;&lt;ol&gt;&lt;li&gt;&amp;#x27;src/&amp;#x27; 디렉토리에 있는 모든 &amp;#x27;js&amp;#x27; 파일을 찾아서 Stream에 추가한다.&lt;/li&gt;&lt;li&gt;현재 Stream의 파일들을 babel로 트랜스파일한다.&lt;/li&gt;&lt;li&gt;&amp;#x27;vendor/&amp;#x27; 디렉토리에 있는 모든 &amp;#x27;js&amp;#x27; 파일을 찾아서 Stream에 추가한다.&lt;/li&gt;&lt;li&gt;&lt;strong&gt;현재 Stream에 있는 파일들을 &amp;#x27;output/&amp;#x27; 디렉토리에 출력한다.&lt;/strong&gt; &lt;/li&gt;&lt;li&gt;현재 Stream에 있는 파일들에 대해서 ugilify로 난독화한다.&lt;/li&gt;&lt;li&gt;현재 Stream에 있는 파일들에 대해서 확장자의 이름을 &amp;#x27;.min.js&amp;#x27;로 수정한다.&lt;/li&gt;&lt;li&gt;&lt;strong&gt;현재 Stream에 있는 파일들을 &amp;#x27;output/&amp;#x27; 디렉토리에 출력한다.&lt;/strong&gt;&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;파일 구조가 어떻게 변했는지 살펴보기 위해, &lt;code&gt;minifyCode&lt;/code&gt; 태스크가 실행되기 전에는 파일 구조가 다음과 같았다면,&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;gulp-example/
+|- src/
+   |- app.js
+|- vendor/
+   |- jquery.js
+|- output/
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Gulp가 &lt;code&gt;minifyCode&lt;/code&gt; 태스크를 실행하고 난 다음에는 파일 구조가 다음과 같을 것입니다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;gulp-example/
+|- src/
+   |- app.js
+|- vendor/
+   |- jquery.js
+|- output/
+   |- app.js
+   |- app.min.js
+   |- jquery.js
+   |- jquery.min.js
+&lt;/code&gt;&lt;/pre&gt;&lt;h2&gt;5. 참고하면 좋은 자료&lt;/h2&gt;&lt;ul&gt;&lt;li&gt;Gulp 4.0 달라진 것들 : &lt;a href=&quot;https://programmingsummaries.tistory.com/393&quot;&gt;https://programmingsummaries.tistory.com/393&lt;/a&gt;&lt;/li&gt;&lt;li&gt;Gulp 공식 사이트 : &lt;a href=&quot;https://gulpjs.com&quot;&gt;https://gulpjs.com&lt;/a&gt;&lt;/li&gt;&lt;li&gt;Gulp 주요 개념들 : &lt;a href=&quot;https://gulpjs.com/docs/en/api/concepts&quot;&gt;https://gulpjs.com/docs/en/api/concepts&lt;/a&gt;&lt;/li&gt;&lt;li&gt;프론트엔드 개발을 위한 Gulp &lt;a href=&quot;https://github.com/FEDevelopers/tech.description/wiki/%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C-%EA%B0%9C%EB%B0%9C%EC%9D%84-%EC%9C%84%ED%95%9C-Gulp&quot;&gt;https://github.com/FEDevelopers/tech.description/wiki/%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C-%EA%B0%9C%EB%B0%9C%EC%9D%84-%EC%9C%84%ED%95%9C-Gulp&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[자바스크립트의 this 살펴보기]]></title><description><![CDATA[다른 프로그래밍 언어에서  this 는 일반적으로 생성자나 메서드에서 자기 자신의 인스턴스를 가리키기 위한 목적으로 사용된다. 하지만 자바스크립트의  this…]]></description><link>https://haeguri.github.iojavascript-this/</link><guid isPermaLink="false">https://haeguri.github.iojavascript-this/</guid><pubDate>Sat, 02 Feb 2019 18:29:42 GMT</pubDate><content:encoded>&lt;p&gt;다른 프로그래밍 언어에서 &lt;code&gt;this&lt;/code&gt;는 일반적으로 생성자나 메서드에서 자기 자신의 인스턴스를 가리키기 위한 목적으로 사용된다. 하지만 자바스크립트의 &lt;code&gt;this&lt;/code&gt;는 메서드는 물론이고 일반 함수에서 사용될 수도 있다. 그리고 특정 메서드를 사용하면 &lt;code&gt;this&lt;/code&gt;가 가리키는 값을 강제로 변경할 수도 있다. 이렇듯 자바스크립트에서 &lt;code&gt;this&lt;/code&gt;는 이해하기 까다롭지만, &lt;code&gt;this&lt;/code&gt;를 사용하는 경우가 흔하기 때문에 꼼꼼하게 살펴봐야하는 중요한 개념이라고 생각한다.&lt;/p&gt;&lt;p&gt;자바스크립트의 &lt;code&gt;this&lt;/code&gt;는 다른 프로그래밍 언어처럼 &lt;strong&gt;정적(static)&lt;/strong&gt;으로 정해질 수도 있고, 프로그램이 실행되는 런타임에 &lt;strong&gt;동적(dynamic)&lt;/strong&gt;으로 변경될 수도 있다. 먼저 &lt;code&gt;this&lt;/code&gt;가 정적으로 정해지는 경우에 대해서 살펴보자.&lt;/p&gt;&lt;h2&gt;1. 정적으로 정해지는 경우&lt;/h2&gt;&lt;p&gt;&lt;code&gt;this&lt;/code&gt;가 정적으로 정해진다는 것은 소스코드를 작성하는 단계에서 정해지는 것을 의미한다. &lt;code&gt;this&lt;/code&gt;가 정적으로 정해지는 경우는 다음의 네 가지로 나눠볼 수 있다.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong&gt;&amp;#x27;함수&amp;#x27;&lt;/strong&gt;안에 있을 때&lt;/li&gt;&lt;li&gt;&lt;strong&gt;&amp;#x27;객체의 메서드&amp;#x27;&lt;/strong&gt;에 있을 때&lt;/li&gt;&lt;li&gt;&lt;strong&gt;&amp;#x27;클래스의 메서드&amp;#x27;&lt;/strong&gt;에 있을 때&lt;/li&gt;&lt;li&gt;&lt;strong&gt;&amp;#x27;화살표 함수&amp;#x27;&lt;/strong&gt;에 있을 때&lt;/li&gt;&lt;/ul&gt;&lt;h3&gt;1.1. 함수의 this&lt;/h3&gt;&lt;p&gt;함수안의 &lt;code&gt;this&lt;/code&gt;는 &lt;code&gt;&amp;#x27;use strict&amp;#x27;&lt;/code&gt;를 사용해서 &lt;strong&gt;&amp;#x27;엄격(strict) 모드&amp;#x27;&lt;/strong&gt;로 실행되는 경우와, &lt;strong&gt;&amp;#x27;느슨한(sloppy) 모드&amp;#x27;&lt;/strong&gt;에서 실행되는 경우에서 정해지는 값이 달라진다.&lt;/p&gt;&lt;h4&gt;느슨한 모드&lt;/h4&gt;&lt;p&gt;&amp;#x27;느슨한 모드&amp;#x27;에서 함수안의 &lt;code&gt;this&lt;/code&gt;는 &lt;code&gt;window&lt;/code&gt; 객체를 가리킨다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;function func() {
+  return this;
+}
+
+window === func(); // true
+&lt;/code&gt;&lt;/pre&gt;&lt;h4&gt;엄격 모드&lt;/h4&gt;&lt;p&gt;자바스크립트가 ‘엄격 모드’에서 실행될 때, 함수 안의 &lt;code&gt;this&lt;/code&gt;는 &lt;code&gt;undefined&lt;/code&gt;이 할당된다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;&amp;quot;use strict&amp;quot;;
+
+function func() {
+  return this;
+}
+
+window === func(); // false
+undefined === func(); // true
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;1.2. 객체 메서드의 this&lt;/h3&gt;&lt;p&gt;함수가 객체의 프로퍼티의 값으로 할당되면 그 함수를 &lt;strong&gt;메서드&lt;/strong&gt;라고 부른다. 객체의 메서드 안에서 &lt;code&gt;this&lt;/code&gt;가 사용되면, 메서드의 &lt;code&gt;this&lt;/code&gt;는 메서드가 속한 객체를 가리킨다. 메서드 안의 &lt;code&gt;this&lt;/code&gt;가 정해지는 매커니즘은 ‘엄격 모드’를 적용했을 때에도 동일하게 동작한다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;// 엄격모드 사용
+&amp;#x27;use strict&amp;#x27;
+
+function func() {
+    return this;
+}
+// func를 obj의 methodA로 정의한다.
+var obj = {
+    methodA: func;
+}
+
+// func를 obj의 methodB로 정의한다.
+obj.methodB = func;
+obj.methodA() === obj; // true
+obj.methodB() === obj; // true
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;1.3 클래스 메서드의 this&lt;/h3&gt;&lt;p&gt;자바스크립트에서는 &amp;#x27;생성자 함수&amp;#x27; 혹은 ECMAScript 2015에서 추가된 &lt;code&gt;class&lt;/code&gt; 키워드로 클래스를 만들 수 있다. 만약 &amp;#x27;생성자 함수&amp;#x27;를 통해 클래스를 정의한다면, &amp;#x27;생성자 함수&amp;#x27;와 &lt;code&gt;prototype&lt;/code&gt; 객체 메서드의 &lt;code&gt;this&lt;/code&gt;는 인스턴스를 가리킨다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;// ECMAScript 2015 이전의 클래스 선언
+function Person(name) {
+  this.name = name;
+}
+
+Person.prototype.sayHello = function () {
+  console.log(&amp;quot;제 이름은 &amp;quot; + this.name + &amp;quot;입니다.&amp;quot;);
+};
+
+var jack = new Person(&amp;quot;jack&amp;quot;);
+jack.sayHello(); // &amp;#x27;제 이름은 jack 입니다.&amp;#x27;.
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;그리고 &lt;code&gt;class&lt;/code&gt; 키워드로 클래스를 정의한다면, &lt;code&gt;constructor&lt;/code&gt; 생성자를 포함한 클래스 메서드안의 &lt;code&gt;this&lt;/code&gt;가 클래스의 인스턴스를 가리킨다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;// ESMAScript 2015의 클래스 선언
+class Person {
+  constructor(name) {
+    this.name = name;
+  }
+
+  sayHello() {
+    console.log(`제 이름은 ${this.name}입니다.`);
+  }
+}
+
+const jack = new Person(&amp;quot;jack&amp;quot;);
+jack.sayHello(); // &amp;#x27;제 이름은 jack 입니다.&amp;#x27;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;1.4. 화살표 함수&lt;/h3&gt;&lt;p&gt;ECMAScript 6에서 추가된 &lt;strong&gt;화살표 함수&lt;/strong&gt;는 화살표 함수 안의 &lt;code&gt;this&lt;/code&gt;를 따로 할당하지 않으며, 화살표 함수를 감싸고 있는 컨텍스트에서의 &lt;code&gt;this&lt;/code&gt;가 할당된다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;&amp;quot;use strict&amp;quot;;
+
+// 그냥 함수안의 this
+function test1() {
+  return this;
+}
+this === window; // true
+this === test1(); // false
+
+// 화살표 함수안의 this
+const test2 = () =&amp;gt; {
+  return this;
+};
+this === window; // true
+this === test2(); // true
+&lt;/code&gt;&lt;/pre&gt;&lt;h2&gt;2. 동적으로 변경하는 경우&lt;/h2&gt;&lt;p&gt;&lt;code&gt;this&lt;/code&gt;는 어떻게 호출되는지에 따라서 동적으로 변경될 수도 있다. 즉, 프로그램이 실행되는 과정에서 &lt;code&gt;this&lt;/code&gt;를 정할 수 있다.&lt;/p&gt;&lt;p&gt;&lt;code&gt;this&lt;/code&gt;를 동적으로 변경하는 것은 &lt;code&gt;Function.prototype&lt;/code&gt; 객체의 메서드인 &lt;code&gt;call&lt;/code&gt;, &lt;code&gt;bind&lt;/code&gt;, &lt;code&gt;apply&lt;/code&gt;로 변경할 수 있다. 자바스크립트의 메서드를 포함한 모든 함수는 내부적으로 &lt;code&gt;Function&lt;/code&gt;의 인스턴스가 되기 때문에, 모든 함수들은 프로토타입 체인을 통해서 &lt;code&gt;Function.prototype&lt;/code&gt; 객체에 정의된 &lt;code&gt;call&lt;/code&gt;, &lt;code&gt;bind&lt;/code&gt;, &lt;code&gt;apply&lt;/code&gt; 메서드를 호출할 수 있다.&lt;/p&gt;&lt;h3&gt;2.1. Function.prototype.call&lt;/h3&gt;&lt;p&gt;&lt;code&gt;call&lt;/code&gt; 메서드는 호출하는 함수의 &lt;code&gt;this&lt;/code&gt;를 다시 정의하면서 함수를 호출한다. &lt;code&gt;call&lt;/code&gt; 메서드에 넘겨줘야 하는 인자는 다음과 같다.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;첫 번째 인자는 &lt;code&gt;this&lt;/code&gt;로 참조할 객체이다.&lt;/li&gt;&lt;li&gt;그 외의 인자들은 함수에 넘겨줄 인자들이다.&lt;/li&gt;&lt;/ul&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;function add(a, b) {
+  return this.baseNumber + a + b;
+}
+
+add.call({ baseNumber: 0 }, 1, 2); // 3
+add.call({ baseNumber: 1 }, 1, 2); // 4
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;2.2. Function.prototype.apply&lt;/h3&gt;&lt;p&gt;&lt;code&gt;apply&lt;/code&gt; 메서드도 &lt;code&gt;this&lt;/code&gt;를 재정의 하면서 함수를 호출한다. 하지만 &lt;code&gt;this&lt;/code&gt; 다음으로 넘기는 인자가 &lt;code&gt;call&lt;/code&gt; 메서드와는 다르다.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;첫 번째 인자는 &lt;code&gt;this&lt;/code&gt;로 참조할 객체이다.&lt;/li&gt;&lt;li&gt;두 번째 인자는 함수에 전달할 인자가 담긴 &lt;strong&gt;배열&lt;/strong&gt;이다.&lt;/li&gt;&lt;/ul&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;function add(a, b) {
+  return this.baseNumber + a + b;
+}
+var params = [1, 2];
+add.apply({ baseNumber: 0 }, params); // 3
+add.apply({ baseNumber: 1 }, params); // 4
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;2.3. Function.prototype.bind&lt;/h3&gt;&lt;p&gt;&lt;code&gt;bind&lt;/code&gt; 메서드는 인자의 구성은 &lt;code&gt;call&lt;/code&gt; 메서드와 동일하다. 하지만 &lt;code&gt;bind&lt;/code&gt;는 &lt;code&gt;call&lt;/code&gt;처럼 함수를 호출하는 것이 아니라 새로운 함수를 생성한다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;function add(a, b) {
+  return this.baseNumber + a + b;
+}
+
+var newAdd1 = add.bind({ baseNumber: 0 }, 1, 2);
+var newAdd2 = add.bind({ baseNumber: 1 }, 1, 2);
+
+newAdd1(); // 3
+newAdd2(); // 4
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;그리고 &lt;code&gt;bind&lt;/code&gt;는 새로운 함수를 생성하기만하고 호출은 하지 않는데, 이것을 이용해서 함수가 나중에 호출될 때 고정된 인자를 갖도록 할 수 있다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;// `bind`를 호출할 때는 첫 번째 인자만 넘겨준다.
+var newAdd1 = add.bind({ baseNumber: 0 }, 1);
+var newAdd2 = add.bind({ baseNumber: 1 }, 1);
+
+// 나머지 두 번째 인자를 넘겨주면서 호출한다.
+newAdd1(2); // 3
+newAdd2(3); // 4
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;만약, &lt;code&gt;bind&lt;/code&gt;와 같은 기능을 하는 함수를 구현한다면 다음과 같을 것이다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;Function.prototype.bind = function () {
+  var bindArgs = Array.prototype.slice.apply(arguments);
+
+  var self = this;
+  var newThis = bindArgs.shift();
+
+  return function () {
+    var extraArgs = Array.prototype.slice.apply(arguments);
+
+    for (var i = 0; i &amp;lt; extraArgs.length; i++) {
+      bindArgs.push(extraArgs[i]);
+    }
+
+    return self.apply(newThis, bindArgs);
+  };
+};
+&lt;/code&gt;&lt;/pre&gt;&lt;h2&gt;3. 정리&lt;/h2&gt;&lt;p&gt;정리하자면 &lt;code&gt;this&lt;/code&gt;는 정적으로 정해질 수도 있고, 동적으로 정해질 수도 있다. 정적으로 결정될 때는 &lt;code&gt;this&lt;/code&gt;가 소스코드에서 &lt;strong&gt;&amp;#x27;&lt;code&gt;function&lt;/code&gt; 함수&amp;#x27;&lt;/strong&gt;, &lt;strong&gt;&amp;#x27;객체의 메서드&amp;#x27;&lt;/strong&gt;, &lt;strong&gt;&amp;#x27;클래스의 메서드&amp;#x27;&lt;/strong&gt;, &lt;strong&gt;&amp;#x27;화살표 함수&amp;#x27;&lt;/strong&gt; 중 어디에 속해있는지에 따라서 달라진다. 그리고 &lt;code&gt;this&lt;/code&gt;를 동적으로 결정하고 싶다면 &lt;code&gt;call&lt;/code&gt;, &lt;code&gt;apply&lt;/code&gt;, &lt;code&gt;bind&lt;/code&gt; 메서드를 활용해서 함수의 &lt;code&gt;this&lt;/code&gt;를 직접 설정해줄 수 있다.&lt;/p&gt;&lt;h2&gt;4. 참고자료&lt;/h2&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Operators/this&quot;&gt;MDN this&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Function/bind&quot;&gt;MDN bind&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Functions/%EC%95%A0%EB%A1%9C%EC%9A%B0_%ED%8E%91%EC%85%98&quot;&gt;MDN 화살표 함수&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[CORS(Cross Origin Resource Sharing, 교차 출처 리소스 공유)]]></title><description><![CDATA[소개 브라우저는 동일 출처 정책(Single Origin Policy, SOP)에 의해 스크립트 단에서 다른 도메인의 서버로 HTTP 요청을 하는 것이 제한된다. 예를 들면 브라우저를 통해 "naver.com"이라는 URL…]]></description><link>https://haeguri.github.iohttp-cross-origin-resource-sharing/</link><guid isPermaLink="false">https://haeguri.github.iohttp-cross-origin-resource-sharing/</guid><pubDate>Fri, 01 Feb 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;소개&lt;/h2&gt;&lt;p&gt;브라우저는 동일 출처 정책(Single Origin Policy, SOP)에 의해 스크립트 단에서 다른 도메인의 서버로 HTTP 요청을 하는 것이 제한된다. 예를 들면 브라우저를 통해 &amp;quot;naver.com&amp;quot;이라는 URL의 웹 페이지에서 &lt;code&gt;XMLHttpRequest&lt;/code&gt; API를 통해 &amp;quot;open-api.com&amp;quot;의 API 서버에 요청하는 것은 차단된다.&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt;대신에 &lt;code&gt;XMLHttpRequest&lt;/code&gt;가 아니라 &lt;code&gt;&amp;lt;script&amp;gt;&lt;/code&gt;, 혹은 &lt;code&gt;&amp;lt;link&amp;gt;&lt;/code&gt;와 같이 태그 형태로 외부의 리소스를 받아오는 것에 대해서는 동일 출처 정책이 적용되지 않는다. 이를 이용한 기법으로는 JSONP가 있다.&lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;점차 웹 어플리케이션의 역할이 커지면서 개발자들은 이 제한을 우회할 수 있는 방법들을 요구하기 시작했다. 그래서 브라우저 벤더사들은 CORS(Cross Origin Resource Sharing, 교차 출처 리소스 공유)라는 메커니즘을 브라우저에 적용했으며, CORS는 W3C의 권고안이 되어 완전한 웹 표준이 되었다. &lt;/p&gt;&lt;p&gt;하지만 동일 출처 정책이 없어진 것은 아니며, 추가적인 작업을 해줘야만 서로 다른 도메인 간의 리소스를 공유 할 수 있다. CORS 요청을 가능하게 하기 위해서는 다른 도메인을 가진 서버 쪽에서 &lt;strong&gt;특별한 응답 헤더를 설정&lt;/strong&gt; 해야 한다. 앞서 살펴본 경우를 예로 들자면, &amp;quot;naver.com&amp;quot; 서버가 아니라 &amp;quot;open-api.com&amp;quot; 서버 쪽에서 설정해야만 한다.&lt;/p&gt;&lt;h2&gt;매커니즘&lt;/h2&gt;&lt;p&gt;만약 스크립트 단에서 다른 도메인의 서버로 HTTP 요청을 하게 되면, 브라우저는 실제 요청을 보내기 전에 &lt;strong&gt;‘사전 요청(preflight)’&lt;/strong&gt;을 보낸다. 그리고 &lt;strong&gt;‘사전 요청’&lt;/strong&gt;에 대한 응답을 받은 후 요청이 가능하다고 판단되면, 브라우저는 원래대로 실제 HTTP 요청을 보낸다. 과정을 요약한다면 다음과 같다.&lt;/p&gt;&lt;ol&gt;&lt;li&gt;(JavaScript) &lt;code&gt;XMLHttpRequest&lt;/code&gt;로 HTTP 요청 &lt;/li&gt;&lt;li&gt;(Browser) 다른 도메인 서버로 가는 HTTP 요청임을 감지&lt;/li&gt;&lt;li&gt;(Browser) 사전 요청 전송 ( HTTP OPTIONS METHOD )&lt;/li&gt;&lt;li&gt;(Server) 사전 요청에 대한 응답 전송 (  알맞는 헤더가 설정된 응답 )&lt;/li&gt;&lt;li&gt;(Browser) CORS 요청이 가능하다고 판단함&lt;/li&gt;&lt;li&gt;(Browser) 원래의 HTTP 요청을 계속 함&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;‘1’번을 제외한 나머지 과정은 브라우저와 서버가 알아서 해주는 과정이다. 서버는 이 과정이 시작되기 전에 응답에 알맞는 헤더가 설정되도록 작업하기만 하면 된다. 여기에서 &lt;u&gt;‘3’번&lt;/u&gt;의 사전 요청 전송 과정은 생략되는 경우도 있다. 이것은 클라이언트에서 어떤 헤더나 메서드로 요청을 하는가에 따라서 달라진다. &lt;/p&gt;&lt;h2&gt;간단한 요청&lt;/h2&gt;&lt;p&gt; 사전 요청을 하지 않아도 된다고 판단되는 &lt;strong&gt;간단한 CORS 요청&lt;/strong&gt;들은 다음의 세가지 조건을 &lt;strong&gt;모두 만족&lt;/strong&gt;해야 한다.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;메서드는 다음 중 하나여야 한다 : &lt;code&gt;GET&lt;/code&gt;, &lt;code&gt;HEAD&lt;/code&gt;, &lt;code&gt;POST &lt;/code&gt;&lt;/li&gt;&lt;li&gt;스크립트에서 수동 설정이 허용되는 헤더는 다음 중 하나여야 한다 : &lt;code&gt;Accept&lt;/code&gt;, &lt;code&gt;Accept-Language&lt;/code&gt;, &lt;code&gt;Content-Language&lt;/code&gt;, &lt;code&gt;Content-Type&lt;/code&gt; &lt;/li&gt;&lt;li&gt;&lt;code&gt;Content-Type&lt;/code&gt; 헤더 값은 다음 중 하나여야 한다 : &lt;code&gt;application/x-www-form-urlencoded&lt;/code&gt;, &lt;code&gt;multipart/form-data&lt;/code&gt;, &lt;code&gt;text/plain&lt;/code&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;그리고 당연한 이야기지만, 이 모든 조건이 만족해도 서버에서 알맞은 헤더가 사전에 설정되어 있지 않으면 브라우저에 의해 CORS 요청은 거부된다.&lt;/p&gt;&lt;p&gt;아래는 &lt;strong&gt;&amp;quot;foo.example&amp;quot;&lt;/strong&gt; 페이지를 보고 있는 브라우저와 &lt;strong&gt;&amp;quot;bar.other&amp;quot;&lt;/strong&gt; 서버가 주고받은 HTTP 요청, 응답의 내용이다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;GET /resources/public-data/ HTTP/1.1
+Host: bar.other
+User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; rv:1. 9.1b3pre) Gecko/20081130 Minefield/3.1b3pre
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-us,en;q=0.5
+Accept-Encoding: gzip,deflate
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+Connection: keep-alive
+Referer: http://foo.example/examples/access-control/simpleXSInvocation.html
+Origin: http://foo.example
+
+
+HTTP/1.1 200 OK
+Date: Mon, 01 Dec 2008 00:23:53 GMT
+Server: Apache/2.0.61 
+Access-Control-Allow-Origin: *
+Keep-Alive: timeout=2, max=100
+Connection: Keep-Alive
+Transfer-Encoding: chunked
+Content-Type: application/xml
+
+[XML Data]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;첫 번째 블록은 HTTP GET 요청의 헤더인데, &lt;code&gt;Host&lt;/code&gt;와 &lt;code&gt;Origin&lt;/code&gt; 헤더의 주소가 다르므로 이 요청은 CORS 요청에 해당된다. 그런데 HTTP 메서드가 GET이고, 스크립트에서 수동 설정되는 헤더는 없기 때문에 브라우저는 사전 요청을 보내지 않는다. &lt;/p&gt;&lt;p&gt;두 번째 블록은 HTTP GET 요청에 대한 응답의 내용이다. 여기에서 CORS 요청을 가능하게 끔 하는 가장 중요한 헤더는 &lt;code&gt;Access-Control-Allow-Origin&lt;/code&gt;이다. 이 헤더가 설정되지 않았거나, &lt;code&gt;*&lt;/code&gt; 혹은 &lt;code&gt;http://foo.example&lt;/code&gt;이 포함되지 않았다면 요청은 거부되었을 것이다. 이 헤더는 앞에서 말한 것처럼 서버 단에서 별도로 설정해줘야 한다.&lt;/p&gt;&lt;p&gt;예를 들어서 NodeJS 서버에서 &lt;code&gt;Access-Control-Allow-Origin&lt;/code&gt; 헤더를 설정한다면 다음과 같을 것이다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;// …
+var express = require(&amp;#x27;express&amp;#x27;);
+var app = express();
+
+app.use((req, res, next) =&amp;gt; {
+    res.header(&amp;#x27;Access-Control-Allow-Origin&amp;#x27;, &amp;#x27;*&amp;#x27;);
+    next();
+});
+// …
+&lt;/code&gt;&lt;/pre&gt;&lt;h2&gt;사전 요청&lt;/h2&gt;&lt;p&gt;간단한 요청이 되는 경우를 제외하고, 다른 출처간의 리소스가 공유되기 전에 브라우저에서 받아들여도 되는 리소스인지 확인하기 위해서는 &lt;strong&gt;사전요청&lt;/strong&gt;이 전달된다. 만약 다음의 조건 중 &lt;strong&gt;하나라도 해당된다면&lt;/strong&gt; 실제 HTTP 요청 이전에 &lt;strong&gt;사전 요청&lt;/strong&gt;이 전달된다. &lt;/p&gt;&lt;ul&gt;&lt;li&gt;GET, POST, HEAD 이외의 메서드인 요청&lt;/li&gt;&lt;li&gt;요청이 &lt;code&gt;application/x-www-form-urlencoded&lt;/code&gt;, &lt;code&gt;multipart/form-data&lt;/code&gt;, &lt;code&gt;text/plain&lt;/code&gt; 이외의 값을 가진&lt;code&gt;Content-Type&lt;/code&gt;으로 전송될 경우&lt;/li&gt;&lt;li&gt;커스텀 헤더를 설정하는 경우&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;다음은 사전 요청이 전달될 수 있는 자바스크립트의 코드이다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;var invocation = new XMLHttpRequest();
+var url = &amp;#x27;http://bar.other/resources/post-here/&amp;#x27;;
+var body = &amp;#x27;&amp;lt;?xml version=&amp;quot;1.0&amp;quot;?&amp;gt;&amp;lt;person&amp;gt;&amp;lt;name&amp;gt;Arun&amp;lt;/name&amp;gt;&amp;lt;/person&amp;gt;&amp;#x27;;
+    
+function callOtherDomain(){
+  if(invocation)
+    {
+      invocation.open(&amp;#x27;POST&amp;#x27;, url, true);
+      invocation.setRequestHeader(&amp;#x27;X-PINGOTHER&amp;#x27;, &amp;#x27;pingpong&amp;#x27;);
+      invocation.setRequestHeader(&amp;#x27;Content-Type&amp;#x27;, &amp;#x27;application/xml&amp;#x27;);
+      invocation.onreadystatechange = handler;
+      invocation.send(body); 
+    }
+}
+// ......
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;그리고 다음은 위의 스크립트가 실행되면서 브라우저와 서버 간 요청과 응답을 주고받는 내용이다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;OPTIONS /resources/post-here/ HTTP/1.1
+Host: bar.other
+User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; rv:1.9.1b3pre) Gecko/20081130 Minefield/3.1b3pre
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-us,en;q=0.5
+Accept-Encoding: gzip,deflate
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+Connection: keep-alive
+Origin: http://foo.example
+Access-Control-Request-Method: POST
+Access-Control-Request-Headers: X-PINGOTHER
+
+
+HTTP/1.1 200 OK
+Date: Mon, 01 Dec 2008 01:15:39 GMT
+Server: Apache/2.0.61 (Unix)
+Access-Control-Allow-Origin: http://foo.example
+Access-Control-Allow-Methods: POST, GET, OPTIONS
+Access-Control-Allow-Headers: X-PINGOTHER
+Access-Control-Max-Age: 1728000
+Vary: Accept-Encoding, Origin
+Content-Encoding: gzip
+Content-Length: 0
+Keep-Alive: timeout=2, max=100
+Connection: Keep-Alive
+Content-Type: text/plain
+
+POST /resources/post-here/ HTTP/1.1
+Host: bar.other
+User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; rv:1.9.1b3pre) Gecko/20081130 Minefield/3.1b3pre
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-us,en;q=0.5
+Accept-Encoding: gzip,deflate
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+Connection: keep-alive
+X-PINGOTHER: pingpong
+Content-Type: text/xml; charset=UTF-8
+Referer: http://foo.example/examples/preflightInvocation.html
+Content-Length: 55
+Origin: http://foo.example
+Pragma: no-cache
+Cache-Control: no-cache
+
+&amp;lt;?xml version=&amp;quot;1.0&amp;quot;?&amp;gt;&amp;lt;person&amp;gt;&amp;lt;name&amp;gt;Arun&amp;lt;/name&amp;gt;&amp;lt;/person&amp;gt;
+
+
+HTTP/1.1 200 OK
+Date: Mon, 01 Dec 2008 01:15:40 GMT
+Server: Apache/2.0.61 (Unix)
+Access-Control-Allow-Origin: http://foo.example
+Vary: Accept-Encoding, Origin
+Content-Encoding: gzip
+Content-Length: 235
+Keep-Alive: timeout=2, max=99
+Connection: Keep-Alive
+Content-Type: text/plain
+
+[Some GZIP&amp;#x27;d payload]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;먼저 살펴볼 부분은 첫 번째 요청인 HTTP OPTIONS 메서드의 사전 요청이다. &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;OPTIONS /resources/post-here/ HTTP/1.1
+Host: bar.other
+User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; rv:1.9.1b3pre) Gecko/20081130 Minefield/3.1b3pre
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-us,en;q=0.5
+Accept-Encoding: gzip,deflate
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
+Connection: keep-alive
+Origin: http://foo.example
+Access-Control-Request-Method: POST
+Access-Control-Request-Headers: X-PINGOTHER
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;사전 요청이 일어난 이유는 스크립트를 살펴보면 알 듯이 커스텀 헤더인 &lt;code&gt;X-PINGOTHER&lt;/code&gt;이 설정되었기 때문이다. 여기서 &lt;code&gt;Access-Control-Request-Method&lt;/code&gt;로는 실제 요청이 어떤 메서드로 이뤄지는지 서버에게 알려준다. &lt;code&gt;Access-Control-Request-Headers&lt;/code&gt;는 실제 요청에 어떤 헤더가 세팅될 것인지 알려주는데, 여기에 &lt;code&gt;Content-Type&lt;/code&gt;과 같은 기본적인 헤더들은 리스트업되지 않는다. 이 두 개의 헤더는 프로그래머가 직접 설정해주는 것이 아니며, 브라우저에 의해 사전 요청에 자동 삽입되는 헤더이다.&lt;/p&gt;&lt;p&gt;다음으로 살펴볼 부분은 첫 번째 HTTP OPTIONS 요청에 대한 응답이다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;HTTP/1.1 200 OK
+Date: Mon, 01 Dec 2008 01:15:39 GMT
+Server: Apache/2.0.61 (Unix)
+Access-Control-Allow-Origin: http://foo.example
+Access-Control-Allow-Methods: POST, GET, OPTIONS
+Access-Control-Allow-Headers: X-PINGOTHER
+Access-Control-Max-Age: 1728000
+Vary: Accept-Encoding, Origin
+Content-Encoding: gzip
+Content-Length: 0
+Keep-Alive: timeout=2, max=100
+Connection: Keep-Alive
+Content-Type: text/plain
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;OPTIONS 요청에 대한 응답을 살펴보면 &lt;code&gt;Access-Control-Allow-Origin&lt;/code&gt; 헤더가 웹 페이지의 출처인 &lt;code&gt;http://foo.example&lt;/code&gt;을 가르키고 있다. 그리고 &lt;code&gt;Access-Control-Allow-Methods&lt;/code&gt;는 허용되는 HTTP 메서드들을 말하는데, 스크립트 상에서 요청되는 메서드인 POST가 포함되어 있다. 그리고 &lt;code&gt;Access-Control-Allow-Headers&lt;/code&gt;는 클라이언트의 요청에 설정됐던 &lt;code&gt;X-PINGOTHER&lt;/code&gt; 헤더를 포함하고 있다. 이 OPTIONS 요청에 대한 응답으로 인해서 CORS 요청이 승인되고, 다음으로 실질적인 HTTP POST 요청, 응답이 이뤄진다.&lt;/p&gt;&lt;p&gt;추가적으로, &lt;code&gt;Access-Control-Max-Age&lt;/code&gt; 헤더는 사전 전달 요청이 얼마동안 캐시되는지 알려주는 초 단위의 값이다. 사전 전달 요청이 캐시되면 이 헤더에 설정된 시간 동안은 사전전달 요청이 전달되지 않는다.&lt;/p&gt;&lt;h2&gt;인증을 이용한 요청&lt;/h2&gt;&lt;p&gt;서버와 통신하는 부분의 코드를 살펴보다보면 흔하게 봤었던 것이 &lt;code&gt;withCrendentials&lt;/code&gt; 플래그이다. &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;var invocation = new XMLHttpRequest();
+var url = &amp;#x27;http://bar.other/resources/credentialed-content/&amp;#x27;;
+    
+function callOtherDomain(){
+  if(invocation) {
+    invocation.open(&amp;#x27;GET&amp;#x27;, url, true);
+    invocation.withCredentials = true;
+    invocation.onreadystatechange = handler;
+    invocation.send(); 
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;withCredentials&lt;/code&gt; 플래그의 역할은 CORS 요청을 하면서 인증 정보(ex. 쿠키, authorization 헤더, 또는 TLS 클라이언트 인증서)를 서버로 보낼 수 있게 해준다. 그러면 서버 쪽 응답에서는 &lt;code&gt;Access-Control-Allow-Credentials&lt;/code&gt; 헤더가 &lt;code&gt;true&lt;/code&gt;로 설정되어 있어야한다. 스크립트에서 &lt;code&gt;withCredentials&lt;/code&gt; 플래그가 설정됐는데도 &lt;code&gt;Access-Control-Allow-Credentials&lt;/code&gt; 헤더가 &lt;code&gt;true&lt;/code&gt;가 아니라면, 아래와 같이 처리된다.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;사전 요청이 없는 경우에는 브라우저가 요청에 대한 응답을 무시한다.&lt;/li&gt;&lt;li&gt;사전 요청이 전달되는 경우에는 실질적인 Cross Origin 요청에 인증 정보를 사용될 수 없게 된다.&lt;/li&gt;&lt;/ul&gt;&lt;h2&gt;참고자료&lt;/h2&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;https://developer.mozilla.org/ko/docs/Web/HTTP/Access_control_CORS&quot;&gt;https://developer.mozilla.org/ko/docs/Web/HTTP/Access_control_CORS&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://homoefficio.github.io/2015/07/21/Cross-Origin-Resource-Sharing/&quot;&gt;https://homoefficio.github.io/2015/07/21/Cross-Origin-Resource-Sharing/&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials&quot;&gt;https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[CSS Box Model]]></title><description><![CDATA[소개 브라우저는 HTML 문서의 엘리먼트들을 화면에 그리기 위해 각 엘리먼트를 박스(box)로 표현한다. 이 때 모든 HTML 엘리먼트를 둘러싸고 있는 사각형 박스를  CSS 박스 모델(CSS Box Model) 이라고 한다.  CSS 2.…]]></description><link>https://haeguri.github.iocss-box-model/</link><guid isPermaLink="false">https://haeguri.github.iocss-box-model/</guid><pubDate>Thu, 24 Jan 2019 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;소개&lt;/h2&gt;&lt;p&gt;브라우저는 HTML 문서의 엘리먼트들을 화면에 그리기 위해 각 엘리먼트를 박스(box)로 표현한다. 이 때 모든 HTML 엘리먼트를 둘러싸고 있는 사각형 박스를 &lt;strong&gt;CSS 박스 모델(CSS Box Model)&lt;/strong&gt;이라고 한다. &lt;a href=&quot;https://www.w3.org/TR/CSS2/box.html&quot;&gt;CSS 2.1 스펙&lt;/a&gt;에 의하면 박스 모델을 다음처럼 설명하고 있다.&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt;&lt;em&gt;CSS 박스 모델은 문서 트리(document tree)안의 엘리먼트들에 대해 만들어지고, 시각적 형식 모델(visual formatting model)에 따라서 배치되는 사각형 상자를 말한다.&lt;/em&gt; &lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;하나의 박스는 컨텐츠 영역(content area), 패딩 영역(padding area), 테두리 영역(border area), 마진 영역(margin area)으로 구성된다. 네 가지의 영역이 박스를 어떻게 구성하는지는 아래의 그림을 통해 쉽게 파악해볼 수 있다.&lt;/p&gt;&lt;p&gt;&lt;span class=&quot;gatsby-resp-image-wrapper&quot; style=&quot;position:relative;display:block;margin-left:auto;margin-right:auto;max-width:400px&quot;&gt;
+      &lt;a class=&quot;gatsby-resp-image-link&quot; href=&quot;/static/73a525e28fc7ccdd3cdc33c5571522ff/587b0/css-box-model.png&quot; style=&quot;display:block&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;
+    &lt;span class=&quot;gatsby-resp-image-background-image&quot; style=&quot;padding-bottom:78.99999999999999%;position:relative;bottom:0;left:0;background-image:url(&amp;#x27;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAQCAYAAAAWGF8bAAAACXBIWXMAAAsTAAALEwEAmpwYAAACzUlEQVQ4y5WU604TQRzFGxNNfAH7CPJJI2+gibyEXGr8TCJRIBohXGIwCrZbaEIIIGCRFgq0BRHLB7QtArU32qUUCoUSKAW63XZLuXS7c8wuYmqCApP8ktkzZ87MZOa/svLqhhuvmrtu16v7C2qVfQW1yo9XpK9AnFtHaQsqG1Q3ZXWU9q5ujjkw+nNZI507MtG546vBHxv9/LHBfcCrPn17IGvqMBaO+k4E8xIw5Mpg0HUI/RUYdB/CHABGfVlQOmuR7E3n+D0TncvqHCkoKIdQ0uolirbLUda2QErUXqHHHhfMdA7v+6cfypo6x6TAAQeHYvUCMVhD+BFKwRZkYQsm/wGLmZUkJj0xFFNu0mWNE/PiOYGlGj+ZWWYRZoHFHR6BWA6BGC/1pe8/Wg6rCcAVOUIp5STd/wsUV6fFgNAm4okU4iwHljtAkstIfVFb3dgGHc3CEc5cLlDcwW48CbElEglEIhGshcNgGEbSmAQLevsEjvXDywfuMaeBySSLaHQb0WgUqdTvRdgrBFqXEgjEBATCUWzFGOwwHBjuWCLGpCVtaW1LCpy/6MhlGj+ZDSWxnoS0y+AegZ2OwjTtgXHaje/eTUkTx8SL82xecCnFbTTR2zYw5Ytj0rsHiy+OCecWxmaWYbYH8Xk+AouPwVfvPqZ8+xid28Ij1bnPhs/qf6bxROMWytQuolA7yeNWJylROUhlL03aLRGimdwgL7QBUqx0SGOiR3HqFXrtccF09rDffpgoNPp5MhYUy4fHSB6jtICBOQbt4350fAlCa9+FkSYY8WXzfFmIZWv086B0tiKxlu/o5pnEkCudNrjSKYMrzZ0x7M5wutl9rtuywnVblrl++w437Mlw+Z6zOeIPpqVv6r7s6cvX16ob1beqGtXyZ3XKPFTyitpmeU1Lj5zS2eSqAZu8vlUvr6h5J39ep/rLW9VASZRX1l//BfA/1okOw+LbAAAAAElFTkSuQmCC&amp;#x27;);background-size:cover;display:block&quot;&gt;&lt;/span&gt;
+  &lt;img class=&quot;gatsby-resp-image-image&quot; alt=&quot;css-box-model&quot; title=&quot;css-box-model&quot; src=&quot;/static/73a525e28fc7ccdd3cdc33c5571522ff/e17e5/css-box-model.png&quot; srcSet=&quot;/static/73a525e28fc7ccdd3cdc33c5571522ff/7e516/css-box-model.png 100w,/static/73a525e28fc7ccdd3cdc33c5571522ff/772e8/css-box-model.png 200w,/static/73a525e28fc7ccdd3cdc33c5571522ff/e17e5/css-box-model.png 400w,/static/73a525e28fc7ccdd3cdc33c5571522ff/0a47e/css-box-model.png 600w,/static/73a525e28fc7ccdd3cdc33c5571522ff/5a190/css-box-model.png 800w,/static/73a525e28fc7ccdd3cdc33c5571522ff/587b0/css-box-model.png 970w&quot; sizes=&quot;(max-width: 400px) 100vw, 400px&quot; style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;/&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;&lt;h2&gt;컨텐츠 영역&lt;/h2&gt;&lt;p&gt;컨텐츠 영역에는 텍스트나 이미지 등 엘리먼트의 실제 내용이 있다. 컨텐츠 영역의 크기를 명시적으로 정해주는 것은 &lt;code&gt;box-sizing&lt;/code&gt; 속성이 기본 값인 &lt;code&gt;content-box&lt;/code&gt;으로 되어 있을 때만 가능하다. &lt;code&gt;box-sizing&lt;/code&gt;이 기본 값으로 설정되어 있으면, &lt;code&gt;width&lt;/code&gt;, &lt;code&gt;height&lt;/code&gt;, &lt;code&gt;min-width&lt;/code&gt;, &lt;code&gt;min-height&lt;/code&gt;, &lt;code&gt;max-width&lt;/code&gt;, &lt;code&gt;max-height&lt;/code&gt;과 같은 크기를 지정하는 CSS 속성들은 컨텐츠 영역의 크기만 변경하게 된다.&lt;/p&gt;&lt;p&gt;그런데 &lt;code&gt;width&lt;/code&gt;, &lt;code&gt;height&lt;/code&gt;과 같은 속성들은 주로 컨텐츠 영역의 크기를 변경하려고 하는 것이 아니라 엘리먼트(박스)의 크기를 지정하려고 사용하는 경우가 대부분일 것이다.&lt;/p&gt;&lt;p&gt;예를 들어서, &lt;code&gt;padding&lt;/code&gt;, &lt;code&gt;border&lt;/code&gt; 속성이 부여된 엘리먼트의 크기를 너비 200px, 높이 200px으로 하고 싶다면 다음처럼 소스를 작성하려고 할 수도 있다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;!DOCTYPE html&amp;gt;
+&amp;lt;html&amp;gt;
+&amp;lt;head&amp;gt;
+  &amp;lt;style&amp;gt;
+    #ex1 {
+      background: yellow;
+      padding: 10px;
+      border: solid 10px red;
+      margin: 10px;
+      width: 200px;
+      height: 200px;
+    }
+  &amp;lt;/style&amp;gt;
+&amp;lt;/head&amp;gt;
+&amp;lt;body&amp;gt;
+  &amp;lt;div class=&amp;quot;elem&amp;quot; id=&amp;quot;ex1&amp;quot;&amp;gt;width:200, height:200&amp;lt;/div&amp;gt;
+&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;이 엘리먼트가 실제 화면에 보여지는 크기를 개발자 도구에서 확인해보면 다음과 같다. &lt;/p&gt;&lt;p&gt;&lt;span class=&quot;gatsby-resp-image-wrapper&quot; style=&quot;position:relative;display:block;margin-left:auto;margin-right:auto;max-width:400px&quot;&gt;
+      &lt;a class=&quot;gatsby-resp-image-link&quot; href=&quot;/static/525bac4b0745e995c6542926e356de97/e7c18/calculated-box-size.png&quot; style=&quot;display:block&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;
+    &lt;span class=&quot;gatsby-resp-image-background-image&quot; style=&quot;padding-bottom:74%;position:relative;bottom:0;left:0;background-image:url(&amp;#x27;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAPCAYAAADkmO9VAAAACXBIWXMAABYlAAAWJQFJUiTwAAADAUlEQVQ4y32S61MaZxjF+ZPztZlJY2ZMROUmWRbQeEEda5o0mRq1EhZBWOUmSIqCEi5FMILBcg0gOvPr7GJFO00+nNmz53neZ57znlfT7XT41qzRbTfotRu0mzVajb8foNOqqz3/1YcY1G5urtHUchG+bFsouO1knCL1wDy92BK96AD9gyXOd2b4Ks+qXNVjSw96FH4p2+nWK2ga2RBVr5nQ6ij+5acUPuq52JmiJBkpugycuY0cr49zsj6h8qJkoHSHQU9dttLcFenWy2hq2RDX4RkKOzpOA3oy3gnS2+O0EwK9lMjVsUg5bOTrvon+sVXVVD0l0k2JtI4ECpKehmwbDKxnQ/QCdop+Pef7Jg5lHcmggYuUleqJTUVmf4pczKxq5SORSlKknLRQT1khN01x20DDb703MGin5NdznbETjOp4+3GE1xuP+XXjMZu+Ebb8z3DKz9j9pEWOjyHHtUjRcRIxI2TtnCoDZevQcjc42LBzYmMvMsE79yjzv08x/0HAsSGwKtn4RbLxzjfNW+8Ma34RT0zLUdw0HKhuWEFzcRLg8wcdSecYKe8kXvk5K5taJtd3GXnj5ZGwypMVFz85Nnlkec3T3wIIf2ypDkLyJKd7ev5cG+Pw/QTfarcbtnetnPp0NJMi4ZgOZ3CSZdcii65lFrYWmN9ysOB04HAusCit8MY7hzsyxtGBiX7axl+SnssdC51/7/AqNLjDbtqGvK9DimnxRJ/jiY7ii7/gvfsJa96fVa5onugLnNFxPil3mJtWLTflW8t3ocgGNZTioUAu8ZL8oUA+Iajf9IGZz3HzQLtFNmHmIikOUvYYhykrlq+CdjLK20sJ9I/FB7hJWynt6SmHDSq/X1PeaCv5krxLN0y5ng3TD09T2jZR9Bg48xopeYZQ/nMuPXlJ/7+1ksdA1WehtWcbWL5MB2jJAr3IHL3wLL3wqzt0Q6/oR+YoOM2cSYLKFe1+j3LmKjJL1WOmo6TcqldpnmdplnPfRauSo1n5UT1P/UuG/lWXfwBt6eYiCh2OBgAAAABJRU5ErkJggg==&amp;#x27;);background-size:cover;display:block&quot;&gt;&lt;/span&gt;
+  &lt;img class=&quot;gatsby-resp-image-image&quot; alt=&quot;css-box-model&quot; title=&quot;css-box-model&quot; src=&quot;/static/525bac4b0745e995c6542926e356de97/e17e5/calculated-box-size.png&quot; srcSet=&quot;/static/525bac4b0745e995c6542926e356de97/7e516/calculated-box-size.png 100w,/static/525bac4b0745e995c6542926e356de97/772e8/calculated-box-size.png 200w,/static/525bac4b0745e995c6542926e356de97/e17e5/calculated-box-size.png 400w,/static/525bac4b0745e995c6542926e356de97/e7c18/calculated-box-size.png 408w&quot; sizes=&quot;(max-width: 400px) 100vw, 400px&quot; style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;/&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;&lt;p&gt;엘리먼트의 너비는 바깥에서부터 &lt;code&gt;border&lt;/code&gt;, &lt;code&gt;padding&lt;/code&gt;, &lt;code&gt;width&lt;/code&gt;를 더해서 240px으로 계산되고, 엘리먼트의 높이도 &lt;code&gt;border&lt;/code&gt;, &lt;code&gt;padding&lt;/code&gt;, &lt;code&gt;height&lt;/code&gt;를 더해서 240px으로 계산된다.&lt;/p&gt;&lt;p&gt;이렇게 계산된 이유는 CSS 코드에서 &lt;code&gt;box-sizing&lt;/code&gt; 속성으로 어떤 값도 주어지지 않아서 기본 값인 &lt;code&gt;content-box&lt;/code&gt;로 설정됐기 때문이다. &lt;code&gt;box-sizing:content-box&lt;/code&gt;로 설정된 엘리먼트는 &lt;code&gt;width&lt;/code&gt;, &lt;code&gt;height&lt;/code&gt; 속성을 적용해도 &lt;code&gt;padding&lt;/code&gt;과 &lt;code&gt;border&lt;/code&gt;는 포함하지 않고 &lt;strong&gt;컨텐츠 영역&lt;/strong&gt;의 크기만을 지정한다.&lt;/p&gt;&lt;h2&gt;패딩(padding) 영역&lt;/h2&gt;&lt;p&gt;패딩 영역은 컨텐츠 영역을 감싸면서 엘리먼트의 패딩을 포함하는 투명한 영역이다. 패딩의 두께는 &lt;code&gt;padding-top&lt;/code&gt;, &lt;code&gt;padding-right&lt;/code&gt;, &lt;code&gt;padding-bottom&lt;/code&gt;, &lt;code&gt;padding-left&lt;/code&gt; 속성과 네 가지 속성을 축약한 버전인 &lt;code&gt;padding&lt;/code&gt;으로 결정된다.&lt;/p&gt;&lt;h2&gt;테두리(border) 영역&lt;/h2&gt;&lt;p&gt;테두리 영역은 패딩 영역을 감싸면서 엘리먼트의 테두리를 포함하는 영역이며, 테두리의 두께는 &lt;code&gt;border-width&lt;/code&gt;, &lt;code&gt;border&lt;/code&gt;으로 결정된다. &lt;/p&gt;&lt;p&gt;&lt;code&gt;box-sizing&lt;/code&gt; 속성 값 중에는 &lt;code&gt;border-box&lt;/code&gt;가 있는데, &lt;code&gt;box-sizing: border-box;&lt;/code&gt;를 하게 되면 &lt;code&gt;width&lt;/code&gt;, &lt;code&gt;height&lt;/code&gt; 같은 엘리먼트(박스)의 크기를 변경하는 CSS 속성들이 &lt;strong&gt;&amp;#x27;border-box&amp;#x27;&lt;/strong&gt;의 크기를 변경하게 한다. &lt;strong&gt;&amp;#x27;border-box&amp;#x27;&lt;/strong&gt;는 컨텐츠, 패딩, 테두리 영역를 포함하는 박스를 말한다.&lt;/p&gt;&lt;p&gt;이제 앞서 살펴본 예제에서 &lt;code&gt;box-sizing: border-box;&lt;/code&gt; 코드만을 추가한 버전을 살펴보자.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;!DOCTYPE html&amp;gt;
+&amp;lt;html&amp;gt;
+&amp;lt;head&amp;gt;
+  &amp;lt;style&amp;gt;
+    #ex1 {
+      box-sizing: border-box;
+      background: yellow;
+      padding: 10px;
+      border: solid 10px red;
+      margin: 10px;
+      width: 200px;
+      height: 200px;
+    }
+  &amp;lt;/style&amp;gt;
+&amp;lt;/head&amp;gt;
+&amp;lt;body&amp;gt;
+  &amp;lt;div class=&amp;quot;elem&amp;quot; id=&amp;quot;ex1&amp;quot;&amp;gt;width:200, height:200&amp;lt;/div&amp;gt;
+&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;개발자 도구를 통해서 엘리먼트의 크기를 살펴보면 아래와 같다.&lt;/p&gt;&lt;p&gt;&lt;span class=&quot;gatsby-resp-image-wrapper&quot; style=&quot;position:relative;display:block;margin-left:auto;margin-right:auto;max-width:400px&quot;&gt;
+      &lt;a class=&quot;gatsby-resp-image-link&quot; href=&quot;/static/c35229fc0468b31e5fd0bf14b1883420/494f9/calculated-box-size-2.png&quot; style=&quot;display:block&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;
+    &lt;span class=&quot;gatsby-resp-image-background-image&quot; style=&quot;padding-bottom:71.00000000000001%;position:relative;bottom:0;left:0;background-image:url(&amp;#x27;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAOCAYAAAAvxDzwAAAACXBIWXMAABYlAAAWJQFJUiTwAAACo0lEQVQ4y2WT+1MSURiG/b+b6eKIAuvuImmzbThN02UyLRGFTBBYBIn7gpcK8Y6JglmLXdTyafbAlJcf3tkz7/e+z+yZb07PSWuPRt7PoRmkWQ5yVAlhrczyrav26jta5RBNMyjOtmdd1mon1ywGaLfq9Jzsf2Jv1k32RS8x3y1WX/fzNT7EQVgRakU9VP0DVMb7OIp6ur4qvocRlcacQjs5QnthCGvvIz0njTWslMZOVGU7KbOdkNk0BjnIeGjlvBzlvXxeVKmnFI4KXuFdUd4rulZS46RR6wC/GCPsJVQOTS8f4hJLURc/qg+52PLB9ijN8jD13BAXmz7Oajrn6484X9c5r+lQH6VuKIJhs/4BbZPNRywXPcQWncwbDiKGg0R6gGTGSSLtJGtKZEoS2dIgqYJEJa9ysaHfBFoLD8QfsuOjUFQYe3eHxxO3eeK/y8u3DiZjTsbn+omVPMxlZcKZQYyKm1JJgW2f6FrJBx3g94Ma1cAgtbBEy7xPetHNTMLBcDCIGorS+3QM5/g07skQ956+wvlmluGZINNGH6mki+PKMGtzEtWAhLXfBa5NXwUG4n2MTE/imZml79lzpIk3KP4p+p+/QPbPoIWmOsBUB1i7DLx+5WJJIV52M59zEcm5MEyZQNzB63CvOM/nOrN4xS2yN678fymqWMpq0UO2JFM0FQqmTLEsk8lLpDNuiuWuZyoiY2ftjt29spRjY4SduAxbOqdVjbOuTj9p/KnpHBS87L5X+bOuC+/fvKqJjt09vgxspzS2Igo7CzK711RPymzEJNYiLnG+Prc7dtdmCKD9XKzEEOdZnV9p7Yp+pjXh74c9bIVkfmd14V3P2Rmb0Xl6X/ZpLkf4+jHO8Q3FhN9cidJYmu9mYjdyIrMcwWb9BV/+lz9849XIAAAAAElFTkSuQmCC&amp;#x27;);background-size:cover;display:block&quot;&gt;&lt;/span&gt;
+  &lt;img class=&quot;gatsby-resp-image-image&quot; alt=&quot;css-box-model&quot; title=&quot;css-box-model&quot; src=&quot;/static/c35229fc0468b31e5fd0bf14b1883420/e17e5/calculated-box-size-2.png&quot; srcSet=&quot;/static/c35229fc0468b31e5fd0bf14b1883420/7e516/calculated-box-size-2.png 100w,/static/c35229fc0468b31e5fd0bf14b1883420/772e8/calculated-box-size-2.png 200w,/static/c35229fc0468b31e5fd0bf14b1883420/e17e5/calculated-box-size-2.png 400w,/static/c35229fc0468b31e5fd0bf14b1883420/494f9/calculated-box-size-2.png 404w&quot; sizes=&quot;(max-width: 400px) 100vw, 400px&quot; style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;/&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;code&gt;box-sizing&lt;/code&gt;이 &lt;code&gt;border-box&lt;/code&gt;로 되어 있기 때문에 &lt;code&gt;width&lt;/code&gt;, &lt;code&gt;height&lt;/code&gt;가 &lt;strong&gt;&amp;#x27;border-box&amp;#x27;&lt;/strong&gt;의 크기를 변경했다. 그리고 컨텐츠 영역의 크기는 &lt;code&gt;border&lt;/code&gt;, &lt;code&gt;padding&lt;/code&gt;을 제외한 크기로 계산됐다.&lt;/p&gt;&lt;h2&gt;마진(margin) 영역&lt;/h2&gt;&lt;p&gt;마진 영역은 테두리 영역을 감싸면서 이웃 엘리먼트로부터 자신을 구분하기 위해 비어있는 공간인 마진을 포함하는 영역이다. 마진의 두께는 &lt;code&gt;margin-left&lt;/code&gt;, &lt;code&gt;margin-right&lt;/code&gt;, &lt;code&gt;margin-bottom&lt;/code&gt;, &lt;code&gt;margin-left&lt;/code&gt;와 네 가지를 축약한 버전인 &lt;code&gt;margin&lt;/code&gt;으로 결정된다.&lt;/p&gt;&lt;h2&gt;참고 자료&lt;/h2&gt;&lt;ul&gt;&lt;li&gt;MDN Box Model : &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Learn/CSS/Introduction_to_CSS/Box_model&quot;&gt;https://developer.mozilla.org/en-US/docs/Learn/CSS/Introduction_to_CSS/Box_model&lt;/a&gt;&lt;/li&gt;&lt;li&gt;MDN Box Model Introduction : &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Box_Model/Introduction_to_the_CSS_box_model&quot;&gt;https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Box_Model/Introduction_to_the_CSS_box_model&lt;/a&gt;&lt;/li&gt;&lt;li&gt;W3C CSS 2.1 Box Model : &lt;a href=&quot;https://www.w3.org/TR/CSS2/box.html&quot;&gt;https://www.w3.org/TR/CSS2/box.html&lt;/a&gt;&lt;/li&gt;&lt;li&gt;W3C CSS Box Model Level 3 : &lt;a href=&quot;https://www.w3.org/TR/css-box-3/#box-model&quot;&gt;https://www.w3.org/TR/css-box-3/#box-model&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[( 번역 ) Refs and the DOM]]></title><description><![CDATA[리액트 문서의 "Refs and the DOM"을 번역한 자료 
+원문 :  https://reactjs.org/docs/refs-and-the-dom.html Ref는 DOM 노드 혹은  render…]]></description><link>https://haeguri.github.ioreact-refs/</link><guid isPermaLink="false">https://haeguri.github.ioreact-refs/</guid><pubDate>Sun, 09 Dec 2018 00:00:00 GMT</pubDate><content:encoded>&lt;blockquote&gt;&lt;p&gt;리액트 문서의 &amp;quot;Refs and the DOM&amp;quot;을 번역한 자료
+원문 : &lt;a href=&quot;https://reactjs.org/docs/refs-and-the-dom.html&quot;&gt;https://reactjs.org/docs/refs-and-the-dom.html&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;Ref는 DOM 노드 혹은 &lt;code&gt;render&lt;/code&gt; 메서드로 생성된 리액트 엘리먼트에 접근할 수 있는 방법을 제공한다.&lt;/p&gt;&lt;p&gt;일반적인 리액트 데이터 플로우에서는 &lt;a href=&quot;https://reactjs.org/docs/components-and-props.html&quot;&gt;props&lt;/a&gt;만이 부모 컴포넌트와 자식 컴포넌트와 상호작용할 수 있는 유일한 방법이다. 자식을 수정하기 위해서는 새로운 props을 넘겨줘야 자식이 다시 렌더링된다. 하지만 몇 가지 예외 경우에는 일반적인 데이터 플로에서 벗어나 긴급하게 자식을 수정해야 할 경우가 있다. 여기서 말하는 자식은 리액트 컴포넌트의 인스턴스이거나 DOM 요소일 수도 있다. 이러한 경우, 리액트는 비상용 탈출구를 제공한다.&lt;/p&gt;&lt;h3&gt;언제 Ref를 쓰는가?&lt;/h3&gt;&lt;p&gt;Ref를 사용하면 좋은 몇 가지의 경우가 있다.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;포커스, 텍스트 선택, 미디어 재생을 다룰 때&lt;/li&gt;&lt;li&gt;애니메이션을 시작할 때&lt;/li&gt;&lt;li&gt;써드-파티 DOM 라이브러리와 상호작용&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;선언적으로 수행할 수 있는 모든 것에 대해서는 Ref를 사용하지 마라.&lt;/p&gt;&lt;p&gt;예를 들어서, &lt;code&gt;Dialog&lt;/code&gt; 컴포넌트의 &lt;code&gt;open()&lt;/code&gt;과 &lt;code&gt;close()&lt;/code&gt; 메서드를 외부에 노출하는 것 대신에 &lt;code&gt;Dialog&lt;/code&gt; 컴포넌트로 &lt;code&gt;isOpen&lt;/code&gt; prop을 넘겨줘라.&lt;/p&gt;&lt;h3&gt;Ref를 남용하지 마라&lt;/h3&gt;&lt;p&gt;당신은 처음에 Ref를 당신의 앱에서 “무언가를 일어나도록 하기 위해” 사용할 것이다. 이 경우에는 시간을 갖고 컴포넌트 계층에서 상태를 소유해야 하는 장소에 대해서 비판적으로 생각해봐라. 보통은 상태를 소유하는 적절한 장소가 더 높은 위치에 있는 것을 알게 된다. 이러한 경우에는 &lt;a href=&quot;https://reactjs.org/docs/lifting-state-up.html&quot;&gt;Lifting State Up&lt;/a&gt; 가이드를 읽어봐라.&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt;&lt;strong&gt;주의&lt;/strong&gt;
+아래의 예제는 16.3에서 소개된 &lt;code&gt;React.createRef()&lt;/code&gt; API를 사용하도록 업데이트됐다. 만약 이전의 React 버전을 사용한다면 &lt;a href=&quot;#callback-refs&quot;&gt;callback refs&lt;/a&gt;를 사용하는 것을 권한다.&lt;/p&gt;&lt;/blockquote&gt;&lt;h3&gt;&lt;a id=&quot;creating-refs&quot;&gt;&lt;/a&gt; Ref 만들기&lt;/h3&gt;&lt;p&gt;Ref는 &lt;code&gt;React.createRef()&lt;/code&gt;로 만들어지며 &lt;code&gt;ref&lt;/code&gt; 속성으로 리액트 엘리먼트와 연결한다. 보통 Ref는 컴포넌트가 생성될 때 인스턴스 프로퍼티로 연결되서 컴포넌트를 통해 참조될 수 있게 된다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;class MyComponent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.myRef = React.createRef();
+    }
+    render() {
+        return &amp;lt;div ref={this.myRef} /&amp;gt;;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;Ref에 접근하기&lt;/h3&gt;&lt;p&gt;Ref가 &lt;code&gt;render&lt;/code&gt;에서 엘리먼트로 전달되면, 노드에 대한 참조는 ref의 &lt;code&gt;current&lt;/code&gt; 속성에서 접근할 수 있게 된다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot;&gt;const node = this.myRef.current;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Ref의 값은 노드의 유형에 따라 달라진다.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;code&gt;ref&lt;/code&gt; 속성이 HTML 엘리먼트에서 사용될 때에는 생성자에서 &lt;code&gt;Reac.createRef()&lt;/code&gt;로 만들어지는 &lt;code&gt;ref&lt;/code&gt;는 &lt;code&gt;current&lt;/code&gt; 프로퍼티를 통해 DOM 엘리먼트를 받게 된다.&lt;/li&gt;&lt;li&gt;&lt;code&gt;ref&lt;/code&gt; 속성이 커스텀 클래스 컴포넌트에서 사용될 때, &lt;code&gt;ref&lt;/code&gt; 객체는 &lt;code&gt;current&lt;/code&gt;를 통해 마운트된 컴포넌트의 인스턴스를 받는다.&lt;/li&gt;&lt;li&gt;&lt;strong&gt;함수 컴포넌트는 인스턴스가 없기 때문에 &lt;code&gt;ref&lt;/code&gt; 속성은 사용할 수 없다.&lt;/strong&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;아래의 예제들은 차이점을 보여준다.&lt;/p&gt;&lt;h4&gt;Ref를 DOM 엘리먼트에 추가하기&lt;/h4&gt;&lt;p&gt;이 코드는 &lt;code&gt;ref&lt;/code&gt;를 DOM 노드에 대한 참조를 저장하기 위해 사용한다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;class CustomTextInput extends React.Component {
+    constructor(props) {
+        super(props);
+        // textInput DOM 엘리먼트를 저장하기 위한 ref를 만든다.
+        this.textInput = React.createRef();
+        this.focusTextInput = this.focusTextInput.bind(this);
+    }
+
+    focusTextInput() {
+        // DOM API를 이용하여 명시적으로 텍스트 입력을 포커스한다.
+        // 주의: DOM 노드를 가져오기 위해 `current`에 접근하고 있음.
+        this.textInput.current.focus();
+    }
+
+    render() {
+        // React에게 우리가 생성자에서 만들었던 `textInput` 프로퍼티에 &amp;lt;input&amp;gt; ref를 연결하고 싶다고 말한다.
+        return (
+            &amp;lt;div&amp;gt;
+                &amp;lt;input
+                    type=&amp;quot;text&amp;quot;
+                    ref={this.textInput} /&amp;gt;
+                &amp;lt;input
+                    type=&amp;quot;button&amp;quot;
+                    value=&amp;quot;Focus the text input&amp;quot;
+                    onClick={this.focusTextInput}
+                /&amp;gt;
+            &amp;lt;/div&amp;gt;
+        );
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;리액트는 컴포넌트가 마운트 될 때 DOM 요소를 &lt;code&gt;current&lt;/code&gt; 프로퍼티에 할당할 것이며 컴포넌트가 언마운트되면 다시 &lt;code&gt;null&lt;/code&gt;을 할당할 것이다. &lt;code&gt;ref&lt;/code&gt;는 &lt;code&gt;componentDidMount&lt;/code&gt; 혹은 &lt;code&gt;componentDidUpdate&lt;/code&gt; 라이프 사이클 훅이 실행되기 전에 갱신된다.&lt;/p&gt;&lt;h4&gt;&lt;a id=&quot;adding-ref-to-class-comp&quot;&gt;&lt;/a&gt;Ref를 클래스 컴포넌트에 추가하기&lt;/h4&gt;&lt;p&gt;만약 위의 &lt;code&gt;CustomTextInput&lt;/code&gt;을 래핑해서 컴포넌트가 마운트되면 입력이 클릭된 것처럼 하려는 경우, ref를 통해서 커스텀 입력에 접근하고, &lt;code&gt;focusTextInput&lt;/code&gt; 메서드를 수동으로 호출할 수 있다.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;class AutoFocusTextInput extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.textInput = React.createRef();
+    }
+
+    componentDidMount() {
+        this.textInput.current.focusTextInput();
+    }
+
+    render() {
+        return (
+            &amp;lt;CustomTextInput ref={this.textInput} /&amp;gt;
+        );
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;CustomTextInput&lt;/code&gt;가 클래스로서 선언되어야만 동작할 수 있음을 유의해라.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;class CustomTextInput extends React.Component {
+  // ...
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h4&gt;Ref와 함수형 컴포넌트&lt;/h4&gt;&lt;p&gt;함수형 컴포넌트들은 인스턴스가 없기 때문에 &lt;strong&gt; &lt;code&gt;ref&lt;/code&gt; 속성을 가질 수 없을 것이다.&lt;/strong&gt;&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;function MyFunctionalComponent() {
+    return &amp;lt;input /&amp;gt;;
+}
+
+class Parent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.textInput = React.createRef();
+    }
+    render() {
+        // 이것은 동작하지 않을 것이다!
+        return (
+            &amp;lt;MyFunctionalComponent ref={this.textInput} /&amp;gt;
+        );
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;만약 컴포넌트에 대한 ref가 필요하다면 라이프 사이클 메서드나 상태가 필요할 경우와 마찬가지로 함수형 컴포넌트들은 클래스로 변환해야 한다.&lt;/p&gt;&lt;p&gt;그러나 &lt;strong&gt;함수형 컴포넌트 내에서&lt;/strong&gt; DOM 엘리먼트 혹은 클래스 컴포넌트를 참조한다면 &lt;strong&gt;ref 속성을 사용할 수 있다&lt;/strong&gt;.&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;function CustomTextInput(props) {
+    // textInput은 여기서 선언되어야 ref가 DOM 엘리먼트를 참조할 수 있다.
+    let textInput = React.createRef();
+    function handleClick() {
+        textInput.current.focus();
+    }
+
+    return (
+        &amp;lt;div&amp;gt;
+            &amp;lt;input
+                type=&amp;quot;text&amp;quot;
+                ref={textInput} /&amp;gt;
+            &amp;lt;input
+                type=&amp;quot;button&amp;quot;
+                value=&amp;quot;Focus the text input&amp;quot;
+                onClick={handleClick}
+            /&amp;gt;
+        &amp;lt;/div&amp;gt;
+    );
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h3&gt;부모 컴포넌트에 DOM Ref를 노출하기&lt;/h3&gt;&lt;p&gt;드문 경우에 부모 컴포넌트에서 자식의 DOM 노드에 접근하기를 원할 수 있다. 이것은 컴포넌트 캡슐화를 망가뜨리기 때문에 일반적으로 추천되지 않지만, 포커스를 주거나 자식 DOM 노드의 크기나 포지션을 측정할 때 유용할 수 있다.&lt;/p&gt;&lt;p&gt;위에서 &lt;a href=&quot;#adding-ref-to-class-comp&quot;&gt;자식 컴포넌트에 ref를 추가할 수 있었지만&lt;/a&gt;, DOM 노드보다는 컴포넌트 인스턴스만을 가져오기 때문에 이것은 이상적인 해결책이 아니다. 덧붙이면 이것은 함수형 컴포넌트로도 할 수 없다.&lt;/p&gt;&lt;p&gt;이러한 경우에서 리액트 16.3 이상을 사용한다면 &lt;a href=&quot;https://reactjs.org/docs/forwarding-refs.html&quot;&gt;ref forwarding&lt;/a&gt;을 추천한다. Ref Forwarding은 컴포넌트가 자식 컴포넌트의 ref를 노출하는 것을 선택할 수 있게 한다. 자식의 DOM 노드를 부모 컴포넌트에 노출하는 방법에 대한 자세한 예제는 &lt;a href=&quot;https://reactjs.org/docs/forwarding-refs.html#forwarding-refs-to-dom-componentsV&quot;&gt;ref forwarding 문서&lt;/a&gt;에서 찾을 수 있다.&lt;/p&gt;&lt;p&gt;만약 리액트 16.2 이하을 사용하거나 ref forwarding에 의해 제공되는 기능보다 유연해야 한다면, &lt;a href=&quot;https://gist.github.com/gaearon/1a018a023347fe1c2476073330cc5509&quot;&gt;이 대안&lt;/a&gt;을 사용하거나 다르게 명명된 prop으로 ref를 명시적으로 넘겨줄 수 있다.&lt;/p&gt;&lt;p&gt;가능하다면, DOM 노드를 노출하지 않을 것을 권장하지만, 때때로 유용할 수 있다. 이 접근 법은 자식 컴포넌트에 어떤 코드를 추가해야 할 경우의 접근 법이다. 만약 자식 컴포넌트 구현체를 변경할 수 없다면 마지막 선택지는 &lt;a href=&quot;https://reactjs.org/docs/react-dom.html#finddomnode&quot;&gt;findDOMNode&lt;/a&gt;를 사용하는 것이지만, 실망스러울 것이다.&lt;/p&gt;&lt;h3&gt;&lt;a id=&quot;callback-refs&quot;&gt;&lt;/a&gt; Callback Refs&lt;/h3&gt;&lt;p&gt;리액트는 Ref를 설정하기 위한 또 다른 방법인 &amp;#x27;callback refs&amp;#x27;를 제공한다. &amp;#x27;callback refs&amp;#x27;는 Ref가 설정되고 해제될 때 더욱 세세한 제어를 하게 한다.&lt;/p&gt;&lt;p&gt;&lt;code&gt;createRef( )&lt;/code&gt;로 만든 &lt;code&gt;ref&lt;/code&gt;속성을 넘겨주는 대신에, 함수를 넘겨줄 수 있다. 함수는 리액트 컴포넌트 인스턴스 혹은 HTML DOM 엘리먼트를 인자로 받는다. 그리고 인자는 다른 곳에 저장하고, 접근할 수 있다.&lt;/p&gt;&lt;p&gt;아래의 예제는 인스턴스 프로퍼티에서 DOM 노드에 접근할 참조를 저장하기 위한 &lt;code&gt;ref&lt;/code&gt; 콜백을 사용하는 일반적인 패턴을 구현한다. &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;class CustomTextInput extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.textInput = null;
+        this.setTextInputRef = element =&amp;gt; {
+            this.textInput = element;
+        };
+        this.focusTextInput = () =&amp;gt; {
+            // 원래의 DOM API를 이용하여 텍스트 입력을 포커싱한다
+            if (this.textInput) this.textInput.focus();
+        };
+    }
+
+    componentDidMount() {
+        // 마운트됐을 때 입력을 포커싱을 한다.
+        this.focusTextInput();
+    }
+
+    render() {
+        // 인스턴스 필드(`this.textInput`)에 텍스트 입력 DOM 엘리먼트에 대한
+        // 참조를 저장하기 위해 `ref` 콜백을 사용한다
+        return (
+            &amp;lt;div&amp;gt;
+                &amp;lt;input
+                    type=&amp;quot;text&amp;quot;
+                    ref={this.setTextInputRef}
+                /&amp;gt;
+                &amp;lt;input
+                    type=&amp;quot;button&amp;quot;
+                    value=&amp;quot;Focus the text input&amp;quot;
+                    onClick={this.focusTextInput}
+                /&amp;gt;
+            &amp;lt;/div&amp;gt;
+        );
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;리액트는 컴포넌트가 마운트되면 DOM 엘리먼트를 파라메터로 &lt;code&gt;ref&lt;/code&gt; 콜백을 실행할 것이다. 그리고 언마운트되면 &lt;code&gt;null&lt;/code&gt;을 파라메터로 호출할 것이다. Ref는 &lt;code&gt;componentDidMount&lt;/code&gt; 혹은 &lt;code&gt;componentDidUpdate&lt;/code&gt;가 호출되기 전에 최신 상태로 보장된다.&lt;/p&gt;&lt;p&gt;&lt;code&gt;React.createRef()&lt;/code&gt;로 만든 객체 Ref와 같이 컴포넌트 사이에서 Ref 콜백을 넘겨줄 수 있다. 컴포넌트 사이에서 콜백을 호출할 수 있다&lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-jsx&quot;&gt;function CustomTextInput(props) {
+    return (
+        &amp;lt;div&amp;gt;
+            &amp;lt;input ref={props.inputRef} /&amp;gt;
+        &amp;lt;/div&amp;gt;
+    );
+}
+
+class Parent extends React.Component {
+    render() {
+        return (
+            &amp;lt;CustomTextInput
+                inputRef={el =&amp;gt; this.inputElement = el}
+            /&amp;gt;
+        );
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;위의 예제에서, &lt;code&gt;Parent&lt;/code&gt;는 ref 콜백을 &lt;code&gt;inputRef&lt;/code&gt; prop으로 &lt;code&gt;CustomTextInput&lt;/code&gt;에 넘겨준다. &lt;code&gt;CustomTextInput&lt;/code&gt;은 넘겨받은 함수를 특별한 &lt;code&gt;ref&lt;/code&gt; 속성으로써  &lt;code&gt;&amp;lt;input&amp;gt;&lt;/code&gt;로 넘긴다.&lt;/p&gt;&lt;h3&gt;레거시 API: 문자열 Ref&lt;/h3&gt;&lt;p&gt;예전에 리액트를 사용했다면 &lt;code&gt;ref&lt;/code&gt; 속성이 &lt;code&gt;”textInput&amp;quot;&lt;/code&gt;과 같이 문자열이고, DOM 노드를 &lt;code&gt;this.refs.textInput&lt;/code&gt;으로 접근하는 오래된 API에 더 친숙할 것이다. 문자열 Ref는 &lt;a href=&quot;https://github.com/facebook/react/pull/8333#issuecomment-271648615&quot;&gt;어떤 이슈&lt;/a&gt;들을 가져서 레거시로 간주됐고, 앞으로의 릴리즈에서 제거될 것이기 때문에 문자열 Ref를 사용하는 일은 피해라&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt;&lt;strong&gt;주의&lt;/strong&gt;
+Ref에 접근하기 위해 &lt;code&gt;this.refs.textInput&lt;/code&gt;를 사용하고 있다면, &lt;a href=&quot;#callback-refs&quot;&gt;콜백 패턴&lt;/a&gt;이나 &lt;a href=&quot;#creating-refs&quot;&gt;createRef API&lt;/a&gt;를 대신에 사용할 것을 권장한다.&lt;/p&gt;&lt;/blockquote&gt;&lt;h3&gt;Callback Refs를 사용할 때 주의사항&lt;/h3&gt;&lt;p&gt;&lt;code&gt;ref&lt;/code&gt; 콜백이 인라인 함수로 정의된다면 컴포넌트가 업데이트되는 동안 두 번 호출될 것이다. 첫 번째는 &lt;code&gt;null&lt;/code&gt;, 그 다음에는 DOM 엘리먼트가 파라메터로 넘어간다. 이것은 각각의 &lt;code&gt;render&lt;/code&gt; 메서드로 함수의 새 인스턴스가 만들어지기 때문인데, 그래서 리액트는 예전의 ref를 비워우고 새로운 것으로 설정해줄 필요가 있다. &lt;code&gt;ref&lt;/code&gt; 콜백을 클래스에 바운드된 메서드로 정의하면 이것을 피할 수 있지만, 대부분의 경우에서는 문제가 되지 않음을 기억해라.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Express res.json과 res.send 비교]]></title><description><![CDATA[개인 프로젝트 를 개발하면서 서버가 필요하게 되었는데 자바스크립트를 더 공부해보고 싶어서 서버를 Node.js, Express를 사용하여 개발하고 있다. 지금 작성된 모든 서버 API는 Express를 통해서 JSON…]]></description><link>https://haeguri.github.iocompare-response-json-send-func/</link><guid isPermaLink="false">https://haeguri.github.iocompare-response-json-send-func/</guid><pubDate>Mon, 03 Dec 2018 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;&lt;a href=&quot;https://github.com/haeguri/reviewers&quot;&gt;개인 프로젝트&lt;/a&gt;를 개발하면서 서버가 필요하게 되었는데 자바스크립트를 더 공부해보고 싶어서 서버를 Node.js, Express를 사용하여 개발하고 있다.&lt;/p&gt;&lt;p&gt;지금 작성된 모든 서버 API는 Express를 통해서 JSON 응답을 하도록 구현되어 있다. 그런데 내가 작성한 코드를 살펴보다가 JSON 응답을 보낼 때 Express의 &lt;code&gt;res.json&lt;/code&gt; 함수와 &lt;code&gt;res.send&lt;/code&gt; 함수를 혼용하고 있었다는 사실을 알았다.  &lt;/p&gt;&lt;p&gt;클라이언트에서는 API를 호출했을 때 JSON 응답을 받은 것을 확인했으니, 두 개의 함수 모두 JSON 데이터를 보낼 수 있다는 말인데, 이렇게 사용해도 상관없는 것인지 궁금했다. 그래서 &lt;code&gt;res.send&lt;/code&gt; 함수와 &lt;code&gt;res.json&lt;/code&gt; 함수의 내부 코드를 살펴보기로 했다. &lt;/p&gt;&lt;h3&gt;res.json [&lt;a href=&quot;https://github.com/expressjs/express/blob/master/lib/response.js#L239&quot;&gt;source&lt;/a&gt;]&lt;/h3&gt;&lt;p&gt;먼저 &lt;code&gt;res.json&lt;/code&gt; 소스코드의 일부는 다음과 같다. &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;res.json = function json(obj) {
+  var val = obj;
+
+  // 생략...
+
+  var app = this.app;
+  var escape = app.get(&amp;#x27;json escape&amp;#x27;)
+  var replacer = app.get(&amp;#x27;json replacer&amp;#x27;);
+  var spaces = app.get(&amp;#x27;json spaces&amp;#x27;);
+  var body = stringify(val, replacer, spaces, escape)
+
+  if (!this.get(&amp;#x27;Content-Type&amp;#x27;)) {
+    this.set(&amp;#x27;Content-Type&amp;#x27;, &amp;#x27;application/json&amp;#x27;);
+  }
+
+  return this.send(body);
+};
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;res.json&lt;/code&gt; 함수에 명시된 인자로는 &lt;code&gt;obj&lt;/code&gt;가 있다. &lt;code&gt;obj&lt;/code&gt;는 JSON 문자열로 변환되서 &lt;code&gt;body&lt;/code&gt;라는 변수에 저장된다. 여기서 &lt;strong&gt;Content-Type&lt;/strong&gt; 헤더가 세팅되지 않았을 경우 &lt;strong&gt;this&lt;/strong&gt;(res 객체)에 &lt;strong&gt;Content-Type&lt;/strong&gt; 으로 &lt;strong&gt;application/json&lt;/strong&gt;을 세팅한다. 그리고 마지막으로 &lt;code&gt;res.send(body)&lt;/code&gt;를 실행하면서 그 결과를 반환한다. 결국은 &lt;code&gt;res.json&lt;/code&gt;은 내부적으로 &lt;code&gt;res.send&lt;/code&gt;를 호출하고 있었다. &lt;/p&gt;&lt;h3&gt;res.send [&lt;a href=&quot;https://github.com/expressjs/express/blob/master/lib/response.js#L107&quot;&gt;source&lt;/a&gt;]&lt;/h3&gt;&lt;p&gt;&lt;code&gt;res.send&lt;/code&gt;의 소스코드의 일부는 다음과 같으며, &lt;code&gt;chunk&lt;/code&gt; 타입에 따른 실행 흐름을 분기하는 코드에 초점을 맞춰서 살펴봤다. &lt;/p&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;res.send = function send(body) {
+    var chunk = body;
+    
+    // 생략....
+
+    switch (typeof chunk) {
+        // string defaulting to html
+        case &amp;#x27;string&amp;#x27;:
+            if (!this.get(&amp;#x27;Content-Type&amp;#x27;)) {
+                this.type(&amp;#x27;html&amp;#x27;);
+            }
+            break;
+        case &amp;#x27;boolean&amp;#x27;:
+        case &amp;#x27;number&amp;#x27;:
+        case &amp;#x27;object&amp;#x27;:
+            if (chunk === null) {
+                chunk = &amp;#x27;&amp;#x27;;
+            } else if (Buffer.isBuffer(chunk)) {
+                if (!this.get(&amp;#x27;Content-Type&amp;#x27;)) {
+                    this.type(&amp;#x27;bin&amp;#x27;);
+                }
+            } else {
+                return this.json(chunk);
+            }
+            break;
+    }
+    
+    // 생략..
+
+    return this;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;res.send&lt;/code&gt; 함수의 인자로는 &lt;code&gt;body&lt;/code&gt;가 있다. &lt;code&gt;body&lt;/code&gt;는 바로 &lt;code&gt;chunk&lt;/code&gt;로 할당되고, &lt;code&gt;chunk&lt;/code&gt;에 대한 타입 검사가 진행된다. 여기에서 &lt;code&gt;chunk&lt;/code&gt;가 &lt;strong&gt;object&lt;/strong&gt; 타입이면 &lt;code&gt;res.json&lt;/code&gt;을 호출한다. 여기서 의문이 들었는데, 이렇게 되면 두 개의 함수가 서로 호출하기 때문에 함수 호출 스택이 넘쳐버리지 않을까 생각했다. &lt;/p&gt;&lt;p&gt;그래서 &lt;code&gt;res.send(object)&lt;/code&gt;로 코드를 실행했을 때 함수의 실행 순서가 어떻게 되는지 살펴봤다.&lt;/p&gt;&lt;ol&gt;&lt;li&gt;&lt;strong&gt;res.send(object)&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong&gt;res.json(object)&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong&gt;res.send(string)&lt;/strong&gt;&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;&lt;code&gt;res.json&lt;/code&gt;에서 &lt;code&gt;res.send&lt;/code&gt;를 호출할 때는 &lt;code&gt;body&lt;/code&gt;로 문자열을 넘겨주기 때문에, &lt;strong&gt;두 번째 실행&lt;/strong&gt;되는 &lt;code&gt;res.send&lt;/code&gt;의 &lt;code&gt;chunk&lt;/code&gt; 타입은 &lt;strong&gt;string&lt;/strong&gt;이다. &lt;code&gt;chunk&lt;/code&gt;가 &lt;strong&gt;string&lt;/strong&gt;일 경우에는 &lt;strong&gt;object&lt;/strong&gt;일 때와 다른 분기를 타게 되서 &lt;code&gt;res.json&lt;/code&gt;을 호출하지 않기 때문에, 계속해서 서로를 호출하는 일은 없게 된다.&lt;/p&gt;&lt;h3&gt;실행 흐름을 비교&lt;/h3&gt;&lt;p&gt;그러면 두 개의 함수를 각각 사용했을 때 차이점은 무엇일까 생각해봤다. 그리고 각각을 실행했을 때 실행 흐름이 어떻게 흘러가는지 비교해봤다.&lt;/p&gt;&lt;p&gt;&lt;code&gt;res.send(object)&lt;/code&gt;를 실행하면 함수의 호출 순서는 다음과 같다. &lt;/p&gt;&lt;ol&gt;&lt;li&gt;&lt;strong&gt;res.send(object)&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong&gt;res.json(object)&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong&gt;res.send(string)&lt;/strong&gt;&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;그리고 &lt;code&gt;res.json(object)&lt;/code&gt;를 실행했을 때 함수의 호출 순서는 다음과 같다.&lt;/p&gt;&lt;ol&gt;&lt;li&gt;&lt;strong&gt;res.json(object)&lt;/strong&gt;&lt;/li&gt;&lt;li&gt;&lt;strong&gt;res.send(string)&lt;/strong&gt;&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;&lt;code&gt;object&lt;/code&gt;를 인자로 &lt;code&gt;res.send&lt;/code&gt;를 호출하면 &lt;code&gt;res.json&lt;/code&gt;을 호출했을 때 보다 &lt;strong&gt;불필요한 호출&lt;/strong&gt;이 한 번 더 발생한다.&lt;/p&gt;&lt;h3&gt;결론&lt;/h3&gt;&lt;p&gt;불필요한 함수 호출이 한번 더 발생하는 것은 어쨌든 추가 비용은 발생하는 것이기 때문에, JSON 응답을 한다면 &lt;code&gt;res.send&lt;/code&gt;보다 &lt;code&gt;res.json&lt;/code&gt;이 적절한 것 같다.&lt;/p&gt;&lt;p&gt;또한 소스코드를 읽을 때에도 &lt;code&gt;res.json&lt;/code&gt;이 JSON 데이터를 보낸다는 의도가 더 명확하게 드러난다. 예를 들어서 &lt;code&gt;res.send({data:1})&lt;/code&gt;라면 객체를 즉시 생성해서 전달하기 때문에 JSON을 응답하는 것을 유추할 수 있지만, &lt;code&gt;res.send(data)&lt;/code&gt;처럼 객체의 참조값을 변수에 담아서 인자로 넘긴다면 JSON 응답을 하는지 쉽게 구분이 가지 않을 것이다.&lt;/p&gt;</content:encoded></item></channel></rss>
