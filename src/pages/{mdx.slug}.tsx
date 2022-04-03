@@ -26,7 +26,7 @@ interface SiteMetadata {
 const components: Record<string, React.FC<any>> = {
   a: ({ children, href }) => (
     <a
-      className="text-blue-500 font-semibold"
+      className="text-blue-500 font-semibold break-words"
       href={href}
       target="_blank"
       rel="noreferrer"

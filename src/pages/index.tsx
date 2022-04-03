@@ -25,7 +25,7 @@ const Home: React.VFC<{ data: Data }> = ({ data }) => {
       <Layout>
         {data.allMdx.nodes.map((node) => (
           <Link to={node.slug}>
-            <article className="p-6 rounded-lg" key={node.id}>
+            <article className="py-6 px-0 rounded-lg sm:px-6" key={node.id}>
               <h2 className="text-2xl font-semibold">
                 {node.frontmatter.title}
               </h2>

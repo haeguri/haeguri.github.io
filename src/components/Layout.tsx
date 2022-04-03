@@ -39,7 +39,9 @@ const Layout: React.FC<LayoutProps> = ({ children, ...props }) => {
           </ul>
         </div>
       </nav>
-      <main className="container flex-1 mx-auto mt-14 mb-10">{children}</main>
+      <main className="container flex-1 mx-auto mt-6 mb-10 sm:mt-14">
+        {children}
+      </main>
       <footer className="mt-10">
         <div className="container flex items-center mx-auto border-t h-16">
           ©{" "}
