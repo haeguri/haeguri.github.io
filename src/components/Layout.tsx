@@ -18,8 +18,8 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children, ...props }) => {
   return (
     <div className="flex flex-col h-screen" {...props}>
-      <nav className="flex flex-shrink-0 w-full h-16 border-b">
-        <div className="flex items-center container mx-auto">
+      <nav className="bg-white flex flex-shrink-0 flex-col w-full h-16 border-b ">
+        <div className="flex items-center flex-1 container mx-auto">
           <Link
             to="/"
             className="text-lg font-medium tracking-normal sm:text-xl"
@@ -27,11 +27,6 @@ const Layout: React.FC<LayoutProps> = ({ children, ...props }) => {
             Haeguri Blog
           </Link>
           <ul className="flex ml-auto">
-            <li>
-              <Link to="/" className="tracking-wide text-lg">
-                Posts
-              </Link>
-            </li>
             <li className="ml-4">
               <a
                 href="https://github.com/haeguri"

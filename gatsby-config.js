@@ -1,6 +1,6 @@
 module.exports = {
   siteMetadata: {
-    title: "Devlog",
+    title: "Haeguri Devlog",
     description: "This blog posts about web frontend devlopement.",
     url: "https://haeguri.github.io",
   },
