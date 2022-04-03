@@ -11,6 +11,7 @@ import Code from "../components/Code";
 interface Mdx {
   id: string;
   body: string;
+  excerpt: string;
   frontmatter: {
     title: string;
     date: string;
@@ -95,7 +96,7 @@ const BlogPost: React.VFC<{
       <SEO
         article
         title={data.mdx.frontmatter.title}
-        description={data.mdx.frontmatter.description}
+        description={data.mdx.excerpt}
       />
       <Layout>
         <PostHeader>
@@ -117,6 +118,7 @@ export const query = graphql`
     mdx(id: { eq: $id }) {
       id
       body
+      excerpt(truncate: true)
       frontmatter {
         title
         date(formatString: "MMMM D, YYYY")
