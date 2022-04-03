@@ -1,5 +1,5 @@
 import Highlight, { defaultProps, Language } from "prism-react-renderer";
-import dracula from "prism-react-renderer/themes/dracula";
+import oceanicNext from "prism-react-renderer/themes/oceanicNext";
 
 const Test: React.FC<{ className: string; children: string }> = ({
   children,
@@ -12,7 +12,7 @@ const Test: React.FC<{ className: string; children: string }> = ({
       {...defaultProps}
       code={children}
       language={language}
-      theme={dracula}
+      theme={oceanicNext}
     >
       {({ style, tokens, getLineProps, getTokenProps }) => (
         <pre

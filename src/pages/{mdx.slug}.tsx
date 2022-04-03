@@ -1,4 +1,3 @@
-import { styled } from "twin.macro";
 import { graphql } from "gatsby";
 import { MDXRenderer } from "gatsby-plugin-mdx";
 import { Disqus } from "gatsby-plugin-disqus";
@@ -54,8 +53,11 @@ const components: Record<string, React.FC<any>> = {
   ul: ({ children }) => <ul className="mb-4 pl-6 list-disc">{children}</ul>,
   li: ({ children }) => <li className="mb-2 leading-6">{children}</li>,
   ol: ({ children }) => <ul className="mb-4 pl-6 list-decimal">{children}</ul>,
-  em: ({ children }) => (
-    <em className="font-semibold text-gray-500">{children}</em>
+  em: ({ children }) => <em className="text-gray-500">{children}</em>,
+  img: ({ children, ...props }) => (
+    <img className="mx-auto" {...props}>
+      {children}
+    </img>
   ),
   blockquote: ({ children }) => (
     <blockquote className="mb-4 pt-6 pb-1 px-6 bg-gray-100 rounded">
