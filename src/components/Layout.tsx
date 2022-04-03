@@ -33,7 +33,7 @@ const Layout: React.FC<LayoutProps> = ({ children, ...props }) => {
                 target="_blank"
                 className="tracking-wide text-lg"
               >
-                Github
+                GitHub
               </a>
             </li>
           </ul>
