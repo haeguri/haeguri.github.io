@@ -4,8 +4,10 @@ import Layout from "../components/Layout";
 import SEO from "../components/SEO";
 interface Mdx {
   id: string;
-  slug: string;
   excerpt: string;
+  fields: {
+    slug: string;
+  };
   frontmatter: {
     title: string;
     date: string;
@@ -24,7 +26,7 @@ const Home: React.VFC<{ data: Data }> = ({ data }) => {
       <SEO />
       <Layout>
         {data.allMdx.nodes.map((node) => (
-          <Link to={node.slug}>
+          <Link to={node.fields.slug}>
             <article className="py-6 px-0 rounded-lg sm:px-6" key={node.id}>
               <h2 className="text-2xl font-semibold">
                 {node.frontmatter.title}
@@ -46,7 +48,9 @@ export const query = graphql`
     allMdx(sort: { fields: frontmatter___date, order: DESC }) {
       nodes {
         id
-        slug
+        fields {
+          slug
+        }
         excerpt(truncate: true)
         frontmatter {
           date(formatString: "MMMM D, YYYY")

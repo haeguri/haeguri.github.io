@@ -6466,6 +6466,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"date-fns@npm:^2.28.0":
+  version: 2.28.0
+  resolution: "date-fns@npm:2.28.0"
+  checksum: a0516b2e4f99b8bffc6cc5193349f185f195398385bdcaf07f17c2c4a24473c99d933eb0018be4142a86a6d46cb0b06be6440ad874f15e795acbedd6fd727a1f
+  languageName: node
+  linkType: hard
+
 "debug@npm:2, debug@npm:2.6.9, debug@npm:^2.2.0, debug@npm:^2.3.3, debug@npm:^2.6.0, debug@npm:^2.6.9":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
@@ -9589,6 +9596,7 @@ __metadata:
     "@types/react-helmet": ^6.1.4
     autoprefixer: latest
     babel-preset-gatsby: ^2.1.0
+    date-fns: ^2.28.0
     gatsby: ^4.11.1
     gatsby-plugin-disqus: ^1.2.3
     gatsby-plugin-feed: ^4.11.1

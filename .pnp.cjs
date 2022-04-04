@@ -44,6 +44,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/react-helmet", "npm:6.1.4"],
             ["autoprefixer", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:10.4.0"],
             ["babel-preset-gatsby", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:2.1.0"],
+            ["date-fns", "npm:2.28.0"],
             ["gatsby", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.11.1"],
             ["gatsby-plugin-disqus", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:1.2.3"],
             ["gatsby-plugin-feed", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.11.1"],
@@ -10418,6 +10419,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["date-fns", "npm:2.25.0"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:2.28.0", {
+          "packageLocation": "./.yarn/cache/date-fns-npm-2.28.0-c19c5add1b-a0516b2e4f.zip/node_modules/date-fns/",
+          "packageDependencies": [
+            ["date-fns", "npm:2.28.0"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["debug", [
@@ -14345,6 +14353,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/react-helmet", "npm:6.1.4"],
             ["autoprefixer", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:10.4.0"],
             ["babel-preset-gatsby", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:2.1.0"],
+            ["date-fns", "npm:2.28.0"],
             ["gatsby", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.11.1"],
             ["gatsby-plugin-disqus", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:1.2.3"],
             ["gatsby-plugin-feed", "virtual:7b138a85fc09e42d7e0e209b17b28465db4db7367bc2cf212eb0086b51e02d5c97aea58680e3c4f62d637b89c17b9a85e1fa727cf269a6d93285a2831e88f711#npm:4.11.1"],
